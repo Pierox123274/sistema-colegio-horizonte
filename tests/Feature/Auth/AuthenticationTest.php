@@ -51,4 +51,11 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
         $response->assertRedirect('/');
     }
+
+    public function test_guest_is_redirected_from_intranet_dashboard(): void
+    {
+        $this->get('/intranet/dashboard')->assertRedirect(
+            route('login', absolute: false),
+        );
+    }
 }

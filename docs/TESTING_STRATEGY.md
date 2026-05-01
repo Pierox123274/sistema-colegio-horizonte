@@ -32,9 +32,10 @@ Cada módulo de negocio debería tener al menos:
 ## Herramientas previstas
 
 - **PHPUnit** (incluido con Laravel).
-- **Cypress** y **Gherkin** (según fases del roadmap).
+- **Cypress** (instalado): E2E frente a la app en ejecución (`npm run e2e` / `npm run e2e:open`). Variable opcional `CYPRESS_BASE_URL` (por defecto `http://localhost:8000` en `cypress.config.ts`). Requiere `php artisan serve` (o stack equivalente) antes de correr E2E.
+- **Gherkin**: escenarios legibles en `tests/Bdd/features/*.feature`, enlazados con pruebas PHPUnit en `tests/Feature` (sin motor Behat en este repositorio salvo que se añada después).
 - **Pest** opcional si el equipo lo adopta de mutuo acuerdo (el proyecto arranca con PHPUnit).
 
 ## Fase actual
 
-Fase 1 no añade casos de negocio nuevos; las pruebas existentes de Breeze se mantienen. Las carpetas `tests/Feature` y `tests/Unit` son el lugar estándar para crecer.
+Fase 2 añade pruebas de intranet y roles (`tests/Feature/Intranet`, ampliaciones en `tests/Feature/Auth`). Las carpetas `tests/Feature` y `tests/Unit` siguen siendo el estándar; los `.feature` documentan criterios BDD (ISO/IEC 29119).

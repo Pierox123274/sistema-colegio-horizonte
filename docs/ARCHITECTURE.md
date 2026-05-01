@@ -41,8 +41,8 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 |------|-----|
 | `Pages/Public` | Web institucional (SEO, marketing, formularios públicos). Convención Inertia: `Public/Nombre` → `Inertia::render('Public/Nombre')`. |
 | `Pages/Intranet` | Área autenticada (dashboard, módulos operativos). |
-| `Pages/Auth`, `Pages/Profile` | Se mantienen como en Breeze hasta refactor explícito (no obligatorio en Fase 1). |
-| `Layouts` | Shell visual: público vs autenticado cuando existan layouts definitivos. |
+| `Pages/Auth`, `Pages/Profile` | Breeze; el perfil usa el layout de intranet (`IntranetLayout`) para coherencia con el área autenticada. |
+| `Layouts` | `IntranetLayout`: shell temporal de intranet (sidebar + cabecera). `GuestLayout` / `AuthenticatedLayout` siguen disponibles según pantalla. |
 | `Components` | UI reutilizable (botones, formularios, tablas). Agrupar por subcarpetas solo cuando el volumen lo exija (`ui/`, `forms/`, etc.). |
 | `types` | Tipos compartidos TypeScript (`User`, `PageProps`, props por página). |
 
@@ -52,10 +52,16 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **React**: componentes `PascalCase`, archivos de página alineados con la ruta Inertia.
 - **Tests**: reflejar la ruta del código bajo prueba cuando sea posible (`tests/Feature/Intranet/...`).
 
-## Qué queda fuera de Fase 1
+## Autorización (Fase 2)
 
-- CRUD de negocio, políticas por rol, módulos académicos/financieros.
-- Cambios en pantallas de login o flujo Breeze salvo decisión explícita en fases posteriores.
+- **Roles** (`App\Enums\IntranetRole` + `spatie/laravel-permission`): Administrador, Secretaria, Docente, Estudiante, Apoderado.
+- Rutas de intranet: middleware `auth`, `verified` y `role:` con la lista de roles del enum.
+- **UserPolicy**: el usuario solo actualiza / elimina su propia cuenta.
+- Detalle operativo: `docs/AUTHORIZATION.md`.
+
+## Qué queda fuera de fases tempranas
+
+- CRUD de negocio y módulos académicos/financieros (fases posteriores del roadmap).
 
 ## Referencias
 

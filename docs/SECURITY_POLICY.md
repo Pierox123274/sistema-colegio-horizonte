@@ -17,7 +17,7 @@ Documento orientado a **ISO/IEC 27001** y a las exigencias del `SYSTEM_REQUIREME
 ## Controles técnicos previstos (evolución del proyecto)
 
 1. **Autenticación y sesión**: mecanismos Laravel/Sanctum según diseño aprobado en fases de auth; sesiones seguras en producción (HTTPS, cookies `secure`, `httpOnly` donde aplique).
-2. **Autorización**: policies y middleware; principio de **mínimo privilegio** por rol (Administrador, Secretaría, Docente, Estudiante, Apoderado — ver requerimientos).
+2. **Autorización**: policies y middleware; principio de **mínimo privilegio** por rol (Administrador, Secretaría, Docente, Estudiante, Apoderado — ver requerimientos). Implementación técnica: `spatie/laravel-permission`, middleware `role:` en rutas de intranet, registro público con rol **Estudiante** por defecto (`docs/AUTHORIZATION.md`).
 3. **Validación de entrada**: Form Requests en `app/Http/Requests`; sanitización según el vector (SQL vía Eloquent, XSS en vistas/React).
 4. **Datos en tránsito y en reposo**: TLS en producción; credenciales y claves solo en variables de entorno (nunca en el código ni en el historial).
 5. **Secretos**: `.env` fuera de control de versiones; rotación de claves documentada en despliegue.

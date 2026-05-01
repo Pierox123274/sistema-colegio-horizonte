@@ -13,6 +13,8 @@
 /.zed
 /auth.json
 /node_modules
+/cypress/screenshots
+/cypress/videos
 /public/build
 /public/hot
 /public/storage

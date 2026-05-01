@@ -11,6 +11,14 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | **ISO/IEC 25010** | Calidad del producto: funcionalidad, rendimiento, seguridad, mantenibilidad, usabilidad, compatibilidad. |
 | **ISO/IEC 29119** | Pruebas: planificación, diseño, ejecución, evidencia. |
 
+## Mapeo (Fase 2 — roles e intranet)
+
+| Requerimiento / objetivo | ISO principal | Artefacto |
+|--------------------------|----------------|-----------|
+| Roles del sistema (Sección 6 SYSTEM_REQUIREMENTS) | 27001, 9001 | `App\Enums\IntranetRole`, `RoleSeeder`, middleware `role:`, `docs/AUTHORIZATION.md` |
+| Login e intranet (Sección 2) | 25010, 27001 | Breeze + rutas `/intranet/dashboard`, `IntranetLayout`, pruebas `tests/Feature` |
+| Pruebas y trazabilidad BDD | 29119 | `tests/Bdd/features/authentication.feature`, Cypress `cypress/e2e/auth.cy.ts` |
+
 ## Mapeo inicial (Fase 1 — arquitectura base)
 
 | Requerimiento / objetivo (referencia) | ISO principal | Artefacto en el repo |
