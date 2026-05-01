@@ -39,11 +39,11 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 
 | Ruta | Uso |
 |------|-----|
-| `Pages/Public` | Web institucional (SEO, marketing, formularios públicos). Convención Inertia: `Public/Nombre` → `Inertia::render('Public/Nombre')`. |
+| `Pages/Public` | Web institucional: `Public/Home`, `Public/Nosotros`, etc. Rutas en `PublicSiteController`; layout `PublicLayout`; componentes en `Components/Public/`. |
 | `Pages/Intranet` | Área autenticada (dashboard, módulos operativos). |
 | `Pages/Auth`, `Pages/Profile` | Breeze; el perfil usa el layout de intranet (`IntranetLayout`) para coherencia con el área autenticada. |
-| `Layouts` | `IntranetLayout`: shell intranet (sidebar colapsable, cabecera institucional, área principal). `GuestLayout` / `AuthenticatedLayout` para otras pantallas. |
-| `Components` | UI genérica en `Components/`; **intranet** en `Components/Intranet/` (`Sidebar`, `Header`, `Card`, `StatsCard`, contenedores). |
+| `Layouts` | `PublicLayout` (web pública: navbar + footer). `IntranetLayout` (intranet). `GuestLayout` / `AuthenticatedLayout` (Breeze). |
+| `Components` | `Components/Public/` (navbar, secciones landing, footer). `Components/Intranet/` (shell y widgets intranet). |
 | `types` | Tipos compartidos TypeScript (`User`, `PageProps`, props por página). |
 
 ## Convenciones de nombres

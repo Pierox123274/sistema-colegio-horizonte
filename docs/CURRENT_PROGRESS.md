@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 3** (UI intranet premium) sobre las fases 1 y 2.
+Última actualización: **Fase 4** (web institucional pública) sobre las fases 1–3.
 
 ## Completado — Fase 1
 
@@ -29,10 +29,19 @@
 - [x] Dependencia `lucide-react` para iconografía.
 - [x] Prueba Feature `IntranetDashboardUiTest` (componente Inertia en respuesta).
 
+## Completado — Fase 4 (web pública)
+
+- [x] Rutas públicas limpias: `/`, `/nosotros`, `/niveles`, `/admision`, `/noticias`, `/contacto` (intranet sin cambios: `/login`, `/intranet/dashboard`, perfil).
+- [x] `PublicSiteController` + `PublicLayout` + `resources/js/Components/Public/*` + `Pages/Public/*`.
+- [x] Landing con hero, nosotros (resumen), niveles (Inicial / Primaria / Secundaria), propuesta educativa, admisión, noticias demo, CTA y footer.
+- [x] Contenido demo en `resources/js/data/publicSiteDemo.ts` (sin BD).
+- [x] Pruebas `tests/Feature/Public/PublicSiteTest.php`.
+- [x] Eliminada la página Breeze `Welcome.tsx` (sustituida por `Public/Home`).
+
 ## Pendiente / siguientes fases (ROADMAP)
 
 - Fase 2+: permisos granulares por módulo si se requiere más allá de roles.
-- Fase 4 en adelante: web pública, módulos de negocio (estudiantes, matrículas, etc.), ML, despliegue.
+- Fase 5 en adelante: módulos de negocio (estudiantes, matrículas, etc.), ML, despliegue.
 
 ## Notas
 

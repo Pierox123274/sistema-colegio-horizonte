@@ -2,18 +2,16 @@
 
 use App\Enums\IntranetRole;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\PublicSiteController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+Route::get('/', [PublicSiteController::class, 'home'])->name('public.home');
+Route::get('/nosotros', [PublicSiteController::class, 'nosotros'])->name('public.nosotros');
+Route::get('/niveles', [PublicSiteController::class, 'niveles'])->name('public.niveles');
+Route::get('/admision', [PublicSiteController::class, 'admision'])->name('public.admision');
+Route::get('/noticias', [PublicSiteController::class, 'noticias'])->name('public.noticias');
+Route::get('/contacto', [PublicSiteController::class, 'contacto'])->name('public.contacto');
 
 $intranetRoles = 'role:'.IntranetRole::middlewarePipe();
 

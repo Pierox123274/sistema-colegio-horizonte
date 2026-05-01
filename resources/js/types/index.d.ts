@@ -20,4 +20,7 @@ export type PageProps<
         user: User | null;
     };
     sidebarNav: SidebarNavItem[];
+    /** Web pública (PublicSiteController) */
+    canLogin?: boolean;
+    canRegister?: boolean;
 };
