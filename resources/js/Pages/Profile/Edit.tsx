@@ -1,3 +1,5 @@
+import { Card } from '@/Components/Intranet/Card';
+import { PageContainer } from '@/Components/Intranet/PageContainer';
 import IntranetLayout from '@/Layouts/IntranetLayout';
 import { PageProps } from '@/types';
 import { Head } from '@inertiajs/react';
@@ -13,25 +15,25 @@ export default function Edit({
         <IntranetLayout title="Mi perfil">
             <Head title="Mi perfil" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
+            <PageContainer width="default">
+                <div className="mx-auto max-w-3xl space-y-6">
+                    <Card>
                         <UpdateProfileInformationForm
                             mustVerifyEmail={mustVerifyEmail}
                             status={status}
                             className="max-w-xl"
                         />
-                    </div>
+                    </Card>
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
+                    <Card>
                         <UpdatePasswordForm className="max-w-xl" />
-                    </div>
+                    </Card>
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
+                    <Card>
                         <DeleteUserForm className="max-w-xl" />
-                    </div>
+                    </Card>
                 </div>
-            </div>
+            </PageContainer>
         </IntranetLayout>
     );
 }

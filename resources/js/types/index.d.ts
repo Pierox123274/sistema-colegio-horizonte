@@ -8,7 +8,9 @@ export interface User {
 
 export interface SidebarNavItem {
     label: string;
-    href: string;
+    href: string | null;
+    icon: string;
+    disabled: boolean;
 }
 
 export type PageProps<

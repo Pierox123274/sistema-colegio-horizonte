@@ -42,8 +42,8 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 | `Pages/Public` | Web institucional (SEO, marketing, formularios públicos). Convención Inertia: `Public/Nombre` → `Inertia::render('Public/Nombre')`. |
 | `Pages/Intranet` | Área autenticada (dashboard, módulos operativos). |
 | `Pages/Auth`, `Pages/Profile` | Breeze; el perfil usa el layout de intranet (`IntranetLayout`) para coherencia con el área autenticada. |
-| `Layouts` | `IntranetLayout`: shell temporal de intranet (sidebar + cabecera). `GuestLayout` / `AuthenticatedLayout` siguen disponibles según pantalla. |
-| `Components` | UI reutilizable (botones, formularios, tablas). Agrupar por subcarpetas solo cuando el volumen lo exija (`ui/`, `forms/`, etc.). |
+| `Layouts` | `IntranetLayout`: shell intranet (sidebar colapsable, cabecera institucional, área principal). `GuestLayout` / `AuthenticatedLayout` para otras pantallas. |
+| `Components` | UI genérica en `Components/`; **intranet** en `Components/Intranet/` (`Sidebar`, `Header`, `Card`, `StatsCard`, contenedores). |
 | `types` | Tipos compartidos TypeScript (`User`, `PageProps`, props por página). |
 
 ## Convenciones de nombres

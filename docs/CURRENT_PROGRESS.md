@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización coherente con el trabajo de **Fase 1** (arquitectura y configuración base).
+Última actualización: **Fase 3** (UI intranet premium) sobre las fases 1 y 2.
 
 ## Completado — Fase 1
 
@@ -18,10 +18,21 @@
 - [x] Pruebas Feature (auth + intranet), escenarios Gherkin en `tests/Bdd/features`, base Cypress (`cypress/`, scripts npm).
 - [x] `docs/AUTHORIZATION.md`.
 
-## No iniciado (según ROADMAP)
+## Completado — Fase 3 (UI intranet)
 
-- Fase 2 (base): roles Spatie, intranet protegida, pruebas y Cypress — **completada en su alcance inicial**; permisos granulares y flujos avanzados quedan para fases posteriores.
-- Fase 3 en adelante: layouts intranet premium, web pública, módulos de negocio, ML, despliegue.
+- [x] Paleta institucional en Tailwind: `navy`, `brand.red`, `brand.yellow`, `plomo`.
+- [x] Componentes reutilizables en `resources/js/Components/Intranet/`: `Card`, `StatsCard`, `PageContainer`, `SectionTitle`, `EmptyState`, `TableContainer`, `Sidebar`, `Header`, `navIcons`.
+- [x] `IntranetLayout` con sidebar colapsable (persistencia `localStorage`), overlay móvil, cabecera institucional.
+- [x] `IntranetNavigation` (PHP): ítems de menú ERP visuales; solo `Dashboard` y `Mi perfil` con enlace real; resto deshabilitado hasta módulos.
+- [x] `Intranet/Dashboard` con tarjetas estadísticas demo, actividad reciente demo, accesos rápidos y vista previa de tabla (`resources/js/data/intranetDashboardDemo.ts`).
+- [x] `Profile/Edit` alineado visualmente con `Card` + `PageContainer`.
+- [x] Dependencia `lucide-react` para iconografía.
+- [x] Prueba Feature `IntranetDashboardUiTest` (componente Inertia en respuesta).
+
+## Pendiente / siguientes fases (ROADMAP)
+
+- Fase 2+: permisos granulares por módulo si se requiere más allá de roles.
+- Fase 4 en adelante: web pública, módulos de negocio (estudiantes, matrículas, etc.), ML, despliegue.
 
 ## Notas
 
