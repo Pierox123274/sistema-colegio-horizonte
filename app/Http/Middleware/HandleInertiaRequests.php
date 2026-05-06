@@ -44,6 +44,10 @@ class HandleInertiaRequests extends Middleware
                 ] : null,
             ],
             'sidebarNav' => IntranetNavigation::items($user),
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+            ],
         ];
     }
 }

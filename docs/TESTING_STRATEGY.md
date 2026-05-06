@@ -39,3 +39,13 @@ Cada módulo de negocio debería tener al menos:
 ## Fase actual
 
 Fase 2 añade pruebas de intranet y roles (`tests/Feature/Intranet`, ampliaciones en `tests/Feature/Auth`). Las carpetas `tests/Feature` y `tests/Unit` siguen siendo el estándar; los `.feature` documentan criterios BDD (ISO/IEC 29119).
+
+**Fase 5 (estudiantes)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Intranet/StudentManagementTest.php` (roles, validación, unicidad, CRUD lectura/escritura según rol) |
+| BDD (Gherkin) | `tests/Bdd/features/students.feature` |
+| E2E (Cypress) | `cypress/e2e/students.cy.ts` (base: invitado redirigido al login en `/intranet/students`) |
+
+Los escenarios Gherkin se ejecutan como documentación y criterio de aceptación; la automatización correspondiente vive en PHPUnit/Cypress según la tabla anterior (ISO/IEC 29119).

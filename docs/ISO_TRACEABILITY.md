@@ -19,6 +19,20 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | Login e intranet (Sección 2) | 25010, 27001 | Breeze + rutas `/intranet/dashboard`, `IntranetLayout`, pruebas `tests/Feature` |
 | Pruebas y trazabilidad BDD | 29119 | `tests/Bdd/features/authentication.feature`, Cypress `cypress/e2e/auth.cy.ts` |
 
+## Mapeo (Fase 5 — estudiantes)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| **RF-01** Registrar estudiantes | 9001, 25010 (adecuación funcional) | `Student`, `StudentService`, `StudentController`, rutas `intranet.students.*`, páginas `Pages/Intranet/Students/*` |
+| **RF-18** Seguridad | 27001, 25010 (seguridad) | Middleware `role:` por ruta del módulo, `StudentPolicy`, exclusión Estudiante/Apoderado |
+| **RNF-03** Seguridad avanzada | 27001 | Políticas + validación en Form Requests, datos personales solo para roles autorizados |
+| **RNF-09** Trazabilidad | 9001 | Este documento, commits/MR con referencia a RF; flash de confirmación en altas/edición |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/Intranet/StudentManagementTest.php`, `tests/Bdd/features/students.feature`, `cypress/e2e/students.cy.ts` |
+| ISO 9001 (proceso requisito → implementación → prueba) | 9001 | Matriz anterior + `tests/Feature` enlazado a criterios BDD |
+| ISO/IEC 27001 (control de acceso) | 27001 | `StudentPolicy`, middleware de rol, auditoría futura en fases de auditoría |
+| ISO/IEC 25010 (calidad del producto) | 25010 | UX intranet coherente (`IntranetLayout`, validaciones visibles), rendimiento de listados paginados |
+| ISO/IEC 29119 (pruebas) | 29119 | Pirámide: Feature + escenarios Gherkin + Cypress base |
+
 ## Mapeo inicial (Fase 1 — arquitectura base)
 
 | Requerimiento / objetivo (referencia) | ISO principal | Artefacto en el repo |

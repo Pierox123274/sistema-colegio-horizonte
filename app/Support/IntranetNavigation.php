@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Enums\IntranetRole;
 use App\Models\User;
 
 final class IntranetNavigation
@@ -16,6 +17,12 @@ final class IntranetNavigation
         if ($user === null) {
             return [];
         }
+
+        $canManageStudents = $user->hasAnyRole([
+            IntranetRole::Administrador->value,
+            IntranetRole::Secretaria->value,
+            IntranetRole::Docente->value,
+        ]);
 
         return [
             [
@@ -32,9 +39,11 @@ final class IntranetNavigation
             ],
             [
                 'label' => 'Estudiantes',
-                'href' => null,
+                'href' => $canManageStudents
+                    ? route('intranet.students.index', absolute: false)
+                    : null,
                 'icon' => 'users',
-                'disabled' => true,
+                'disabled' => ! $canManageStudents,
             ],
             [
                 'label' => 'Apoderados',

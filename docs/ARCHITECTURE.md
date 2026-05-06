@@ -59,9 +59,17 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **UserPolicy**: el usuario solo actualiza / elimina su propia cuenta.
 - Detalle operativo: `docs/AUTHORIZATION.md`.
 
+## Módulo de estudiantes (Fase 5)
+
+- **Dominio**: modelo `App\Models\Student`, enums (`EducationalLevel`, `StudentStatus`, `Gender`, `DocumentType`), catálogo de grados `App\Support\StudentGradeCatalog`.
+- **Entrega HTTP**: `StudentController` (delgado), validación en `StoreStudentRequest` / `UpdateStudentRequest`, reglas compartidas en `Http/Requests/Intranet/Concerns/ValidatesStudentAttributes`.
+- **Servicio**: `App\Services\StudentService` (listados filtrados, alta y actualización con normalización de campos opcionales).
+- **Autorización**: `StudentPolicy` + middleware `role:` por ruta (Administrador/Secretaria/Docente para consulta; Administrador/Secretaria para alta/edición); Estudiante y Apoderado excluidos del módulo.
+- **Frontend**: páginas Inertia `Pages/Intranet/Students/*`, navegación habilitada en `App\Support\IntranetNavigation` solo para roles con acceso.
+
 ## Qué queda fuera de fases tempranas
 
-- CRUD de negocio y módulos académicos/financieros (fases posteriores del roadmap).
+- Apoderados, matrículas, pagos e inventario (roadmap); permisos más granulares por permiso Spatie si se requiere más allá de roles en rutas.
 
 ## Referencias
 
