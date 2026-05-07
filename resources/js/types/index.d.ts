@@ -11,6 +11,7 @@ export interface SidebarNavItem {
     href: string | null;
     icon: string;
     disabled: boolean;
+    children?: SidebarNavItem[];
 }
 
 export type FlashMessages = {

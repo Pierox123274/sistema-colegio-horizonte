@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 6** (apoderados y vínculos con estudiantes) sobre las fases 1–5.
+Última actualización: **Fase 7** (estructura académica institucional: niveles, grados, secciones, aulas) sobre las fases 1–6.
 
 ## Completado — Fase 1
 
@@ -58,6 +58,16 @@
 - [x] UI Inertia `Pages/Intranet/Guardians/*`, componentes `GuardianFormFields`, `GuardianStudentLinksEditor`, filtros en listado.
 - [x] Pruebas `tests/Feature/Intranet/GuardianManagementTest.php`, `tests/Bdd/features/guardians.feature`, `cypress/e2e/guardians.cy.ts`.
 
+## Completado — Fase 7 (estructura académica)
+
+- [x] Migraciones `educational_levels`, `grades`, `sections`, `classrooms` (FK y unicidades según especificación; `classrooms.section_id` nullable).
+- [x] Modelos `EducationalLevel`, `Grade`, `Section`, `Classroom` con relaciones en cascada declarada en migraciones.
+- [x] Servicios `EducationalLevelService`, `GradeService`, `SectionService`, `ClassroomService`; Form Requests en `Http/Requests/Intranet`; políticas dedicadas; controladores delgados en `Http/Controllers/Academic`.
+- [x] Rutas `intranet.academic.*` ordenadas (literales `create`/`edit` antes de `{model}`); lectura para Administrador/Secretaria/Docente; escritura solo Administrador.
+- [x] UI Inertia `Pages/Intranet/Academic/{Levels,Grades,Sections,Classrooms}/` (listados con filtros, estadísticas, badges, migas de pan `IntranetBreadcrumbs`), sidebar con submenú **Gestión académica** (`IntranetNavigation` + `Sidebar` con `children`).
+- [x] Seeder `AcademicStructureSeeder` (Inicial 3–5 años, Primaria 1.º–6.º, Secundaria 1.º–5.º; demo sección y aulas); invocado desde `DatabaseSeeder`.
+- [x] Pruebas `tests/Feature/Intranet/AcademicStructureTest.php`, `tests/Bdd/features/academic_structure.feature`, `cypress/e2e/academic-structure.cy.ts`.
+
 ## Pendiente / siguientes fases (ROADMAP)
 
 - Matrículas, pagos, inventario, permisos granulares por módulo si aplica.
@@ -68,3 +78,4 @@
 - En producción HTTPS: definir `SESSION_SECURE_COOKIE=true` (y revisar `SESSION_SAME_SITE`) según `docs/SECURITY_POLICY.md`.
 - Datos demo de estudiantes: `php artisan db:seed --class=StudentDemoSeeder` (opcional).
 - Datos demo de apoderados (requiere estudiantes): `php artisan db:seed --class=GuardianDemoSeeder` (opcional).
+- Estructura académica demo: `AcademicStructureSeeder` se ejecuta con `php artisan db:seed` (además de roles y usuario de prueba).

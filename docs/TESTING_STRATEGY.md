@@ -57,3 +57,11 @@ Los escenarios Gherkin se ejecutan como documentación y criterio de aceptación
 | Feature | `tests/Feature/Intranet/GuardianManagementTest.php` (roles, vínculos estudiante–apoderado, responsable económico, validación y unicidad de documento) |
 | BDD (Gherkin) | `tests/Bdd/features/guardians.feature` |
 | E2E (Cypress) | `cypress/e2e/guardians.cy.ts` (base: invitado redirigido al login en `/intranet/guardians`) |
+
+**Fase 7 (estructura académica)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Intranet/AcademicStructureTest.php` (admin alta nivel/grado; Secretaria/Docente solo lectura; Estudiante/Apoderado prohibido; relaciones; validaciones de unicidad y capacidad) |
+| BDD (Gherkin) | `tests/Bdd/features/academic_structure.feature` |
+| E2E (Cypress) | `cypress/e2e/academic-structure.cy.ts` (invitado redirigido al login en rutas académicas) |

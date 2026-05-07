@@ -8,9 +8,9 @@ use App\Models\User;
 final class IntranetNavigation
 {
     /**
-     * Navegación lateral de la intranet (Fase 3: visual; módulos deshabilitados hasta implementación).
+     * Navegación lateral de la intranet.
      *
-     * @return list<array{label: string, href: string|null, icon: string, disabled: bool}>
+     * @return list<array{label: string, href: string|null, icon: string, disabled: bool, children?: list<array{label: string, href: string|null, icon: string, disabled: bool}>}>
      */
     public static function items(?User $user): array
     {
@@ -26,35 +26,75 @@ final class IntranetNavigation
 
         $canManageGuardians = $canManageStudents;
 
-        return [
+        $canViewAcademic = $user->hasAnyRole([
+            IntranetRole::Administrador->value,
+            IntranetRole::Secretaria->value,
+            IntranetRole::Docente->value,
+        ]);
+
+        $nav = [
             [
                 'label' => 'Dashboard',
                 'href' => route('dashboard', absolute: false),
                 'icon' => 'layout-dashboard',
                 'disabled' => false,
             ],
-            [
+        ];
+
+        if ($canViewAcademic) {
+            $nav[] = [
                 'label' => 'Gestión académica',
                 'href' => null,
                 'icon' => 'school',
-                'disabled' => true,
-            ],
-            [
-                'label' => 'Estudiantes',
-                'href' => $canManageStudents
-                    ? route('intranet.students.index', absolute: false)
-                    : null,
-                'icon' => 'users',
-                'disabled' => ! $canManageStudents,
-            ],
-            [
-                'label' => 'Apoderados',
-                'href' => $canManageGuardians
-                    ? route('intranet.guardians.index', absolute: false)
-                    : null,
-                'icon' => 'user-circle',
-                'disabled' => ! $canManageGuardians,
-            ],
+                'disabled' => false,
+                'children' => [
+                    [
+                        'label' => 'Niveles',
+                        'href' => route('intranet.academic.levels.index', absolute: false),
+                        'icon' => 'layers',
+                        'disabled' => false,
+                    ],
+                    [
+                        'label' => 'Grados',
+                        'href' => route('intranet.academic.grades.index', absolute: false),
+                        'icon' => 'book-marked',
+                        'disabled' => false,
+                    ],
+                    [
+                        'label' => 'Secciones',
+                        'href' => route('intranet.academic.sections.index', absolute: false),
+                        'icon' => 'layout-grid',
+                        'disabled' => false,
+                    ],
+                    [
+                        'label' => 'Aulas',
+                        'href' => route('intranet.academic.classrooms.index', absolute: false),
+                        'icon' => 'door-open',
+                        'disabled' => false,
+                    ],
+                ],
+            ];
+        }
+
+        $nav[] = [
+            'label' => 'Estudiantes',
+            'href' => $canManageStudents
+                ? route('intranet.students.index', absolute: false)
+                : null,
+            'icon' => 'users',
+            'disabled' => ! $canManageStudents,
+        ];
+
+        $nav[] = [
+            'label' => 'Apoderados',
+            'href' => $canManageGuardians
+                ? route('intranet.guardians.index', absolute: false)
+                : null,
+            'icon' => 'user-circle',
+            'disabled' => ! $canManageGuardians,
+        ];
+
+        return array_merge($nav, [
             [
                 'label' => 'Matrículas',
                 'href' => null,
@@ -97,6 +137,6 @@ final class IntranetNavigation
                 'icon' => 'user',
                 'disabled' => false,
             ],
-        ];
+        ]);
     }
 }

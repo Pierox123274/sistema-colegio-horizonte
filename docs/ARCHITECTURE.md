@@ -75,6 +75,13 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Autorización**: `GuardianPolicy` + middleware `role:` (misma matriz que estudiantes: consulta Administrador/Secretaria/Docente; escritura Administrador/Secretaria; **Estudiante** y **Apoderado** sin acceso al módulo).
 - **Frontend**: `Pages/Intranet/Guardians/*`, `GuardianFormFields`, `GuardianStudentLinksEditor` (vincular estudiantes existentes con prioridad y roles en el vínculo).
 
+## Estructura académica institucional (Fase 7)
+
+- **Dominio**: `EducationalLevel` → `Grade` → `Section` → `Classroom` (`section_id` opcional en aula).
+- **Entrega HTTP**: controladores `App\Http\Controllers\Academic\*`, Form Requests `Store*/Update*` por recurso, servicios `EducationalLevelService`, `GradeService`, `SectionService`, `ClassroomService`.
+- **Autorización**: políticas por modelo; rutas de índice/detalle bajo `role:Administrador|Secretaria|Docente`; rutas de alta/edición/baja solo `role:Administrador` (coherente con matriz pedida).
+- **Frontend**: páginas `Pages/Intranet/Academic/**`; menú **Gestión académica** con hijos en `IntranetNavigation` y render anidado en `Sidebar`; migas `Components/Intranet/IntranetBreadcrumbs`.
+
 ## Qué queda fuera de fases tempranas
 
 - Matrículas, pagos e inventario (roadmap); permisos más granulares por permiso Spatie si se requiere más allá de roles en rutas.

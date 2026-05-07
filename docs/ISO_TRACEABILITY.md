@@ -43,6 +43,16 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | **RNF-09** Trazabilidad | 9001 | Matriz en este archivo; vínculos auditables en tabla pivote |
 | **RNF-10** Testing automatizado | 29119 | `tests/Feature/Intranet/GuardianManagementTest.php`, `tests/Bdd/features/guardians.feature`, `cypress/e2e/guardians.cy.ts` |
 
+## Mapeo (Fase 7 — estructura académica)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| **RF-03** Gestión académica (niveles, grados, secciones, aulas) | 9001, 25010 | Modelos y tablas académicas, `AcademicStructureSeeder`, servicios y controladores `Academic\*`, rutas `intranet.academic.*`, UI `Pages/Intranet/Academic/*` |
+| **RF-18** Seguridad | 27001, 25010 | Middleware `role:` (solo Administrador escribe; Secretaria/Docente leen; Estudiante/Apoderado sin acceso al módulo), políticas `EducationalLevelPolicy`, `GradePolicy`, `SectionPolicy`, `ClassroomPolicy` |
+| **RNF-03** Seguridad avanzada | 27001 | Form Requests por recurso; eliminación condicionada en controlador si hay dependientes |
+| **RNF-09** Trazabilidad | 9001 | Este documento; mensajes flash en operaciones; datos semilla reproducibles |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/Intranet/AcademicStructureTest.php`, `tests/Bdd/features/academic_structure.feature`, `cypress/e2e/academic-structure.cy.ts` |
+
 ## Mapeo inicial (Fase 1 — arquitectura base)
 
 | Requerimiento / objetivo (referencia) | ISO principal | Artefacto en el repo |
