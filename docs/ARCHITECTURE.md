@@ -82,9 +82,18 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Autorización**: políticas por modelo; rutas de índice/detalle bajo `role:Administrador|Secretaria|Docente`; rutas de alta/edición/baja solo `role:Administrador` (coherente con matriz pedida).
 - **Frontend**: páginas `Pages/Intranet/Academic/**`; menú **Gestión académica** con hijos en `IntranetNavigation` y render anidado en `Sidebar`; migas `Components/Intranet/IntranetBreadcrumbs`.
 
+## Matrículas y año académico (Fase 8)
+
+- **Dominio**: `AcademicYear` (año calendario único; solo uno `is_active`); `Enrollment` vinculado a estudiante, apoderado opcional, año académico, nivel y grados/sección del modelo académico (`EducationalLevel`, `Grade`, `Section`, `Classroom`), estado (`EnrollmentStatus`), monto y observaciones.
+- **Entrega HTTP**: `EnrollmentController`, `AcademicYearController`; validación en `StoreEnrollmentRequest`, `UpdateEnrollmentRequest`, `StoreAcademicYearRequest`, `UpdateAcademicYearRequest`.
+- **Servicios**: `EnrollmentService` (filtros en índice, generación de código, reglas de negocio); `AcademicYearService` (desactivar otros años al activar uno).
+- **Soporte**: `EnrollmentFormCatalog` centraliza datos para selects dependientes en Inertia.
+- **Autorización**: `EnrollmentPolicy`, `AcademicYearPolicy` + middleware `role:` (Docente solo lectura en matrículas; escritura Administrador/Secretaria; años académicos solo Administrador/Secretaria).
+- **Frontend**: `Pages/Intranet/Enrollments/*`, `Components/Intranet/EnrollmentFormFields`; años académicos en `Pages/Intranet/AcademicYears/*`; entrada **Matrículas** en `IntranetNavigation`.
+
 ## Qué queda fuera de fases tempranas
 
-- Matrículas, pagos e inventario (roadmap); permisos más granulares por permiso Spatie si se requiere más allá de roles en rutas.
+- Pagos, pensiones, boletas e inventario (roadmap); permisos más granulares por permiso Spatie si se requiere más allá de roles en rutas.
 
 ## Referencias
 

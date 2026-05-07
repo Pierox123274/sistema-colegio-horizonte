@@ -32,6 +32,12 @@ final class IntranetNavigation
             IntranetRole::Docente->value,
         ]);
 
+        $canViewEnrollments = $user->hasAnyRole([
+            IntranetRole::Administrador->value,
+            IntranetRole::Secretaria->value,
+            IntranetRole::Docente->value,
+        ]);
+
         $nav = [
             [
                 'label' => 'Dashboard',
@@ -97,9 +103,11 @@ final class IntranetNavigation
         return array_merge($nav, [
             [
                 'label' => 'Matrículas',
-                'href' => null,
+                'href' => $canViewEnrollments
+                    ? route('intranet.enrollments.index', absolute: false)
+                    : null,
                 'icon' => 'clipboard-list',
-                'disabled' => true,
+                'disabled' => ! $canViewEnrollments,
             ],
             [
                 'label' => 'Pensiones',

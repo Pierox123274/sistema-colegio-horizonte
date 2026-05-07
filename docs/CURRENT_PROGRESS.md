@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 7** (estructura académica institucional: niveles, grados, secciones, aulas) sobre las fases 1–6.
+Última actualización: **Fase 8** (matrículas: año académico, inscripción y ubicación curricular) sobre las fases 1–7.
 
 ## Completado — Fase 1
 
@@ -68,9 +68,19 @@
 - [x] Seeder `AcademicStructureSeeder` (Inicial 3–5 años, Primaria 1.º–6.º, Secundaria 1.º–5.º; demo sección y aulas); invocado desde `DatabaseSeeder`.
 - [x] Pruebas `tests/Feature/Intranet/AcademicStructureTest.php`, `tests/Bdd/features/academic_structure.feature`, `cypress/e2e/academic-structure.cy.ts`.
 
+## Completado — Fase 8 (matrículas)
+
+- [x] Modelos y tablas `AcademicYear`, `Enrollment` (año académico con `year` único; un solo año activo; matrícula con `enrollment_code` único; apoderado opcional; estado `pendiente` / `matriculado` / `anulado` / `retirado`).
+- [x] `AcademicYearService` (sincronizar un solo `is_active`), `EnrollmentService` (filtros, reglas de negocio: doble matrícula activa, apoderado vinculado, coherencia nivel–grado–sección–aula, código `MAT-` autogenerado).
+- [x] `EnrollmentFormCatalog` (catálogo Inertia para selects encadenados: estudiantes con apoderados, años, niveles, grados, secciones, aulas).
+- [x] `EnrollmentController`, `AcademicYearController`, Form Requests, `EnrollmentPolicy`, `AcademicYearPolicy`, factorías, `AcademicYearSeeder` opcional.
+- [x] Rutas `intranet.enrollments.*` y `intranet.academic-years.*` (orden: literales `create`/`edit` antes de `{id}` en matrículas). Sin pagos, pensiones ni boletas.
+- [x] UI: `Pages/Intranet/Enrollments/*`, `Pages/Intranet/AcademicYears/*`, `Components/Intranet/EnrollmentFormFields`, item **Matrículas** en `IntranetNavigation`.
+- [x] Pruebas `tests/Feature/Intranet/EnrollmentManagementTest.php`, `tests/Bdd/features/enrollments.feature`, `cypress/e2e/enrollments.cy.ts`.
+
 ## Pendiente / siguientes fases (ROADMAP)
 
-- Matrículas, pagos, inventario, permisos granulares por módulo si aplica.
+- Pagos, pensiones, boletas, inventario, permisos granulares por módulo si aplica.
 
 ## Notas
 

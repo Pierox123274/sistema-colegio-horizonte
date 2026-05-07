@@ -65,3 +65,11 @@ Los escenarios Gherkin se ejecutan como documentación y criterio de aceptación
 | Feature | `tests/Feature/Intranet/AcademicStructureTest.php` (admin alta nivel/grado; Secretaria/Docente solo lectura; Estudiante/Apoderado prohibido; relaciones; validaciones de unicidad y capacidad) |
 | BDD (Gherkin) | `tests/Bdd/features/academic_structure.feature` |
 | E2E (Cypress) | `cypress/e2e/academic-structure.cy.ts` (invitado redirigido al login en rutas académicas) |
+
+**Fase 8 (matrículas)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Intranet/EnrollmentManagementTest.php` (altas por Administrador/Secretaria; Docente solo índice/detalle; Estudiante/Apoderado prohibido; doble matrícula activa; apoderado no vinculado; sección incoherente con grado; actualización) |
+| BDD (Gherkin) | `tests/Bdd/features/enrollments.feature` |
+| E2E (Cypress) | `cypress/e2e/enrollments.cy.ts` (invitado redirigido al login en `/intranet/enrollments`) |

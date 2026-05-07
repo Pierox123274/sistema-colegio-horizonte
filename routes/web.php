@@ -5,6 +5,8 @@ use App\Http\Controllers\Academic\ClassroomController;
 use App\Http\Controllers\Academic\EducationalLevelController;
 use App\Http\Controllers\Academic\GradeController;
 use App\Http\Controllers\Academic\SectionController;
+use App\Http\Controllers\AcademicYearController;
+use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicSiteController;
@@ -100,6 +102,32 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
         Route::get('/grades/{grade}', [GradeController::class, 'show'])->name('intranet.academic.grades.show');
         Route::get('/sections/{section}', [SectionController::class, 'show'])->name('intranet.academic.sections.show');
         Route::get('/classrooms/{classroom}', [ClassroomController::class, 'show'])->name('intranet.academic.classrooms.show');
+    });
+
+    Route::middleware(['role:Administrador|Secretaria'])->group(function () {
+        Route::get('/intranet/academic-years/create', [AcademicYearController::class, 'create'])->name('intranet.academic-years.create');
+        Route::post('/intranet/academic-years', [AcademicYearController::class, 'store'])->name('intranet.academic-years.store');
+        Route::get('/intranet/academic-years/{academic_year}/edit', [AcademicYearController::class, 'edit'])->name('intranet.academic-years.edit');
+        Route::put('/intranet/academic-years/{academic_year}', [AcademicYearController::class, 'update'])->name('intranet.academic-years.update');
+        Route::patch('/intranet/academic-years/{academic_year}', [AcademicYearController::class, 'update']);
+
+        Route::get('/intranet/enrollments/students/search', [EnrollmentController::class, 'searchStudents'])->name('intranet.enrollments.students.search');
+        Route::get('/intranet/enrollments/students/{student}/preview', [EnrollmentController::class, 'studentPreview'])->name('intranet.enrollments.students.preview');
+
+        Route::get('/intranet/enrollments/create', [EnrollmentController::class, 'create'])->name('intranet.enrollments.create');
+        Route::post('/intranet/enrollments', [EnrollmentController::class, 'store'])->name('intranet.enrollments.store');
+        Route::get('/intranet/enrollments/{enrollment}/edit', [EnrollmentController::class, 'edit'])->name('intranet.enrollments.edit');
+        Route::put('/intranet/enrollments/{enrollment}', [EnrollmentController::class, 'update'])->name('intranet.enrollments.update');
+        Route::patch('/intranet/enrollments/{enrollment}', [EnrollmentController::class, 'update']);
+    });
+
+    Route::middleware(['role:Administrador|Secretaria'])->group(function () {
+        Route::get('/intranet/academic-years', [AcademicYearController::class, 'index'])->name('intranet.academic-years.index');
+    });
+
+    Route::middleware(['role:Administrador|Secretaria|Docente'])->group(function () {
+        Route::get('/intranet/enrollments', [EnrollmentController::class, 'index'])->name('intranet.enrollments.index');
+        Route::get('/intranet/enrollments/{enrollment}', [EnrollmentController::class, 'show'])->name('intranet.enrollments.show');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

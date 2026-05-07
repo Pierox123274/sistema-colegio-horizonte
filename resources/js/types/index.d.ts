@@ -82,6 +82,52 @@ export type StudentListRow = StudentSerializable & {
 
 export type SelectOption = { value: string; label: string };
 
+/** Catálogo de formulario de matrícula (EnrollmentFormCatalog::build). */
+export type EnrollmentFormCatalog = {
+    academic_years: SelectOption[];
+    levels: SelectOption[];
+    grades_by_level: Record<string, SelectOption[]>;
+    sections_by_grade: Record<string, SelectOption[]>;
+    classrooms_by_section: Record<string, SelectOption[]>;
+    classrooms_without_section: SelectOption[];
+    statuses: SelectOption[];
+};
+
+/** Resultado de búsqueda de estudiante (JSON). */
+export type EnrollmentStudentSearchHit = {
+    id: number;
+    code: string;
+    first_name: string;
+    last_name: string;
+    document_number: string | null;
+};
+
+/** Vista previa con apoderados para el formulario de matrícula. */
+export type EnrollmentStudentPreview = {
+    id: number;
+    code: string;
+    first_name: string;
+    last_name: string;
+    document_number: string | null;
+    document_type: string | null;
+    guardians: SelectOption[];
+};
+
+export type EnrollmentFormState = {
+    enrollment_code: string;
+    student_id: string;
+    guardian_id: string;
+    academic_year_id: string;
+    educational_level_id: string;
+    grade_id: string;
+    section_id: string;
+    classroom_id: string;
+    enrollment_date: string;
+    amount: string;
+    status: string;
+    observations: string;
+};
+
 export type StudentFormCatalog = {
     document_types: SelectOption[];
     genders: SelectOption[];

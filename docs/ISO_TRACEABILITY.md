@@ -53,6 +53,23 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | **RNF-09** Trazabilidad | 9001 | Este documento; mensajes flash en operaciones; datos semilla reproducibles |
 | **RNF-10** Testing automatizado | 29119 | `tests/Feature/Intranet/AcademicStructureTest.php`, `tests/Bdd/features/academic_structure.feature`, `cypress/e2e/academic-structure.cy.ts` |
 
+## Mapeo (Fase 8 — matrículas)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| **RF-06** Matrículas | 9001, 25010 | `AcademicYear`, `Enrollment`, `EnrollmentService`, `AcademicYearService`, `EnrollmentController`, `AcademicYearController`, rutas `intranet.enrollments.*` y `intranet.academic-years.*`, UI `Pages/Intranet/Enrollments/*` y `Pages/Intranet/AcademicYears/*` |
+| **RF-01** Estudiantes (vínculo en matrícula) | 9001, 25010 | `student_id` en `enrollments`; listado de estudiantes con apoderados en `EnrollmentFormCatalog` |
+| **RF-02** Apoderados (responsable opcional) | 9001, 25010 | `guardian_id` nullable; regla de apoderado vinculado vía `guardian_student` en `EnrollmentService` |
+| **RF-03** Estructura académica (nivel, grado, sección, aula) | 9001, 25010 | FKs y validación en Form Requests + reglas de coherencia en `EnrollmentService` |
+| **RF-18** Seguridad | 27001, 25010 | Middleware `role:`; `EnrollmentPolicy` (Administrador/Secretaria/Docente listan y consultan; solo Administrador/Secretaria escriben; **Estudiante** y **Apoderado** sin acceso). `AcademicYearPolicy` solo Administrador/Secretaria |
+| **RNF-03** Seguridad avanzada | 27001 | Form Requests; reglas de negocio en servicio; sin exposición de módulo a roles no operativos |
+| **RNF-09** Trazabilidad | 9001 | Códigos de matrícula, fechas, estados, observaciones; matriz en este documento; `docs/CURRENT_PROGRESS.md` |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/Intranet/EnrollmentManagementTest.php`, `tests/Bdd/features/enrollments.feature`, `cypress/e2e/enrollments.cy.ts` |
+| **ISO 9001** (requisito → implementación → prueba) | 9001 | Matrícula trazable a estudiante, año y ubicación curricular; pruebas Feature ligadas a roles y reglas |
+| **ISO/IEC 27001** (acceso a datos) | 27001 | Políticas y middleware por rol; no se alteró el flujo de autenticación Breeze |
+| **ISO/IEC 25010** (calidad) | 25010 | Usabilidad en formulario encadenado; integridad de datos con validación en capas |
+| **ISO/IEC 29119** (pruebas) | 29119 | TDD en Feature; Gherkin; smoke E2E Cypress en ruta de listado |
+
 ## Mapeo inicial (Fase 1 — arquitectura base)
 
 | Requerimiento / objetivo (referencia) | ISO principal | Artefacto en el repo |
