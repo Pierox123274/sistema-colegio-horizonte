@@ -3,38 +3,33 @@
 namespace App\Models;
 
 use App\Enums\DocumentType;
-use App\Enums\EducationalLevel;
-use App\Enums\Gender;
-use App\Enums\StudentStatus;
-use Database\Factories\StudentFactory;
+use App\Enums\GuardianRelationshipType;
+use Database\Factories\GuardianFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Student extends Model
+class Guardian extends Model
 {
-    /** @use HasFactory<StudentFactory> */
+    /** @use HasFactory<GuardianFactory> */
     use HasFactory;
 
     /**
      * @var list<string>
      */
     protected $fillable = [
-        'code',
         'first_name',
         'last_name',
         'document_type',
         'document_number',
-        'birth_date',
-        'gender',
-        'educational_level',
-        'grade',
-        'section',
-        'status',
-        'address',
+        'relationship_type',
         'phone',
+        'secondary_phone',
         'email',
-        'medical_observations',
+        'occupation',
+        'address',
+        'workplace',
+        'is_emergency_contact',
     ];
 
     /**
@@ -43,25 +38,18 @@ class Student extends Model
     protected function casts(): array
     {
         return [
-            'birth_date' => 'date',
             'document_type' => DocumentType::class,
-            'educational_level' => EducationalLevel::class,
-            'gender' => Gender::class,
-            'status' => StudentStatus::class,
+            'relationship_type' => GuardianRelationshipType::class,
+            'is_emergency_contact' => 'boolean',
         ];
     }
 
-    public function fullName(): string
-    {
-        return trim("{$this->first_name} {$this->last_name}");
-    }
-
     /**
-     * @return BelongsToMany<Guardian, $this>
+     * @return BelongsToMany<Student, $this>
      */
-    public function guardians(): BelongsToMany
+    public function students(): BelongsToMany
     {
-        return $this->belongsToMany(Guardian::class, 'guardian_student')
+        return $this->belongsToMany(Student::class, 'guardian_student')
             ->withPivot([
                 'relationship',
                 'is_primary',
@@ -70,5 +58,10 @@ class Student extends Model
                 'observations',
             ])
             ->withTimestamps();
+    }
+
+    public function fullName(): string
+    {
+        return trim("{$this->first_name} {$this->last_name}");
     }
 }

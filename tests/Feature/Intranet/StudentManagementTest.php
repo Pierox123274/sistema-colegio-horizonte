@@ -2,10 +2,13 @@
 
 namespace Tests\Feature\Intranet;
 
+use App\Enums\GuardianRelationshipType;
 use App\Enums\IntranetRole;
+use App\Models\Guardian;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 class StudentManagementTest extends TestCase
@@ -185,5 +188,62 @@ class StudentManagementTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Intranet/Students/Show', false);
+    }
+
+    public function test_detalle_estudiante_incluye_apoderados_vinculados(): void
+    {
+        $student = Student::factory()->create();
+        $guardian = Guardian::factory()->create([
+            'first_name' => 'María',
+            'last_name' => 'DetalleApoderado',
+            'phone' => '987111222',
+        ]);
+        $guardian->students()->attach($student->id, [
+            'relationship' => GuardianRelationshipType::Madre->value,
+            'is_primary' => true,
+            'is_financial_responsible' => true,
+            'emergency_priority' => 1,
+            'observations' => 'Nota pivote test',
+        ]);
+
+        $user = $this->userWithRole(IntranetRole::Administrador);
+
+        $response = $this->actingAs($user)->get(route('intranet.students.show', $student));
+
+        $response->assertOk();
+
+        $props = $this->inertiaPropsFromResponse($response);
+        $this->assertArrayHasKey('guardian_links', $props);
+        $this->assertCount(1, $props['guardian_links']);
+        $link = $props['guardian_links'][0];
+        $this->assertSame('María DetalleApoderado', $link['full_name']);
+        $this->assertSame('madre', $link['relationship']);
+        $this->assertSame('987111222', $link['phone']);
+        $this->assertTrue($link['is_primary']);
+        $this->assertTrue($link['is_financial_responsible']);
+        $this->assertSame(1, $link['emergency_priority']);
+        $this->assertSame('Nota pivote test', $link['observations']);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function inertiaPropsFromResponse(TestResponse $response): array
+    {
+        $content = $response->getContent();
+        $this->assertIsString($content);
+        $this->assertMatchesRegularExpression('/<div[^>]*id="app"[^>]*data-page="/', $content);
+
+        if (! preg_match('/<div[^>]*id="app"[^>]*data-page="([^"]+)"/', $content, $matches)) {
+            $this->fail('No se encontró data-page en la respuesta Inertia.');
+        }
+
+        $jsonString = html_entity_decode($matches[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        /** @var array{props?: array<string, mixed>} $payload */
+        $payload = json_decode($jsonString, true, flags: JSON_THROW_ON_ERROR);
+
+        $this->assertArrayHasKey('props', $payload);
+
+        return $payload['props'];
     }
 }

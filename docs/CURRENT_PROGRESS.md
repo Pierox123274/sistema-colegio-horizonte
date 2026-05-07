@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 5** (gestión de estudiantes en intranet) sobre las fases 1–4.
+Última actualización: **Fase 6** (apoderados y vínculos con estudiantes) sobre las fases 1–5.
 
 ## Completado — Fase 1
 
@@ -23,7 +23,7 @@
 - [x] Paleta institucional en Tailwind: `navy`, `brand.red`, `brand.yellow`, `plomo`.
 - [x] Componentes reutilizables en `resources/js/Components/Intranet/`: `Card`, `StatsCard`, `PageContainer`, `SectionTitle`, `EmptyState`, `TableContainer`, `Sidebar`, `Header`, `navIcons`.
 - [x] `IntranetLayout` con sidebar colapsable (persistencia `localStorage`), overlay móvil, cabecera institucional.
-- [x] `IntranetNavigation` (PHP): ítems de menú ERP visuales; `Dashboard`, **Estudiantes** (roles con acceso) y `Mi perfil` con enlace real; resto deshabilitado hasta módulos correspondientes.
+- [x] `IntranetNavigation` (PHP): ítems de menú ERP visuales; `Dashboard`, **Estudiantes**, **Apoderados** (roles con acceso) y `Mi perfil` con enlace real; resto deshabilitado hasta módulos correspondientes.
 - [x] `Intranet/Dashboard` con tarjetas estadísticas demo, actividad reciente demo, accesos rápidos y vista previa de tabla (`resources/js/data/intranetDashboardDemo.ts`).
 - [x] `Profile/Edit` alineado visualmente con `Card` + `PageContainer`.
 - [x] Dependencia `lucide-react` para iconografía.
@@ -44,16 +44,27 @@
 - [x] Enums y catálogo de grados por nivel (`StudentGradeCatalog`).
 - [x] `StoreStudentRequest`, `UpdateStudentRequest`, `StudentController`, `StudentService`, `StudentPolicy`.
 - [x] Rutas intranet: `/intranet/students`, `/intranet/students/create`, `/intranet/students/{student}`, `/intranet/students/{student}/edit` (store/update con POST/PUT/PATCH).
-- [x] UI Inertia: `Pages/Intranet/Students/*`, filtros (búsqueda, nivel, estado), badges, formulario compartido `StudentFormFields`.
+- [x] UI Inertia: `Pages/Intranet/Students/*`, filtros (búsqueda, nivel, estado), badges, formulario compartido `StudentFormFields`; detalle y listado muestran vínculos con apoderados (pivote).
 - [x] Pruebas Feature `tests/Feature/Intranet/StudentManagementTest.php`, escenario `tests/Bdd/features/students.feature`, Cypress base `cypress/e2e/students.cy.ts`.
 - [x] Mensajes flash compartidos en `HandleInertiaRequests` para feedback post alta/edición.
 
+## Completado — Fase 6 (apoderados)
+
+- [x] Modelo `Guardian`, tablas `guardians` y pivote `guardian_student` (parentesco por vínculo, responsable económico, contacto principal, prioridad de emergencia, observaciones).
+- [x] Enum `GuardianRelationshipType`; relaciones Eloquent `Student::guardians()` y `Guardian::students()`.
+- [x] `GuardianController`, `GuardianService` (sync de vínculos, reglas de exclusividad de responsable económico y contacto principal por estudiante), `StoreGuardianRequest`, `UpdateGuardianRequest`, `GuardianPolicy`.
+- [x] `GuardianFactory`, seeder opcional `GuardianDemoSeeder`.
+- [x] Rutas intranet `intranet.guardians.*` alineadas a roles (misma convención que estudiantes).
+- [x] UI Inertia `Pages/Intranet/Guardians/*`, componentes `GuardianFormFields`, `GuardianStudentLinksEditor`, filtros en listado.
+- [x] Pruebas `tests/Feature/Intranet/GuardianManagementTest.php`, `tests/Bdd/features/guardians.feature`, `cypress/e2e/guardians.cy.ts`.
+
 ## Pendiente / siguientes fases (ROADMAP)
 
-- Fase 6+: apoderados, matrículas, pagos, inventario, permisos granulares por módulo si aplica.
+- Matrículas, pagos, inventario, permisos granulares por módulo si aplica.
 
 ## Notas
 
 - El **login Breeze** (pantallas y controladores) se mantiene; el destino tras login sigue siendo la ruta nombrada `dashboard` (`/intranet/dashboard`).
 - En producción HTTPS: definir `SESSION_SECURE_COOKIE=true` (y revisar `SESSION_SAME_SITE`) según `docs/SECURITY_POLICY.md`.
 - Datos demo de estudiantes: `php artisan db:seed --class=StudentDemoSeeder` (opcional).
+- Datos demo de apoderados (requiere estudiantes): `php artisan db:seed --class=GuardianDemoSeeder` (opcional).

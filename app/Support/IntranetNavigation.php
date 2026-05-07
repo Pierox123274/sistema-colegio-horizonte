@@ -24,6 +24,8 @@ final class IntranetNavigation
             IntranetRole::Docente->value,
         ]);
 
+        $canManageGuardians = $canManageStudents;
+
         return [
             [
                 'label' => 'Dashboard',
@@ -47,9 +49,11 @@ final class IntranetNavigation
             ],
             [
                 'label' => 'Apoderados',
-                'href' => null,
+                'href' => $canManageGuardians
+                    ? route('intranet.guardians.index', absolute: false)
+                    : null,
                 'icon' => 'user-circle',
-                'disabled' => true,
+                'disabled' => ! $canManageGuardians,
             ],
             [
                 'label' => 'Matrículas',

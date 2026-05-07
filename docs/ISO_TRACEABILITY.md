@@ -33,6 +33,16 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | ISO/IEC 25010 (calidad del producto) | 25010 | UX intranet coherente (`IntranetLayout`, validaciones visibles), rendimiento de listados paginados |
 | ISO/IEC 29119 (pruebas) | 29119 | Pirámide: Feature + escenarios Gherkin + Cypress base |
 
+## Mapeo (Fase 6 — apoderados)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| **RF-02** Gestión de apoderados | 9001, 25010 | `Guardian`, `guardian_student`, `GuardianService`, `GuardianController`, rutas `intranet.guardians.*`, UI `Pages/Intranet/Guardians/*` |
+| **RF-18** Seguridad | 27001, 25010 | Middleware `role:` + `GuardianPolicy`; sin acceso para rol intranet **Apoderado** al CRUD ni para **Estudiante** |
+| **RNF-03** Seguridad avanzada | 27001 | Validación en Form Requests; datos de contacto restringidos por rol |
+| **RNF-09** Trazabilidad | 9001 | Matriz en este archivo; vínculos auditables en tabla pivote |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/Intranet/GuardianManagementTest.php`, `tests/Bdd/features/guardians.feature`, `cypress/e2e/guardians.cy.ts` |
+
 ## Mapeo inicial (Fase 1 — arquitectura base)
 
 | Requerimiento / objetivo (referencia) | ISO principal | Artefacto en el repo |

@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\IntranetRole;
+use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\StudentController;
@@ -35,6 +36,22 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
 
     Route::middleware(['role:Administrador|Secretaria|Docente'])->group(function () {
         Route::get('/intranet/students/{student}', [StudentController::class, 'show'])->name('intranet.students.show');
+    });
+
+    Route::middleware(['role:Administrador|Secretaria|Docente'])->group(function () {
+        Route::get('/intranet/guardians', [GuardianController::class, 'index'])->name('intranet.guardians.index');
+    });
+
+    Route::middleware(['role:Administrador|Secretaria'])->group(function () {
+        Route::get('/intranet/guardians/create', [GuardianController::class, 'create'])->name('intranet.guardians.create');
+        Route::post('/intranet/guardians', [GuardianController::class, 'store'])->name('intranet.guardians.store');
+        Route::get('/intranet/guardians/{guardian}/edit', [GuardianController::class, 'edit'])->name('intranet.guardians.edit');
+        Route::put('/intranet/guardians/{guardian}', [GuardianController::class, 'update'])->name('intranet.guardians.update');
+        Route::patch('/intranet/guardians/{guardian}', [GuardianController::class, 'update']);
+    });
+
+    Route::middleware(['role:Administrador|Secretaria|Docente'])->group(function () {
+        Route::get('/intranet/guardians/{guardian}', [GuardianController::class, 'show'])->name('intranet.guardians.show');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

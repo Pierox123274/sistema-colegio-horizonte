@@ -49,3 +49,11 @@ Fase 2 añade pruebas de intranet y roles (`tests/Feature/Intranet`, ampliacione
 | E2E (Cypress) | `cypress/e2e/students.cy.ts` (base: invitado redirigido al login en `/intranet/students`) |
 
 Los escenarios Gherkin se ejecutan como documentación y criterio de aceptación; la automatización correspondiente vive en PHPUnit/Cypress según la tabla anterior (ISO/IEC 29119).
+
+**Fase 6 (apoderados)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Intranet/GuardianManagementTest.php` (roles, vínculos estudiante–apoderado, responsable económico, validación y unicidad de documento) |
+| BDD (Gherkin) | `tests/Bdd/features/guardians.feature` |
+| E2E (Cypress) | `cypress/e2e/guardians.cy.ts` (base: invitado redirigido al login en `/intranet/guardians`) |

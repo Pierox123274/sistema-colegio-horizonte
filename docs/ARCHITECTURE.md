@@ -67,9 +67,17 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Autorización**: `StudentPolicy` + middleware `role:` por ruta (Administrador/Secretaria/Docente para consulta; Administrador/Secretaria para alta/edición); Estudiante y Apoderado excluidos del módulo.
 - **Frontend**: páginas Inertia `Pages/Intranet/Students/*`, navegación habilitada en `App\Support\IntranetNavigation` solo para roles con acceso.
 
+## Módulo de apoderados (Fase 6)
+
+- **Dominio**: `App\Models\Guardian`, pivote `guardian_student` (N:N con `Student`), enum `GuardianRelationshipType` (parentesco en ficha y por vínculo), bandera `is_emergency_contact` en apoderado.
+- **Entrega HTTP**: `GuardianController`, `StoreGuardianRequest` / `UpdateGuardianRequest` (incl. arreglo `students` con datos de pivote; filas vacías se descartan en `prepareForValidation`).
+- **Servicio**: `App\Services\GuardianService` (sync de pivote, normalización, exclusividad de **responsable económico** y **contacto principal** por estudiante respecto a otros apoderados).
+- **Autorización**: `GuardianPolicy` + middleware `role:` (misma matriz que estudiantes: consulta Administrador/Secretaria/Docente; escritura Administrador/Secretaria; **Estudiante** y **Apoderado** sin acceso al módulo).
+- **Frontend**: `Pages/Intranet/Guardians/*`, `GuardianFormFields`, `GuardianStudentLinksEditor` (vincular estudiantes existentes con prioridad y roles en el vínculo).
+
 ## Qué queda fuera de fases tempranas
 
-- Apoderados, matrículas, pagos e inventario (roadmap); permisos más granulares por permiso Spatie si se requiere más allá de roles en rutas.
+- Matrículas, pagos e inventario (roadmap); permisos más granulares por permiso Spatie si se requiere más allá de roles en rutas.
 
 ## Referencias
 

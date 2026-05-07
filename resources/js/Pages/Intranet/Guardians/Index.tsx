@@ -3,21 +3,11 @@ import { EmptyState } from '@/Components/Intranet/EmptyState';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
 import { SectionTitle } from '@/Components/Intranet/SectionTitle';
 import { TableContainer } from '@/Components/Intranet/TableContainer';
-import {
-    EDUCATIONAL_LEVEL_LABELS,
-    STATUS_LABELS,
-    levelBadgeClass,
-    statusBadgeClass,
-} from '@/lib/studentLabels';
+import { RELATIONSHIP_LABELS } from '@/lib/guardianLabels';
 import IntranetLayout from '@/Layouts/IntranetLayout';
-import type {
-    PageProps,
-    SelectOption,
-    StudentListRow,
-    StudentPrimaryGuardianBrief,
-} from '@/types';
+import type { GuardianSerializable, PageProps, SelectOption } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Filter, Plus, Users } from 'lucide-react';
+import { Filter, Plus, UserCircle } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 
 type PaginatorLink = {
@@ -27,58 +17,50 @@ type PaginatorLink = {
 };
 
 type LaravelPaginator = {
-    data: StudentListRow[];
+    data: GuardianSerializable[];
     links: PaginatorLink[];
 };
 
 type IndexPageProps = PageProps<{
-    students: LaravelPaginator;
+    guardians: LaravelPaginator;
     filters: {
         search: string;
-        educational_level: string;
-        status: string;
+        relationship_type: string;
     };
     catalog: {
-        educational_levels: SelectOption[];
-        statuses: SelectOption[];
+        relationship_types: SelectOption[];
     };
     permissions: {
         manage: boolean;
     };
 }>;
 
-export default function StudentsIndex() {
-    const { students, filters, catalog, permissions, flash } =
+export default function GuardiansIndex() {
+    const { guardians, filters, catalog, permissions, flash } =
         usePage<IndexPageProps>().props;
 
     const [search, setSearch] = useState(String(filters.search ?? ''));
-    const [educationalLevel, setEducationalLevel] = useState(
-        String(filters.educational_level ?? ''),
+    const [relationshipType, setRelationshipType] = useState(
+        String(filters.relationship_type ?? ''),
     );
-    const [status, setStatus] = useState(String(filters.status ?? ''));
 
     const applyFilters = (e?: FormEvent) => {
         e?.preventDefault();
         router.get(
-            route('intranet.students.index'),
+            route('intranet.guardians.index'),
             {
                 search: search || undefined,
-                educational_level: educationalLevel || undefined,
-                status: status || undefined,
+                relationship_type: relationshipType || undefined,
             },
             { preserveState: true, replace: true },
         );
     };
 
-    const rows = students.data ?? [];
-
-    const primaryGuardian = (
-        row: StudentListRow,
-    ): StudentPrimaryGuardianBrief | undefined => row.guardians?.[0];
+    const rows = guardians.data ?? [];
 
     return (
-        <IntranetLayout title="Estudiantes">
-            <Head title="Estudiantes — Horizonte" />
+        <IntranetLayout title="Apoderados">
+            <Head title="Apoderados — Horizonte" />
 
             <PageContainer>
                 {flash?.success ? (
@@ -91,16 +73,16 @@ export default function StudentsIndex() {
                 ) : null}
 
                 <SectionTitle
-                    title="Estudiantes"
-                    description="Registro institucional del alumnado. Use filtros para localizar fichas."
+                    title="Apoderados"
+                    description="Fichas de familias y vínculos con estudiantes."
                     actions={
                         permissions.manage ? (
                             <Link
-                                href={route('intranet.students.create')}
+                                href={route('intranet.guardians.create')}
                                 className="inline-flex items-center gap-2 rounded-lg bg-navy-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-navy-950"
                             >
                                 <Plus className="h-4 w-4" aria-hidden />
-                                Nuevo estudiante
+                                Nuevo apoderado
                             </Link>
                         ) : null
                     }
@@ -123,48 +105,27 @@ export default function StudentsIndex() {
                                 type="search"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                placeholder="Nombre, código o documento"
+                                placeholder="Nombre, documento o teléfono"
                                 className="mt-1 w-full rounded-md border border-plomo/20 bg-white px-3 py-2 text-sm text-navy-900 shadow-sm focus:border-navy-900 focus:outline-none focus:ring-1 focus:ring-navy-900"
                             />
                         </div>
-                        <div className="w-full min-w-[160px] sm:w-auto">
+                        <div className="w-full min-w-[180px] sm:w-auto">
                             <label
-                                htmlFor="educational_level"
+                                htmlFor="relationship_type"
                                 className="block text-xs font-semibold uppercase tracking-wide text-plomo"
                             >
-                                Nivel
+                                Parentesco principal
                             </label>
                             <select
-                                id="educational_level"
-                                value={educationalLevel}
+                                id="relationship_type"
+                                value={relationshipType}
                                 onChange={(e) =>
-                                    setEducationalLevel(e.target.value)
+                                    setRelationshipType(e.target.value)
                                 }
                                 className="mt-1 w-full rounded-md border border-plomo/20 bg-white px-3 py-2 text-sm text-navy-900 shadow-sm focus:border-navy-900 focus:outline-none focus:ring-1 focus:ring-navy-900"
                             >
                                 <option value="">Todos</option>
-                                {catalog.educational_levels.map((o) => (
-                                    <option key={o.value} value={o.value}>
-                                        {o.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="w-full min-w-[160px] sm:w-auto">
-                            <label
-                                htmlFor="status"
-                                className="block text-xs font-semibold uppercase tracking-wide text-plomo"
-                            >
-                                Estado
-                            </label>
-                            <select
-                                id="status"
-                                value={status}
-                                onChange={(e) => setStatus(e.target.value)}
-                                className="mt-1 w-full rounded-md border border-plomo/20 bg-white px-3 py-2 text-sm text-navy-900 shadow-sm focus:border-navy-900 focus:outline-none focus:ring-1 focus:ring-navy-900"
-                            >
-                                <option value="">Todos</option>
-                                {catalog.statuses.map((o) => (
+                                {catalog.relationship_types.map((o) => (
                                     <option key={o.value} value={o.value}>
                                         {o.label}
                                     </option>
@@ -183,11 +144,11 @@ export default function StudentsIndex() {
 
                 <TableContainer
                     title="Listado"
-                    description={`${students.data?.length ?? 0} registros en esta página.`}
+                    description={`${rows.length} registros en esta página.`}
                     toolbar={
                         permissions.manage ? (
                             <span className="text-xs text-plomo">
-                                Gestión: alta y edición de fichas
+                                Alta y edición para administración y secretaría
                             </span>
                         ) : (
                             <span className="text-xs text-plomo">
@@ -199,19 +160,19 @@ export default function StudentsIndex() {
                     {rows.length === 0 ? (
                         <div className="p-6">
                             <EmptyState
-                                icon={Users}
-                                title="Sin estudiantes"
-                                description="Aún no hay registros que coincidan con los filtros. Cree el primer estudiante o ajuste la búsqueda."
+                                icon={UserCircle}
+                                title="Sin apoderados"
+                                description="Registre el primer apoderado o ajuste los filtros."
                                 action={
                                     permissions.manage ? (
                                         <Link
                                             href={route(
-                                                'intranet.students.create',
+                                                'intranet.guardians.create',
                                             )}
                                             className="inline-flex items-center gap-2 rounded-lg bg-navy-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-navy-950"
                                         >
                                             <Plus className="h-4 w-4" />
-                                            Nuevo estudiante
+                                            Nuevo apoderado
                                         </Link>
                                     ) : null
                                 }
@@ -222,25 +183,17 @@ export default function StudentsIndex() {
                             <thead className="border-b border-plomo/10 bg-navy-50/80 text-xs font-semibold uppercase tracking-wide text-plomo">
                                 <tr>
                                     <th className="px-4 py-3 sm:px-6">
-                                        Código
-                                    </th>
-                                    <th className="px-4 py-3 sm:px-6">
-                                        Estudiante
+                                        Apoderado
                                     </th>
                                     <th className="hidden px-4 py-3 md:table-cell sm:px-6">
                                         Documento
                                     </th>
-                                    <th className="px-4 py-3 sm:px-6">
-                                        Nivel
-                                    </th>
+                                    <th className="px-4 py-3 sm:px-6">Teléfono</th>
                                     <th className="hidden px-4 py-3 lg:table-cell sm:px-6">
-                                        Grado
+                                        Parentesco
                                     </th>
                                     <th className="px-4 py-3 sm:px-6">
-                                        Estado
-                                    </th>
-                                    <th className="hidden px-4 py-3 md:table-cell sm:px-6">
-                                        Apoderado principal
+                                        Estudiantes
                                     </th>
                                     <th className="px-4 py-3 text-right sm:px-6">
                                         Acciones
@@ -248,69 +201,42 @@ export default function StudentsIndex() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-plomo/10">
-                                {rows.map((s) => {
-                                    const pg = primaryGuardian(s);
-                                    return (
+                                {rows.map((g) => (
                                     <tr
-                                        key={s.id}
+                                        key={g.id}
                                         className="bg-white hover:bg-navy-50/40"
                                     >
-                                        <td className="px-4 py-3 font-mono text-xs font-medium text-navy-900 sm:px-6">
-                                            {s.code}
-                                        </td>
                                         <td className="px-4 py-3 sm:px-6">
                                             <div className="font-medium text-navy-900">
-                                                {s.first_name} {s.last_name}
+                                                {g.first_name} {g.last_name}
                                             </div>
-                                        </td>
-                                        <td className="hidden px-4 py-3 text-plomo md:table-cell sm:px-6">
-                                            {s.document_number ?? '—'}
-                                        </td>
-                                        <td className="px-4 py-3 sm:px-6">
-                                            <span
-                                                className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${levelBadgeClass(s.educational_level)}`}
-                                            >
-                                                {EDUCATIONAL_LEVEL_LABELS[
-                                                    s.educational_level
-                                                ] ?? s.educational_level}
-                                            </span>
-                                        </td>
-                                        <td className="hidden px-4 py-3 text-navy-900 lg:table-cell sm:px-6">
-                                            {s.grade}
-                                            {s.section
-                                                ? ` · ${s.section}`
-                                                : ''}
-                                        </td>
-                                        <td className="px-4 py-3 sm:px-6">
-                                            <span
-                                                className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${statusBadgeClass(s.status)}`}
-                                            >
-                                                {STATUS_LABELS[s.status] ??
-                                                    s.status}
-                                            </span>
-                                        </td>
-                                        <td className="hidden px-4 py-3 text-sm md:table-cell sm:px-6">
-                                            {pg ? (
-                                                <div>
-                                                    <div className="font-medium text-navy-900">
-                                                        {pg.first_name}{' '}
-                                                        {pg.last_name}
-                                                    </div>
-                                                    <div className="font-mono text-xs text-plomo">
-                                                        {pg.phone}
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <span className="text-plomo">
-                                                    —
+                                            {g.is_emergency_contact ? (
+                                                <span className="mt-1 inline-flex rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-900 ring-1 ring-amber-200">
+                                                    Emergencia
                                                 </span>
-                                            )}
+                                            ) : null}
+                                        </td>
+                                        <td className="hidden px-4 py-3 font-mono text-xs text-plomo md:table-cell sm:px-6">
+                                            {g.document_number ?? '—'}
+                                        </td>
+                                        <td className="px-4 py-3 text-navy-900 sm:px-6">
+                                            {g.phone}
+                                        </td>
+                                        <td className="hidden px-4 py-3 lg:table-cell sm:px-6">
+                                            <span className="inline-flex rounded-full bg-navy-900/5 px-2.5 py-0.5 text-xs font-semibold text-navy-900 ring-1 ring-navy-900/10">
+                                                {RELATIONSHIP_LABELS[
+                                                    g.relationship_type
+                                                ] ?? g.relationship_type}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-navy-900 sm:px-6">
+                                            {g.students_count ?? 0}
                                         </td>
                                         <td className="px-4 py-3 text-right sm:px-6">
                                             <Link
                                                 href={route(
-                                                    'intranet.students.show',
-                                                    s.id,
+                                                    'intranet.guardians.show',
+                                                    g.id,
                                                 )}
                                                 className="text-sm font-semibold text-navy-900 underline-offset-2 hover:underline"
                                             >
@@ -318,19 +244,18 @@ export default function StudentsIndex() {
                                             </Link>
                                         </td>
                                     </tr>
-                                    );
-                                })}
+                                ))}
                             </tbody>
                         </table>
                     )}
                 </TableContainer>
 
-                {students.links && students.links.length > 3 ? (
+                {guardians.links && guardians.links.length > 3 ? (
                     <nav
                         className="mt-6 flex flex-wrap justify-center gap-1"
                         aria-label="Paginación"
                     >
-                        {students.links.map((link, i) => {
+                        {guardians.links.map((link, i) => {
                             if (!link.url) {
                                 return (
                                     <span

@@ -32,6 +32,12 @@ class StudentService
             $query->where('status', $status);
         }
 
+        $query->with([
+            'guardians' => function ($q): void {
+                $q->wherePivot('is_primary', true);
+            },
+        ]);
+
         return $query->paginate($perPage)->withQueryString();
     }
 

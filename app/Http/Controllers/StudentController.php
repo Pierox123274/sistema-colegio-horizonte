@@ -8,6 +8,7 @@ use App\Enums\Gender;
 use App\Enums\StudentStatus;
 use App\Http\Requests\Intranet\StoreStudentRequest;
 use App\Http\Requests\Intranet\UpdateStudentRequest;
+use App\Models\Guardian;
 use App\Models\Student;
 use App\Services\StudentService;
 use App\Support\StudentGradeCatalog;
@@ -64,12 +65,43 @@ class StudentController extends Controller
     {
         $this->authorize('view', $student);
 
+        $student->load([
+            'guardians' => fn ($q) => $q->orderBy('guardians.last_name')->orderBy('guardians.first_name'),
+        ]);
+
+        $guardianLinks = $this->guardianLinksForStudent($student);
+        $student->unsetRelation('guardians');
+
         return Inertia::render('Intranet/Students/Show', [
             'student' => $student,
+            'guardian_links' => $guardianLinks,
             'permissions' => [
                 'manage' => $request->user()?->can('update', $student) ?? false,
             ],
         ]);
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function guardianLinksForStudent(Student $student): array
+    {
+        return $student->guardians->map(function (Guardian $guardian): array {
+            $pivot = $guardian->pivot;
+
+            return [
+                'id' => $guardian->id,
+                'full_name' => $guardian->fullName(),
+                'relationship' => $pivot->getAttribute('relationship'),
+                'phone' => $guardian->phone,
+                'document_number' => $guardian->document_number,
+                'email' => $guardian->email,
+                'is_primary' => (bool) $pivot->is_primary,
+                'is_financial_responsible' => (bool) $pivot->is_financial_responsible,
+                'emergency_priority' => $pivot->emergency_priority !== null ? (int) $pivot->emergency_priority : null,
+                'observations' => $pivot->observations,
+            ];
+        })->values()->all();
     }
 
     public function edit(Request $request, Student $student): Response

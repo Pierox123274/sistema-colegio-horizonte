@@ -1,6 +1,7 @@
 import { Card } from '@/Components/Intranet/Card';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
 import { SectionTitle } from '@/Components/Intranet/SectionTitle';
+import { RELATIONSHIP_LABELS } from '@/lib/guardianLabels';
 import {
     DOCUMENT_TYPE_LABELS,
     EDUCATIONAL_LEVEL_LABELS,
@@ -10,12 +11,17 @@ import {
     statusBadgeClass,
 } from '@/lib/studentLabels';
 import IntranetLayout from '@/Layouts/IntranetLayout';
-import type { PageProps, StudentSerializable } from '@/types';
+import type {
+    PageProps,
+    StudentGuardianLinkView,
+    StudentSerializable,
+} from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Pencil } from 'lucide-react';
 
 type ShowPageProps = PageProps<{
     student: StudentSerializable;
+    guardian_links: StudentGuardianLinkView[];
     permissions: {
         manage: boolean;
     };
@@ -41,7 +47,8 @@ function DetailRow({
 }
 
 export default function StudentsShow() {
-    const { student, permissions, flash } = usePage<ShowPageProps>().props;
+    const { student, guardian_links, permissions, flash } =
+        usePage<ShowPageProps>().props;
 
     const birth =
         student.birth_date && student.birth_date.length >= 10
@@ -159,6 +166,100 @@ export default function StudentsShow() {
                         </p>
                     </Card>
                 </div>
+
+                <Card className="mt-6">
+                    <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-navy-900">
+                        Apoderados vinculados
+                    </h3>
+                    {guardian_links.length === 0 ? (
+                        <p className="text-sm text-plomo">
+                            No hay apoderados asociados a este estudiante.
+                            Los vínculos se gestionan desde el módulo de apoderados.
+                        </p>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full text-left text-sm">
+                                <thead className="border-b border-plomo/10 bg-navy-50/80 text-xs font-semibold uppercase text-plomo">
+                                    <tr>
+                                        <th className="px-3 py-2">
+                                            Apoderado
+                                        </th>
+                                        <th className="px-3 py-2">
+                                            Parentesco
+                                        </th>
+                                        <th className="px-3 py-2">
+                                            Teléfono
+                                        </th>
+                                        <th className="hidden px-3 py-2 md:table-cell">
+                                            Documento
+                                        </th>
+                                        <th className="hidden px-3 py-2 lg:table-cell">
+                                            Correo
+                                        </th>
+                                        <th className="px-3 py-2 text-center">
+                                            Principal
+                                        </th>
+                                        <th className="px-3 py-2 text-center">
+                                            Económico
+                                        </th>
+                                        <th className="px-3 py-2 text-center">
+                                            Urg.
+                                        </th>
+                                        <th className="hidden px-3 py-2 xl:table-cell">
+                                            Observaciones
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-plomo/10">
+                                    {guardian_links.map((g) => (
+                                        <tr key={g.id}>
+                                            <td className="px-3 py-2 font-medium text-navy-900">
+                                                {g.full_name}
+                                            </td>
+                                            <td className="px-3 py-2">
+                                                {RELATIONSHIP_LABELS[g.relationship] ??
+                                                    g.relationship}
+                                            </td>
+                                            <td className="px-3 py-2 text-navy-900">
+                                                {g.phone}
+                                            </td>
+                                            <td className="hidden px-3 py-2 font-mono text-xs text-plomo md:table-cell">
+                                                {g.document_number ?? '—'}
+                                            </td>
+                                            <td className="hidden px-3 py-2 text-plomo lg:table-cell">
+                                                {g.email ?? '—'}
+                                            </td>
+                                            <td className="px-3 py-2 text-center">
+                                                {g.is_primary ? (
+                                                    <span className="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-900 ring-1 ring-emerald-200">
+                                                        Sí
+                                                    </span>
+                                                ) : (
+                                                    '—'
+                                                )}
+                                            </td>
+                                            <td className="px-3 py-2 text-center">
+                                                {g.is_financial_responsible ? (
+                                                    <span className="inline-flex rounded-full bg-navy-900/10 px-2 py-0.5 text-xs font-semibold text-navy-900 ring-1 ring-navy-900/15">
+                                                        Sí
+                                                    </span>
+                                                ) : (
+                                                    '—'
+                                                )}
+                                            </td>
+                                            <td className="px-3 py-2 text-center text-navy-900">
+                                                {g.emergency_priority ?? '—'}
+                                            </td>
+                                            <td className="hidden max-w-xs px-3 py-2 text-plomo xl:table-cell">
+                                                {g.observations ?? '—'}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </Card>
             </PageContainer>
         </IntranetLayout>
     );
