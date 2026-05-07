@@ -73,3 +73,11 @@ Los escenarios Gherkin se ejecutan como documentación y criterio de aceptación
 | Feature | `tests/Feature/Intranet/EnrollmentManagementTest.php` (altas por Administrador/Secretaria; Docente solo índice/detalle; Estudiante/Apoderado prohibido; doble matrícula activa; apoderado no vinculado; sección incoherente con grado; actualización) |
 | BDD (Gherkin) | `tests/Bdd/features/enrollments.feature` |
 | E2E (Cypress) | `cypress/e2e/enrollments.cy.ts` (invitado redirigido al login en `/intranet/enrollments`) |
+
+**Fase 9 (finanzas — conceptos, pensiones y pagos)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Intranet/FinanceManagementTest.php` (alta de concepto; pensión y unicidad de periodo; pago con actualización de estado de pensión; rechazo por exceso de saldo; monto positivo; Docente/Estudiante/Apoderado sin acceso; código de concepto único) |
+| BDD (Gherkin) | `tests/Bdd/features/payments.feature` |
+| E2E (Cypress) | `cypress/e2e/payments.cy.ts` (invitado redirigido al login en `/intranet/payments`) |

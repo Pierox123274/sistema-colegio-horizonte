@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 8** (matrículas: año académico, inscripción y ubicación curricular) sobre las fases 1–7.
+Última actualización: **Fase 9** (conceptos de pago, pensiones y pagos) sobre las fases 1–8.
 
 ## Completado — Fase 1
 
@@ -78,9 +78,20 @@
 - [x] UI: `Pages/Intranet/Enrollments/*`, `Pages/Intranet/AcademicYears/*`, `Components/Intranet/EnrollmentFormFields`, item **Matrículas** en `IntranetNavigation`.
 - [x] Pruebas `tests/Feature/Intranet/EnrollmentManagementTest.php`, `tests/Bdd/features/enrollments.feature`, `cypress/e2e/enrollments.cy.ts`.
 
+## Completado — Fase 9 (finanzas base)
+
+- [x] Tablas `payment_concepts`, `pensions` (unicidad matrícula + mes + año), `payments` (`payment_code` único; vínculos opcionales a estudiante, apoderado, matrícula y pensión).
+- [x] Enums `PaymentConceptType`, `PensionStatus`, `PaymentMethod`, `PaymentEntryStatus`; modelos `PaymentConcept`, `Pension`, `Payment` y relaciones en `Student`, `Enrollment`, `Guardian`.
+- [x] Servicios `PaymentConceptService`, `PensionService` (saldo pendiente, refresco de estado), `PaymentService` (transacciones, código `PAY-*`, validación de saldo al pagar pensión, resumen financiero por estudiante).
+- [x] Controladores `PaymentConceptController`, `PensionController`, `PaymentController`; Form Requests en `Http/Requests/Intranet`; políticas de finanzas solo **Administrador** y **Secretaria** (Docente/Estudiante/Apoderado sin acceso).
+- [x] Rutas `intranet.payment-concepts.*`, `intranet.pensions.*`, `intranet.payments.*` (literales `create`, búsqueda y `payments/create` antes de `{payment}`).
+- [x] UI Inertia: `Pages/Intranet/PaymentConcepts/*`, `Pages/Intranet/Pensions/*`, `Pages/Intranet/Payments/*` con filtros, badges y formulario de pago con búsqueda de estudiante y resumen de deuda; menú lateral **Finanzas** desplegable (`IntranetNavigation`).
+- [x] `PaymentConceptSeeder` opcional; factorías para los tres modelos.
+- [x] Pruebas `tests/Feature/Intranet/FinanceManagementTest.php`, `tests/Bdd/features/payments.feature`, `cypress/e2e/payments.cy.ts`.
+
 ## Pendiente / siguientes fases (ROADMAP)
 
-- Pagos, pensiones, boletas, inventario, permisos granulares por módulo si aplica.
+- Boleta térmica y PDF de comprobante; inventario y ventas; reportes financieros ampliados; permisos granulares por módulo si aplica.
 
 ## Notas
 

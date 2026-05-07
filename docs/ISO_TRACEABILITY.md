@@ -70,6 +70,22 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | **ISO/IEC 25010** (calidad) | 25010 | Usabilidad en formulario encadenado; integridad de datos con validación en capas |
 | **ISO/IEC 29119** (pruebas) | 29119 | TDD en Feature; Gherkin; smoke E2E Cypress en ruta de listado |
 
+## Mapeo (Fase 9 — conceptos, pensiones y pagos)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| **RF-07** Pensiones | 9001, 25010 | Modelo `Pension`, `PensionService`, `PensionController`, rutas `intranet.pensions.*`, migración con unicidad `(enrollment_id, month, year)`, UI `Pages/Intranet/Pensions/*` |
+| **RF-08** Pagos | 9001, 25010 | Modelo `Payment`, `PaymentService`, `PaymentController`, rutas `intranet.payments.*`, generación de `payment_code`, actualización de estado de pensión vía `PensionService::refreshStatus`, UI `Pages/Intranet/Payments/*` |
+| **RF-14** Reportes financieros (base) | 9001, 25010 | Listados filtrados y resumen JSON `studentFinancialSummary` para registro de cobros (sin PDF ni boleta térmica en esta fase) |
+| **RF-18** Seguridad | 27001, 25010 | Middleware `role:` solo Administrador/Secretaria en rutas financieras; `PaymentConceptPolicy`, `PensionPolicy`, `PaymentPolicy`; Docente/Estudiante/Apoderado sin acceso |
+| **RNF-03** Seguridad avanzada | 27001 | Form Requests y validación en servicio (`assertCanPayPension`, unicidades) |
+| **RNF-09** Trazabilidad | 9001 | Códigos de pago, relaciones a matrícula/pensión; matriz en este documento; `docs/CURRENT_PROGRESS.md` |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/Intranet/FinanceManagementTest.php`, `tests/Bdd/features/payments.feature`, `cypress/e2e/payments.cy.ts` |
+| **ISO 9001** | 9001 | Flujo requisito → implementación → prueba para pensiones y pagos |
+| **ISO/IEC 27001** | 27001 | Control de acceso por rol a datos financieros |
+| **ISO/IEC 25010** | 25010 | Validaciones de negocio (saldo pendiente, duplicados) y UX de tablas/filtros |
+| **ISO/IEC 29119** | 29119 | Pruebas Feature + escenarios Gherkin + smoke E2E |
+
 ## Mapeo inicial (Fase 1 — arquitectura base)
 
 | Requerimiento / objetivo (referencia) | ISO principal | Artefacto en el repo |

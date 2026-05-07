@@ -91,9 +91,17 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Autorización**: `EnrollmentPolicy`, `AcademicYearPolicy` + middleware `role:` (Docente solo lectura en matrículas; escritura Administrador/Secretaria; años académicos solo Administrador/Secretaria).
 - **Frontend**: `Pages/Intranet/Enrollments/*`, `Components/Intranet/EnrollmentFormFields`; años académicos en `Pages/Intranet/AcademicYears/*`; entrada **Matrículas** en `IntranetNavigation`.
 
+## Finanzas — conceptos, pensiones y pagos (Fase 9)
+
+- **Dominio**: `PaymentConcept` (tipo y monto referencial); `Pension` por matrícula y periodo (mes/año únicos); `Payment` con método y estado de registro/anulación.
+- **Entrega HTTP**: `PaymentConceptController`, `PensionController`, `PaymentController`; Form Requests `Store*/Update*`; generación de listados y pagos mediante `PaymentConceptService`, `PensionService`, `PaymentService` (transacciones, saldo pendiente, refresco de estado de pensión).
+- **Autorización**: políticas dedicadas; rutas financieras solo `role:Administrador|Secretaria` (Docente, Estudiante y Apoderado sin acceso al menú **Finanzas**).
+- **Frontend**: `Pages/Intranet/PaymentConcepts/*`, `Pages/Intranet/Pensions/*`, `Pages/Intranet/Payments/*`; submenú **Finanzas** en `IntranetNavigation` (mismo patrón que Gestión académica).
+- **Fuera de esta fase**: boleta térmica final, PDF de comprobante, inventario y ventas.
+
 ## Qué queda fuera de fases tempranas
 
-- Pagos, pensiones, boletas e inventario (roadmap); permisos más granulares por permiso Spatie si se requiere más allá de roles en rutas.
+- Boleta térmica y PDF finales, inventario y ventas (roadmap); permisos más granulares por permiso Spatie si se requiere más allá de roles en rutas.
 
 ## Referencias
 

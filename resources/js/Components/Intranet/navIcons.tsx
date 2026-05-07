@@ -1,6 +1,8 @@
 import {
+    Banknote,
     BarChart3,
     BookMarked,
+    CalendarDays,
     ClipboardList,
     DoorOpen,
     Layers,
@@ -9,6 +11,7 @@ import {
     Package,
     School,
     Settings,
+    Receipt,
     ShoppingCart,
     User,
     UserCircle,
@@ -18,6 +21,9 @@ import {
 } from 'lucide-react';
 
 const NAV_ICONS: Record<string, LucideIcon> = {
+    banknote: Banknote,
+    'calendar-days': CalendarDays,
+    receipt: Receipt,
     'layout-dashboard': LayoutDashboard,
     school: School,
     'graduation-cap': School,

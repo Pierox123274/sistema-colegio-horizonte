@@ -8,6 +8,9 @@ use App\Http\Controllers\Academic\SectionController;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\PaymentConceptController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PensionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\StudentController;
@@ -128,6 +131,39 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
     Route::middleware(['role:Administrador|Secretaria|Docente'])->group(function () {
         Route::get('/intranet/enrollments', [EnrollmentController::class, 'index'])->name('intranet.enrollments.index');
         Route::get('/intranet/enrollments/{enrollment}', [EnrollmentController::class, 'show'])->name('intranet.enrollments.show');
+    });
+
+    Route::middleware(['role:Administrador|Secretaria'])->group(function () {
+        Route::get('/intranet/payment-concepts/create', [PaymentConceptController::class, 'create'])->name('intranet.payment-concepts.create');
+        Route::post('/intranet/payment-concepts', [PaymentConceptController::class, 'store'])->name('intranet.payment-concepts.store');
+        Route::get('/intranet/payment-concepts/{payment_concept}/edit', [PaymentConceptController::class, 'edit'])->name('intranet.payment-concepts.edit');
+        Route::put('/intranet/payment-concepts/{payment_concept}', [PaymentConceptController::class, 'update'])->name('intranet.payment-concepts.update');
+        Route::patch('/intranet/payment-concepts/{payment_concept}', [PaymentConceptController::class, 'update']);
+        Route::delete('/intranet/payment-concepts/{payment_concept}', [PaymentConceptController::class, 'destroy'])->name('intranet.payment-concepts.destroy');
+
+        Route::get('/intranet/pensions/create', [PensionController::class, 'create'])->name('intranet.pensions.create');
+        Route::post('/intranet/pensions', [PensionController::class, 'store'])->name('intranet.pensions.store');
+        Route::get('/intranet/pensions/{pension}/edit', [PensionController::class, 'edit'])->name('intranet.pensions.edit');
+        Route::put('/intranet/pensions/{pension}', [PensionController::class, 'update'])->name('intranet.pensions.update');
+        Route::patch('/intranet/pensions/{pension}', [PensionController::class, 'update']);
+
+        Route::get('/intranet/payments/students/search', [PaymentController::class, 'searchStudents'])->name('intranet.payments.students.search');
+        Route::get('/intranet/payments/students/{student}/summary', [PaymentController::class, 'studentSummary'])->name('intranet.payments.students.summary');
+
+        Route::get('/intranet/payments/create', [PaymentController::class, 'create'])->name('intranet.payments.create');
+        Route::post('/intranet/payments', [PaymentController::class, 'store'])->name('intranet.payments.store');
+        Route::post('/intranet/payments/{payment}/cancel', [PaymentController::class, 'cancel'])->name('intranet.payments.cancel');
+    });
+
+    Route::middleware(['role:Administrador|Secretaria'])->group(function () {
+        Route::get('/intranet/payment-concepts', [PaymentConceptController::class, 'index'])->name('intranet.payment-concepts.index');
+        Route::get('/intranet/payment-concepts/{payment_concept}', [PaymentConceptController::class, 'show'])->name('intranet.payment-concepts.show');
+
+        Route::get('/intranet/pensions', [PensionController::class, 'index'])->name('intranet.pensions.index');
+        Route::get('/intranet/pensions/{pension}', [PensionController::class, 'show'])->name('intranet.pensions.show');
+
+        Route::get('/intranet/payments', [PaymentController::class, 'index'])->name('intranet.payments.index');
+        Route::get('/intranet/payments/{payment}', [PaymentController::class, 'show'])->name('intranet.payments.show');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

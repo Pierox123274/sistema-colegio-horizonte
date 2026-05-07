@@ -80,4 +80,12 @@ class Student extends Model
     {
         return $this->hasMany(Enrollment::class);
     }
+
+    /**
+     * @return HasMany<Payment, $this>
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
 }

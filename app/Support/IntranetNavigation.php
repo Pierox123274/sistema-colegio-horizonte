@@ -38,6 +38,11 @@ final class IntranetNavigation
             IntranetRole::Docente->value,
         ]);
 
+        $canFinance = $user->hasAnyRole([
+            IntranetRole::Administrador->value,
+            IntranetRole::Secretaria->value,
+        ]);
+
         $nav = [
             [
                 'label' => 'Dashboard',
@@ -100,6 +105,36 @@ final class IntranetNavigation
             'disabled' => ! $canManageGuardians,
         ];
 
+        $financeNav = [];
+        if ($canFinance) {
+            $financeNav[] = [
+                'label' => 'Finanzas',
+                'href' => null,
+                'icon' => 'banknote',
+                'disabled' => false,
+                'children' => [
+                    [
+                        'label' => 'Conceptos de pago',
+                        'href' => route('intranet.payment-concepts.index', absolute: false),
+                        'icon' => 'package',
+                        'disabled' => false,
+                    ],
+                    [
+                        'label' => 'Pensiones',
+                        'href' => route('intranet.pensions.index', absolute: false),
+                        'icon' => 'calendar-days',
+                        'disabled' => false,
+                    ],
+                    [
+                        'label' => 'Pagos',
+                        'href' => route('intranet.payments.index', absolute: false),
+                        'icon' => 'receipt',
+                        'disabled' => false,
+                    ],
+                ],
+            ];
+        }
+
         return array_merge($nav, [
             [
                 'label' => 'Matrículas',
@@ -109,12 +144,7 @@ final class IntranetNavigation
                 'icon' => 'clipboard-list',
                 'disabled' => ! $canViewEnrollments,
             ],
-            [
-                'label' => 'Pensiones',
-                'href' => null,
-                'icon' => 'wallet',
-                'disabled' => true,
-            ],
+            ...$financeNav,
             [
                 'label' => 'Inventario',
                 'href' => null,
