@@ -42,6 +42,10 @@ final class IntranetNavigation
             IntranetRole::Administrador->value,
             IntranetRole::Secretaria->value,
         ]);
+        $canInventory = $user->hasAnyRole([
+            IntranetRole::Administrador->value,
+            IntranetRole::Secretaria->value,
+        ]);
 
         $nav = [
             [
@@ -145,12 +149,37 @@ final class IntranetNavigation
                 'disabled' => ! $canViewEnrollments,
             ],
             ...$financeNav,
-            [
+            ...($canInventory ? [[
+                'label' => 'Inventario',
+                'href' => null,
+                'icon' => 'package',
+                'disabled' => false,
+                'children' => [
+                    [
+                        'label' => 'Categorías',
+                        'href' => route('intranet.inventory.categories.index', absolute: false),
+                        'icon' => 'folder-tree',
+                        'disabled' => false,
+                    ],
+                    [
+                        'label' => 'Productos',
+                        'href' => route('intranet.inventory.products.index', absolute: false),
+                        'icon' => 'package-search',
+                        'disabled' => false,
+                    ],
+                    [
+                        'label' => 'Movimientos',
+                        'href' => route('intranet.inventory.movements.index', absolute: false),
+                        'icon' => 'arrow-left-right',
+                        'disabled' => false,
+                    ],
+                ],
+            ]] : [[
                 'label' => 'Inventario',
                 'href' => null,
                 'icon' => 'package',
                 'disabled' => true,
-            ],
+            ]]),
             [
                 'label' => 'Ventas',
                 'href' => null,

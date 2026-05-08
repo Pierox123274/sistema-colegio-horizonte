@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 10** (comprobantes PDF y boletas térmicas de pagos) sobre las fases 1–9.
+Última actualización: **Fase 11** (inventario: categorías, productos y movimientos) sobre las fases 1–10.
 
 ## Completado — Fase 1
 
@@ -105,6 +105,22 @@
 - [x] Trazabilidad de usuario registrador: `payments.created_by_user_id`.
 - [x] Botones en detalle de pago (`Pages/Intranet/Payments/Show.tsx`): Ver comprobante, Descargar PDF, Imprimir ticket.
 - [x] Pruebas fase 10: `tests/Feature/Intranet/PaymentReceiptTest.php`, `tests/Bdd/features/payment_receipts.feature`, `cypress/e2e/payment-receipts.cy.ts`.
+
+## Completado — Fase 11 (inventario)
+
+- [x] Modelos y tablas: `product_categories`, `products`, `inventory_movements`.
+- [x] Reglas de negocio: códigos únicos en categorías/productos; precios y stocks >= 0; cantidad de movimiento > 0; bloqueo de stock negativo.
+- [x] Recalculo automático de stock por movimiento (`entrada`, `salida`, `ajuste`) con transacción y bloqueo pesimista (`lockForUpdate`).
+- [x] Trazabilidad en movimiento: `previous_stock`, `new_stock`, `reason`, `observations`, `created_by_user_id`.
+- [x] Backend: controladores `ProductCategoryController`, `ProductController`, `InventoryMovementController`; servicios `ProductCategoryService`, `ProductService`, `InventoryMovementService`; Form Requests y policies por recurso.
+- [x] Sidebar desplegable **Inventario** con hijos **Categorías**, **Productos**, **Movimientos**.
+- [x] Frontend Inertia:
+  - `Pages/Intranet/Inventory/Categories/*`
+  - `Pages/Intranet/Inventory/Products/*`
+  - `Pages/Intranet/Inventory/Movements/*`
+- [x] UI con filtros, badges, cards de estadísticas y alertas de stock bajo.
+- [x] Seed demo: `InventoryDemoSeeder` integrado en `DatabaseSeeder`.
+- [x] Pruebas fase 11: `tests/Feature/Intranet/InventoryManagementTest.php`, `tests/Bdd/features/inventory.feature`, `cypress/e2e/inventory.cy.ts`.
 
 ## Pendiente / siguientes fases (ROADMAP)
 

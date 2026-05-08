@@ -8,10 +8,13 @@ use App\Http\Controllers\Academic\SectionController;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\InventoryMovementController;
 use App\Http\Controllers\PaymentConceptController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentReceiptController;
 use App\Http\Controllers\PensionController;
+use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\StudentController;
@@ -168,6 +171,57 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
         Route::get('/intranet/payments/{payment}/receipt', [PaymentReceiptController::class, 'show'])->name('intranet.payments.receipt');
         Route::get('/intranet/payments/{payment}/receipt/pdf', [PaymentReceiptController::class, 'pdf'])->name('intranet.payments.receipt.pdf');
         Route::get('/intranet/payments/{payment}/receipt/ticket', [PaymentReceiptController::class, 'ticket'])->name('intranet.payments.receipt.ticket');
+
+        Route::get('/intranet/inventory/categories', [ProductCategoryController::class, 'index'])->name('intranet.inventory.categories.index');
+        Route::get('/intranet/inventory/categories/{product_category}', [ProductCategoryController::class, 'show'])
+            ->whereNumber('product_category')
+            ->name('intranet.inventory.categories.show');
+
+        Route::get('/intranet/inventory/products', [ProductController::class, 'index'])->name('intranet.inventory.products.index');
+        Route::get('/intranet/inventory/products/{product}', [ProductController::class, 'show'])
+            ->whereNumber('product')
+            ->name('intranet.inventory.products.show');
+
+        Route::get('/intranet/inventory/movements', [InventoryMovementController::class, 'index'])->name('intranet.inventory.movements.index');
+        Route::get('/intranet/inventory/movements/{inventory_movement}', [InventoryMovementController::class, 'show'])
+            ->whereNumber('inventory_movement')
+            ->name('intranet.inventory.movements.show');
+    });
+
+    Route::middleware(['role:Administrador'])->group(function () {
+        Route::get('/intranet/inventory/categories/create', [ProductCategoryController::class, 'create'])->name('intranet.inventory.categories.create');
+        Route::post('/intranet/inventory/categories', [ProductCategoryController::class, 'store'])->name('intranet.inventory.categories.store');
+        Route::get('/intranet/inventory/categories/{product_category}/edit', [ProductCategoryController::class, 'edit'])
+            ->whereNumber('product_category')
+            ->name('intranet.inventory.categories.edit');
+        Route::put('/intranet/inventory/categories/{product_category}', [ProductCategoryController::class, 'update'])
+            ->whereNumber('product_category')
+            ->name('intranet.inventory.categories.update');
+        Route::patch('/intranet/inventory/categories/{product_category}', [ProductCategoryController::class, 'update'])
+            ->whereNumber('product_category');
+        Route::post('/intranet/inventory/categories/{product_category}/deactivate', [ProductCategoryController::class, 'deactivate'])
+            ->whereNumber('product_category')
+            ->name('intranet.inventory.categories.deactivate');
+
+        Route::get('/intranet/inventory/products/create', [ProductController::class, 'create'])->name('intranet.inventory.products.create');
+        Route::post('/intranet/inventory/products', [ProductController::class, 'store'])->name('intranet.inventory.products.store');
+        Route::get('/intranet/inventory/products/{product}/edit', [ProductController::class, 'edit'])
+            ->whereNumber('product')
+            ->name('intranet.inventory.products.edit');
+        Route::put('/intranet/inventory/products/{product}', [ProductController::class, 'update'])
+            ->whereNumber('product')
+            ->name('intranet.inventory.products.update');
+        Route::patch('/intranet/inventory/products/{product}', [ProductController::class, 'update'])
+            ->whereNumber('product');
+        Route::post('/intranet/inventory/products/{product}/deactivate', [ProductController::class, 'deactivate'])
+            ->whereNumber('product')
+            ->name('intranet.inventory.products.deactivate');
+
+        Route::get('/intranet/inventory/movements/create', [InventoryMovementController::class, 'create'])->name('intranet.inventory.movements.create');
+        Route::post('/intranet/inventory/movements', [InventoryMovementController::class, 'store'])->name('intranet.inventory.movements.store');
+        Route::post('/intranet/inventory/movements/{inventory_movement}/cancel', [InventoryMovementController::class, 'cancel'])
+            ->whereNumber('inventory_movement')
+            ->name('intranet.inventory.movements.cancel');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

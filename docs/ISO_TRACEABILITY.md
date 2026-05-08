@@ -102,6 +102,20 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | **ISO/IEC 25010** | 25010 | Usabilidad (acciones directas desde detalle), mantenibilidad (servicio dedicado), compatibilidad de impresión térmica |
 | **ISO/IEC 29119** | 29119 | Cobertura Feature, BDD y E2E base de rutas críticas |
 
+## Mapeo (Fase 11 — inventario)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| **RF-09** Inventario (control de stock y movimientos) | 9001, 25010 | Modelos `ProductCategory`, `Product`, `InventoryMovement`; controladores y páginas `Intranet/Inventory/*`; rutas `intranet.inventory.*` |
+| **RF-18** Seguridad (acceso por rol) | 27001, 25010 | Policies `ProductCategoryPolicy`, `ProductPolicy`, `InventoryMovementPolicy`; middleware `role:` (Administrador total, Secretaria solo lectura, demás sin acceso) |
+| **RNF-03** Seguridad avanzada | 27001 | Validaciones de stock no negativo en request y servicio; operaciones críticas con transacción + `lockForUpdate` |
+| **RNF-09** Trazabilidad | 9001 | `inventory_movements` con `previous_stock`, `new_stock`, `reason`, `observations`, `created_by_user_id`, `created_at` |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/Intranet/InventoryManagementTest.php`, `tests/Bdd/features/inventory.feature`, `cypress/e2e/inventory.cy.ts` |
+| **ISO 9001** | 9001 | Flujo requisito → implementación → evidencia de pruebas y documentación |
+| **ISO/IEC 27001** | 27001 | Restricción estricta de acceso al módulo inventario y control de operaciones inválidas |
+| **ISO/IEC 25010** | 25010 | Funcionalidad de stock, usabilidad en filtros/alertas, mantenibilidad por capa Services |
+| **ISO/IEC 29119** | 29119 | Cobertura Feature + BDD + E2E para escenarios críticos de inventario |
+
 ## Mapeo inicial (Fase 1 — arquitectura base)
 
 | Requerimiento / objetivo (referencia) | ISO principal | Artefacto en el repo |

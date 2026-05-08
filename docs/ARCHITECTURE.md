@@ -112,6 +112,21 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Autorización**: se mantiene la matriz de finanzas actual (solo `Administrador` y `Secretaria` por middleware + `PaymentPolicy`).
 - **Dependencia**: generación PDF con `barryvdh/laravel-dompdf` (estable y compatible con Laravel 12).
 
+## Inventario — categorías, productos y movimientos (Fase 11)
+
+- **Dominio**: `ProductCategory` (catálogo), `Product` (stock y precios), `InventoryMovement` (entrada/salida/ajuste con trazabilidad).
+- **Entrega HTTP**: controladores `ProductCategoryController`, `ProductController`, `InventoryMovementController`; Form Requests dedicados para alta/edición de categorías/productos y registro de movimientos.
+- **Servicios**:
+  - `ProductCategoryService` (listado filtrado y mantenimiento de categorías).
+  - `ProductService` (listado filtrado por categoría/estado/stock bajo, catálogos para formularios).
+  - `InventoryMovementService` (transacción con `lockForUpdate`, recalculo automático de stock, bloqueo de stock negativo, estadísticas de inventario).
+- **Autorización**:
+  - Administrador: alta/edición/registro de movimientos.
+  - Secretaria: solo listado y detalle.
+  - Docente/Estudiante/Apoderado: sin acceso.
+- **Frontend Inertia**: páginas en `Pages/Intranet/Inventory/{Categories,Products,Movements}/*` con tablas, badges, filtros, cards de métricas y alertas de stock bajo.
+- **Navegación**: sidebar desplegable **Inventario** con hijos **Categorías**, **Productos** y **Movimientos**.
+
 ## Qué queda fuera de fases tempranas
 
 - Boleta térmica y PDF finales, inventario y ventas (roadmap); permisos más granulares por permiso Spatie si se requiere más allá de roles en rutas.

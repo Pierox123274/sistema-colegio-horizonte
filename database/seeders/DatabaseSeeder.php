@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AcademicStructureSeeder::class);
         $this->call(AcademicYearSeeder::class);
         $this->call(PaymentConceptSeeder::class);
+        $this->call(InventoryDemoSeeder::class);
 
         $user = User::factory()->create([
             'name' => 'Test User',
