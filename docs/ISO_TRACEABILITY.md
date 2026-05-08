@@ -116,6 +116,22 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | **ISO/IEC 25010** | 25010 | Funcionalidad de stock, usabilidad en filtros/alertas, mantenibilidad por capa Services |
 | **ISO/IEC 29119** | 29119 | Cobertura Feature + BDD + E2E para escenarios críticos de inventario |
 
+## Mapeo (Fase 12 — caja y ventas)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| **RF-09** Inventario conectado a ventas | 9001, 25010 | `SaleService` descuenta stock y valida disponibilidad/inactividad de `Product` |
+| **RF-08** Pagos / operaciones de cobro | 9001, 25010 | `Sale`, `SaleItem`, `CashRegister`, `CashMovement`; rutas `intranet.sales.*`; UI `Pages/Intranet/Sales/*` |
+| **RF-18** Seguridad (acceso por rol) | 27001, 25010 | Policies `CashRegisterPolicy`, `SalePolicy`, `CashMovementPolicy`; middleware `role:Administrador|Secretaria` |
+| **RNF-03** Seguridad avanzada | 27001 | Reglas de caja abierta obligatoria, bloqueo de venta sin stock, validación transaccional con `lockForUpdate` |
+| **RNF-09** Trazabilidad | 9001 | `cash_movements`, estado de venta (`registrada`/`anulada`), usuario creador/anulador y timestamps |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/Intranet/CashSalesManagementTest.php` |
+| **ISO 9001** | 9001 | Flujo requisito → implementación → prueba en caja y ventas |
+| **ISO/IEC 27001** | 27001 | Restricción de módulo y reglas de consistencia transaccional |
+| **ISO/IEC 25010** | 25010 | Adecuación funcional (caja, venta, anulación, comprobante) y mantenibilidad por capa Services |
+| **ISO/IEC 29119** | 29119 | Evidencia de pruebas Feature para escenarios críticos |
+| Exportación de ventas diaria (PDF/Excel-compatible) | 9001, 25010 | `SaleController::exportPdf`, `SaleController::exportExcel`, `resources/views/intranet/sales/report-pdf.blade.php` |
+
 ## Mapeo inicial (Fase 1 — arquitectura base)
 
 | Requerimiento / objetivo (referencia) | ISO principal | Artefacto en el repo |

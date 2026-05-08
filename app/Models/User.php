@@ -56,4 +56,36 @@ class User extends Authenticatable
     {
         return $this->hasMany(InventoryMovement::class, 'created_by_user_id');
     }
+
+    /**
+     * @return HasMany<CashRegister, $this>
+     */
+    public function cashRegisters(): HasMany
+    {
+        return $this->hasMany(CashRegister::class);
+    }
+
+    /**
+     * @return HasMany<Sale, $this>
+     */
+    public function salesCreated(): HasMany
+    {
+        return $this->hasMany(Sale::class, 'created_by_user_id');
+    }
+
+    /**
+     * @return HasMany<Sale, $this>
+     */
+    public function salesCanceled(): HasMany
+    {
+        return $this->hasMany(Sale::class, 'canceled_by_user_id');
+    }
+
+    /**
+     * @return HasMany<CashMovement, $this>
+     */
+    public function cashMovementsCreated(): HasMany
+    {
+        return $this->hasMany(CashMovement::class, 'created_by_user_id');
+    }
 }

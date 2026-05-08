@@ -46,6 +46,7 @@ final class IntranetNavigation
             IntranetRole::Administrador->value,
             IntranetRole::Secretaria->value,
         ]);
+        $canSales = $canInventory;
 
         $nav = [
             [
@@ -180,12 +181,43 @@ final class IntranetNavigation
                 'icon' => 'package',
                 'disabled' => true,
             ]]),
-            [
-                'label' => 'Ventas',
+            ...($canSales ? [[
+                'label' => 'Caja y ventas',
+                'href' => null,
+                'icon' => 'shopping-cart',
+                'disabled' => false,
+                'children' => [
+                    [
+                        'label' => 'Caja diaria',
+                        'href' => route('intranet.sales.cash-registers.index', absolute: false),
+                        'icon' => 'wallet',
+                        'disabled' => false,
+                    ],
+                    [
+                        'label' => 'Ventas',
+                        'href' => route('intranet.sales.sales.index', absolute: false),
+                        'icon' => 'shopping-cart',
+                        'disabled' => false,
+                    ],
+                    [
+                        'label' => 'Nueva venta',
+                        'href' => route('intranet.sales.sales.create', absolute: false),
+                        'icon' => 'receipt',
+                        'disabled' => false,
+                    ],
+                    [
+                        'label' => 'Movimientos',
+                        'href' => route('intranet.sales.cash-movements.index', absolute: false),
+                        'icon' => 'arrow-left-right',
+                        'disabled' => false,
+                    ],
+                ],
+            ]] : [[
+                'label' => 'Caja y ventas',
                 'href' => null,
                 'icon' => 'shopping-cart',
                 'disabled' => true,
-            ],
+            ]]),
             [
                 'label' => 'Reportes',
                 'href' => null,

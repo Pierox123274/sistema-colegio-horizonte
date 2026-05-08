@@ -97,3 +97,11 @@ Los escenarios Gherkin se ejecutan como documentación y criterio de aceptación
 | Feature | `tests/Feature/Intranet/InventoryManagementTest.php` (alta de categoría y producto por Administrador; entradas/salidas/ajustes; bloqueo de stock negativo; recalculo de stock; Secretaria solo visualiza; Docente/Estudiante/Apoderado sin acceso) |
 | BDD (Gherkin) | `tests/Bdd/features/inventory.feature` |
 | E2E (Cypress) | `cypress/e2e/inventory.cy.ts` (invitado redirigido al login en rutas de categorías/productos/movimientos) |
+
+**Fase 12 (caja y ventas)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Intranet/CashSalesManagementTest.php` (Administrador y Secretaria abren caja; venta con/sin estudiante; venta con estudiante+apoderado; bloqueo por apoderado no vinculado; descuento y devolución de stock; export PDF/CSV; rechazo sin caja abierta; Docente sin acceso) |
+| BDD (Gherkin) | Pendiente de ampliar en siguiente iteración |
+| E2E (Cypress) | Pendiente de ampliar en siguiente iteración |

@@ -19,7 +19,7 @@ class GradeFactory extends Factory
             'educational_level_id' => EducationalLevel::factory(),
             'code' => 'G-'.fake()->unique()->numerify('###'),
             'name' => fake()->word(),
-            'order' => fake()->numberBetween(1, 20),
+            'order' => fake()->unique()->numberBetween(1, 9999),
             'is_active' => true,
         ];
     }

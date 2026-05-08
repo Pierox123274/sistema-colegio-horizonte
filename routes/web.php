@@ -6,6 +6,8 @@ use App\Http\Controllers\Academic\EducationalLevelController;
 use App\Http\Controllers\Academic\GradeController;
 use App\Http\Controllers\Academic\SectionController;
 use App\Http\Controllers\AcademicYearController;
+use App\Http\Controllers\CashMovementController;
+use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\InventoryMovementController;
@@ -17,6 +19,8 @@ use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicSiteController;
+use App\Http\Controllers\SaleController;
+use App\Http\Controllers\SaleReceiptController;
 use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -186,6 +190,26 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
         Route::get('/intranet/inventory/movements/{inventory_movement}', [InventoryMovementController::class, 'show'])
             ->whereNumber('inventory_movement')
             ->name('intranet.inventory.movements.show');
+
+        Route::get('/intranet/sales/cash-registers', [CashRegisterController::class, 'index'])->name('intranet.sales.cash-registers.index');
+        Route::get('/intranet/sales', [SaleController::class, 'index'])->name('intranet.sales.sales.index');
+        Route::get('/intranet/sales/{sale}', [SaleController::class, 'show'])->whereNumber('sale')->name('intranet.sales.sales.show');
+        Route::get('/intranet/sales/{sale}/receipt', [SaleReceiptController::class, 'show'])->whereNumber('sale')->name('intranet.sales.sales.receipt');
+        Route::get('/intranet/sales/{sale}/receipt/pdf', [SaleReceiptController::class, 'pdf'])->whereNumber('sale')->name('intranet.sales.sales.receipt.pdf');
+        Route::get('/intranet/sales/{sale}/receipt/ticket', [SaleReceiptController::class, 'ticket'])->whereNumber('sale')->name('intranet.sales.sales.receipt.ticket');
+        Route::get('/intranet/sales/cash-movements', [CashMovementController::class, 'index'])->name('intranet.sales.cash-movements.index');
+    });
+
+    Route::middleware(['role:Administrador|Secretaria'])->group(function () {
+        Route::post('/intranet/sales/cash-registers/open', [CashRegisterController::class, 'open'])->name('intranet.sales.cash-registers.open');
+        Route::post('/intranet/sales/cash-registers/{cash_register}/close', [CashRegisterController::class, 'close'])->whereNumber('cash_register')->name('intranet.sales.cash-registers.close');
+        Route::get('/intranet/sales/students/search', [SaleController::class, 'searchStudents'])->name('intranet.sales.students.search');
+        Route::get('/intranet/sales/students/{student}/preview', [SaleController::class, 'studentPreview'])->whereNumber('student')->name('intranet.sales.students.preview');
+        Route::get('/intranet/sales/create', [SaleController::class, 'create'])->name('intranet.sales.sales.create');
+        Route::post('/intranet/sales', [SaleController::class, 'store'])->name('intranet.sales.sales.store');
+        Route::post('/intranet/sales/{sale}/cancel', [SaleController::class, 'cancel'])->whereNumber('sale')->name('intranet.sales.sales.cancel');
+        Route::get('/intranet/sales/reports/export/pdf', [SaleController::class, 'exportPdf'])->name('intranet.sales.reports.export.pdf');
+        Route::get('/intranet/sales/reports/export/excel', [SaleController::class, 'exportExcel'])->name('intranet.sales.reports.export.excel');
     });
 
     Route::middleware(['role:Administrador'])->group(function () {

@@ -127,6 +127,25 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Frontend Inertia**: páginas en `Pages/Intranet/Inventory/{Categories,Products,Movements}/*` con tablas, badges, filtros, cards de métricas y alertas de stock bajo.
 - **Navegación**: sidebar desplegable **Inventario** con hijos **Categorías**, **Productos** y **Movimientos**.
 
+## Caja y ventas (Fase 12)
+
+- **Dominio**:
+  - `CashRegister`: apertura/cierre diario por usuario.
+  - `Sale` + `SaleItem`: venta cabecera/detalle, cliente académico opcional (`student_id`/`guardian_id`), método de pago, estado.
+  - `CashMovement`: libro de movimientos de caja (`apertura`, `venta`, `anulacion_venta`, `cierre`).
+- **Servicios**:
+  - `CashRegisterService`: control de apertura/cierre, regla de una caja abierta por usuario y fecha, resumen de caja.
+  - `SaleService`: transacción de venta con bloqueo de productos, descuento de stock, registro de movimiento de caja y anulación con devolución de stock.
+  - `CashMovementService`: listado filtrado de movimientos de caja.
+  - `SaleReceiptService`: armado de datos del comprobante de venta.
+- **Entrega HTTP**: controladores `CashRegisterController`, `SaleController`, `CashMovementController`, `SaleReceiptController`; Form Requests `OpenCashRegisterRequest`, `CloseCashRegisterRequest`, `StoreSaleRequest`.
+- **Frontend**: páginas Inertia en `Pages/Intranet/Sales/**` para caja diaria, ventas, nueva venta y movimientos.
+- **Comprobantes**: vistas Blade `resources/views/intranet/sales/receipt.blade.php` y `receipt-pdf.blade.php`.
+- **Correcciones posteriores**:
+  - búsqueda/autocomplete de estudiante en venta (`SaleController::searchStudents`, `studentPreview`);
+  - validación `guardian_id` vinculado a `student_id` en request y service;
+  - reportes de ventas filtrables con exportación PDF y CSV (compatible Excel) en rutas `intranet.sales.reports.export.*`.
+
 ## Qué queda fuera de fases tempranas
 
 - Boleta térmica y PDF finales, inventario y ventas (roadmap); permisos más granulares por permiso Spatie si se requiere más allá de roles en rutas.

@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 11** (inventario: categorías, productos y movimientos) sobre las fases 1–10.
+Última actualización: **Fase 12** (caja diaria y ventas escolares) sobre las fases 1–11.
 
 ## Completado — Fase 1
 
@@ -121,6 +121,28 @@
 - [x] UI con filtros, badges, cards de estadísticas y alertas de stock bajo.
 - [x] Seed demo: `InventoryDemoSeeder` integrado en `DatabaseSeeder`.
 - [x] Pruebas fase 11: `tests/Feature/Intranet/InventoryManagementTest.php`, `tests/Bdd/features/inventory.feature`, `cypress/e2e/inventory.cy.ts`.
+
+## Completado — Fase 12 (caja y ventas)
+
+- [x] Tablas y modelos: `cash_registers`, `sales`, `sale_items`, `cash_movements` con trazabilidad de usuario, fecha y estado.
+- [x] Reglas de negocio:
+  - caja abierta obligatoria para vender;
+  - no permitir dos cajas abiertas por usuario en el mismo día;
+  - no vender productos inactivos ni sin stock;
+  - anulación de venta devuelve stock y genera contramovimiento de caja.
+- [x] Backend: `CashRegisterController`, `SaleController`, `CashMovementController`, `SaleReceiptController`; servicios `CashRegisterService`, `SaleService`, `CashMovementService`, `SaleReceiptService`; requests de apertura/cierre y registro de venta.
+- [x] Frontend Inertia:
+  - `Pages/Intranet/Sales/CashRegisters/Index.tsx`
+  - `Pages/Intranet/Sales/Sales/{Index,Create,Show}.tsx`
+  - `Pages/Intranet/Sales/CashMovements/Index.tsx`
+- [x] Comprobante de venta HTML y PDF: `resources/views/intranet/sales/receipt*.blade.php`.
+- [x] Sidebar desplegable **Caja y ventas** con hijos **Caja diaria**, **Ventas**, **Nueva venta**, **Movimientos**.
+- [x] Pruebas fase 12: `tests/Feature/Intranet/CashSalesManagementTest.php`.
+- [x] Ajustes Fase 12:
+  - buscador profesional de estudiante en nueva venta (código/nombres/apellidos/documento) con vista previa y apoderados vinculados;
+  - registro de venta corregido para `student_id`/`guardian_id` nullable y validación de pertenencia del apoderado;
+  - exportación de ventas por filtros a PDF y CSV compatible con Excel desde listado;
+  - corrección de hora local en formulario `datetime-local` y timezone de app por `APP_TIMEZONE`.
 
 ## Pendiente / siguientes fases (ROADMAP)
 
