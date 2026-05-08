@@ -105,3 +105,11 @@ Los escenarios Gherkin se ejecutan como documentación y criterio de aceptación
 | Feature | `tests/Feature/Intranet/CashSalesManagementTest.php` (Administrador y Secretaria abren caja; venta con/sin estudiante; venta con estudiante+apoderado; bloqueo por apoderado no vinculado; descuento y devolución de stock; export PDF/CSV; rechazo sin caja abierta; Docente sin acceso) |
 | BDD (Gherkin) | Pendiente de ampliar en siguiente iteración |
 | E2E (Cypress) | Pendiente de ampliar en siguiente iteración |
+
+**Fase 13 (asistencia académica)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Intranet/AttendanceManagementTest.php` (Administrador/Docente registran; Secretaria consulta; Estudiante/Apoderado sin acceso; no duplicidad por estudiante-fecha-sección; export PDF/CSV) |
+| BDD (Gherkin) | `tests/Bdd/features/attendance.feature` |
+| E2E (Cypress) | `cypress/e2e/attendance.cy.ts` (invitado redirigido al login en rutas de asistencia) |

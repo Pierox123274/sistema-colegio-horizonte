@@ -50,4 +50,12 @@ class Grade extends Model
     {
         return $this->hasMany(Section::class);
     }
+
+    /**
+     * @return HasMany<Attendance, $this>
+     */
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }

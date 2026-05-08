@@ -96,4 +96,12 @@ class Student extends Model
     {
         return $this->hasMany(Sale::class);
     }
+
+    /**
+     * @return HasMany<Attendance, $this>
+     */
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }

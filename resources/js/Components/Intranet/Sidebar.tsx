@@ -1,5 +1,5 @@
 import { intranetNavIcon } from '@/Components/Intranet/navIcons';
-import type { SidebarNavItem } from '@/types';
+import type { PageProps, SidebarNavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
     ChevronDown,
@@ -20,26 +20,60 @@ type SidebarProps = {
 
 const EMPTY_NAV_CHILDREN: SidebarNavItem[] = [];
 
+function routeNamesFor(item: SidebarNavItem): string[] {
+    if (item.active_routes && item.active_routes.length > 0) {
+        return item.active_routes;
+    }
+    return item.activeRoutes ?? [];
+}
+
+function matchesByCurrentRoute(item: SidebarNavItem, currentRoute: string | null): boolean {
+    if (!currentRoute) {
+        return false;
+    }
+
+    const routes = routeNamesFor(item);
+    if (routes.length === 0) {
+        return false;
+    }
+
+    return routes.some((routeName) => {
+        if (routeName.endsWith('.*')) {
+            return currentRoute.startsWith(routeName.slice(0, -1));
+        }
+
+        return routeName === currentRoute;
+    });
+}
+
 function NavRow({
     item,
     showLabels,
     currentPath,
+    currentRoute,
+    isChild = false,
     onNavigate,
 }: {
     item: SidebarNavItem;
     showLabels: boolean;
     currentPath: string;
+    currentRoute: string | null;
+    isChild?: boolean;
     onNavigate?: () => void;
 }) {
     const Icon = intranetNavIcon(item.icon);
     let isActive = false;
     if (!item.disabled && item.href) {
-        const itemPath = item.href.startsWith('http')
-            ? new URL(item.href).pathname
-            : item.href.split('?')[0];
-        isActive =
-            currentPath === itemPath ||
-            currentPath.startsWith(itemPath + '/');
+        if (matchesByCurrentRoute(item, currentRoute)) {
+            isActive = true;
+        } else if (!isChild) {
+            const itemPath = item.href.startsWith('http')
+                ? new URL(item.href).pathname
+                : item.href.split('?')[0];
+            isActive =
+                currentPath === itemPath ||
+                currentPath.startsWith(itemPath + '/');
+        }
     }
 
     const base =
@@ -97,58 +131,46 @@ function NavRow({
     );
 }
 
-function childPathFromHref(href: string): string {
-    return href.startsWith('http')
-        ? new URL(href).pathname
-        : href.split('?')[0];
-}
-
-/** True si la ruta actual coincide con el ítem o es subruta (misma lógica que NavRow). */
-function pathMatchesItem(currentPath: string, href: string | null): boolean {
-    if (!href) {
-        return false;
-    }
-    const itemPath = childPathFromHref(href);
-    return (
-        currentPath === itemPath || currentPath.startsWith(itemPath + '/')
-    );
-}
-
 function isPathInsideNavGroup(
-    currentPath: string,
+    currentRoute: string | null,
     children: SidebarNavItem[],
 ): boolean {
-    return children.some(
-        (c) => !c.disabled && c.href && pathMatchesItem(currentPath, c.href),
-    );
+    return children.some((c) => {
+        if (c.disabled || !c.href) {
+            return false;
+        }
+        return matchesByCurrentRoute(c, currentRoute);
+    });
 }
 
 function NavGroup({
     item,
     showLabels,
     currentPath,
+    currentRoute,
     onNavigate,
 }: {
     item: SidebarNavItem;
     showLabels: boolean;
     currentPath: string;
+    currentRoute: string | null;
     onNavigate?: () => void;
 }) {
     const Icon = intranetNavIcon(item.icon);
     const children = item.children ?? EMPTY_NAV_CHILDREN;
     const subPanelId = useId();
 
-    const insideGroup = isPathInsideNavGroup(currentPath, children);
+    const insideGroup = matchesByCurrentRoute(item, currentRoute) || isPathInsideNavGroup(currentRoute, children);
 
     const [expanded, setExpanded] = useState(() =>
-        isPathInsideNavGroup(currentPath, children),
+        isPathInsideNavGroup(currentRoute, children),
     );
 
     const prevInsideRef = useRef(insideGroup);
 
     useEffect(() => {
         const kids = item.children ?? EMPTY_NAV_CHILDREN;
-        const inside = isPathInsideNavGroup(currentPath, kids);
+        const inside = isPathInsideNavGroup(currentRoute, kids);
         if (inside && !prevInsideRef.current) {
             setExpanded(true);
         }
@@ -157,7 +179,7 @@ function NavGroup({
         }
         prevInsideRef.current = inside;
         // Solo al cambiar la URL: abrir al entrar al grupo y cerrar al salir (no pisar el toggle dentro del grupo).
-    }, [currentPath, item.children]);
+    }, [currentRoute, item.children]);
 
     const headerActive = insideGroup;
 
@@ -222,6 +244,8 @@ function NavGroup({
                                 item={child}
                                 showLabels={showLabels}
                                 currentPath={currentPath}
+                                currentRoute={currentRoute}
+                                isChild
                                 onNavigate={onNavigate}
                             />
                         ))}
@@ -240,8 +264,9 @@ export function Sidebar({
     onMobileClose,
     primaryRole,
 }: SidebarProps) {
-    const { url } = usePage();
+    const { url, props } = usePage<PageProps>();
     const currentPath = url.split('?')[0];
+    const currentRoute = props.current_route;
     const showLabels = !collapsed || mobileOpen;
 
     const asideWidth = collapsed && !mobileOpen ? 'lg:w-[4.5rem]' : 'lg:w-64';
@@ -302,6 +327,7 @@ export function Sidebar({
                             item={item}
                             showLabels={showLabels}
                             currentPath={currentPath}
+                            currentRoute={currentRoute}
                             onNavigate={onMobileClose}
                         />
                     ) : (
@@ -310,6 +336,7 @@ export function Sidebar({
                             item={item}
                             showLabels={showLabels}
                             currentPath={currentPath}
+                            currentRoute={currentRoute}
                             onNavigate={onMobileClose}
                         />
                     ),

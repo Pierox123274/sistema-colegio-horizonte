@@ -146,6 +146,23 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
   - validación `guardian_id` vinculado a `student_id` en request y service;
   - reportes de ventas filtrables con exportación PDF y CSV (compatible Excel) en rutas `intranet.sales.reports.export.*`.
 
+## Asistencia académica (Fase 13)
+
+- **Dominio**: `Attendance` asociado a estudiante, año académico, nivel, grado, sección y usuario registrador.
+- **Estados**: enum `AttendanceStatus` (`presente`, `tarde`, `falta`, `justificado`).
+- **Reglas clave**:
+  - unicidad por estudiante + fecha + sección;
+  - registro masivo solo para estudiantes matriculados en la sección/año seleccionados;
+  - edición posterior mediante actualización del registro existente (upsert).
+- **Entrega HTTP**: `AttendanceController`, request `StoreAttendanceBatchRequest`, servicio `AttendanceService`.
+- **Reportes**: exportación PDF (`dompdf`) y CSV compatible con Excel.
+- **Frontend Inertia**: `Pages/Intranet/Attendance/{Index,Create,StudentHistory}.tsx`.
+- **Autorización**:
+  - Administrador: total.
+  - Docente: registrar y consultar.
+  - Secretaria: solo consulta.
+  - Estudiante/Apoderado: sin acceso administrativo.
+
 ## Qué queda fuera de fases tempranas
 
 - Boleta térmica y PDF finales, inventario y ventas (roadmap); permisos más granulares por permiso Spatie si se requiere más allá de roles en rutas.

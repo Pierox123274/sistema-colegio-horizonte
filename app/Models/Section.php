@@ -50,4 +50,12 @@ class Section extends Model
     {
         return $this->hasMany(Classroom::class);
     }
+
+    /**
+     * @return HasMany<Attendance, $this>
+     */
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }

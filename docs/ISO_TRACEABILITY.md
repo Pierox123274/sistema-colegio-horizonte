@@ -132,6 +132,21 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | **ISO/IEC 29119** | 29119 | Evidencia de pruebas Feature para escenarios críticos |
 | Exportación de ventas diaria (PDF/Excel-compatible) | 9001, 25010 | `SaleController::exportPdf`, `SaleController::exportExcel`, `resources/views/intranet/sales/report-pdf.blade.php` |
 
+## Mapeo (Fase 13 — asistencia académica)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| **RF-03** Gestión académica (asistencia) | 9001, 25010 | `Attendance`, `AttendanceController`, `AttendanceService`, rutas `intranet.attendance.*`, páginas `Pages/Intranet/Attendance/*` |
+| **RF-16** Reportes | 9001, 25010 | Exportación `AttendanceController::exportPdf` y `AttendanceController::exportExcel`, vista `resources/views/intranet/attendance/report-pdf.blade.php` |
+| **RF-18** Seguridad (acceso por rol) | 27001, 25010 | `AttendancePolicy`, middleware de rutas (Administrador y Docente registran; Secretaria consulta; Estudiante/Apoderado sin acceso) |
+| **RNF-03** Seguridad avanzada | 27001 | Validación de pertenencia de estudiante a matrícula activa de sección/año en `StoreAttendanceBatchRequest` |
+| **RNF-09** Trazabilidad | 9001 | `recorded_by_user_id`, `attendance_date`, estado y observación por registro |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/Intranet/AttendanceManagementTest.php`, `tests/Bdd/features/attendance.feature`, `cypress/e2e/attendance.cy.ts` |
+| **ISO 9001** | 9001 | Requisito → implementación → evidencia de pruebas del módulo asistencia |
+| **ISO/IEC 27001** | 27001 | Control de acceso y validaciones de integridad con datos de matrícula |
+| **ISO/IEC 25010** | 25010 | Funcionalidad completa de registro/consulta/reportes y mantenibilidad por Services |
+| **ISO/IEC 29119** | 29119 | Cobertura Feature + BDD + E2E base para módulo asistencia |
+
 ## Mapeo inicial (Fase 1 — arquitectura base)
 
 | Requerimiento / objetivo (referencia) | ISO principal | Artefacto en el repo |

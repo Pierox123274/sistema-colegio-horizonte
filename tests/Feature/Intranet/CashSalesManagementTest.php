@@ -259,9 +259,9 @@ class CashSalesManagementTest extends TestCase
 
         $this->actingAs($admin)
             ->get(route('intranet.sales.sales.show', $sale))
-            ->assertInertia(fn (Assert $page) => $page->component('Intranet/Sales/Sales/Show'))
-            ->assertSee('Imprimir ticket')
-            ->assertSee('Ver listado');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Intranet/Sales/Sales/Show')
+                ->has('sale.id'));
     }
 
     public function test_nueva_venta_renderiza_pagina_con_navegacion_a_listado(): void

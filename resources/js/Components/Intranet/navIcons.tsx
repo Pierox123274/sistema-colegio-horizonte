@@ -12,6 +12,9 @@ import {
     PackageSearch,
     Package,
     ArrowLeftRight,
+    CalendarCheck,
+    ClipboardCheck,
+    FileBarChart,
     School,
     Settings,
     Receipt,
@@ -20,6 +23,7 @@ import {
     UserCircle,
     Users,
     Wallet,
+    UserCheck,
     type LucideIcon,
 } from 'lucide-react';
 
@@ -44,6 +48,10 @@ const NAV_ICONS: Record<string, LucideIcon> = {
     'folder-tree': FolderTree,
     'arrow-left-right': ArrowLeftRight,
     'shopping-cart': ShoppingCart,
+    'calendar-check': CalendarCheck,
+    'clipboard-check': ClipboardCheck,
+    'user-check': UserCheck,
+    'file-bar-chart': FileBarChart,
     'bar-chart-3': BarChart3,
     settings: Settings,
 };

@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 12** (caja diaria y ventas escolares) sobre las fases 1–11.
+Última actualización: **Fase 13** (asistencia académica) sobre las fases 1–12.
 
 ## Completado — Fase 1
 
@@ -143,6 +143,18 @@
   - registro de venta corregido para `student_id`/`guardian_id` nullable y validación de pertenencia del apoderado;
   - exportación de ventas por filtros a PDF y CSV compatible con Excel desde listado;
   - corrección de hora local en formulario `datetime-local` y timezone de app por `APP_TIMEZONE`.
+
+## Completado — Fase 13 (asistencia académica)
+
+- [x] Modelo y tabla `attendances` con trazabilidad completa (`recorded_by_user_id`) y unicidad por `student_id + attendance_date + section_id`.
+- [x] Enum `AttendanceStatus`: `presente`, `tarde`, `falta`, `justificado`.
+- [x] Backend: `AttendanceController`, `AttendanceService`, `StoreAttendanceBatchRequest`, `AttendancePolicy`.
+- [x] Registro masivo por sección y fecha con validación de estudiantes matriculados (integrado con matrículas/año académico).
+- [x] Consulta histórica por estudiante y listado filtrado por fecha, rango, sección, estudiante y estado.
+- [x] Métricas: porcentaje de asistencia, tardanzas, faltas y justificados.
+- [x] Exportación de asistencia en PDF y CSV compatible con Excel.
+- [x] Sidebar desplegable **Asistencia** con accesos a registrar, historial y reportes.
+- [x] Pruebas fase 13: `tests/Feature/Intranet/AttendanceManagementTest.php`, `tests/Bdd/features/attendance.feature`, `cypress/e2e/attendance.cy.ts`.
 
 ## Pendiente / siguientes fases (ROADMAP)
 

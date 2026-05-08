@@ -88,4 +88,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(CashMovement::class, 'created_by_user_id');
     }
+
+    /**
+     * @return HasMany<Attendance, $this>
+     */
+    public function attendancesRecorded(): HasMany
+    {
+        return $this->hasMany(Attendance::class, 'recorded_by_user_id');
+    }
 }

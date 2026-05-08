@@ -39,4 +39,12 @@ class EducationalLevel extends Model
     {
         return $this->hasMany(Grade::class)->orderBy('order');
     }
+
+    /**
+     * @return HasMany<Attendance, $this>
+     */
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }

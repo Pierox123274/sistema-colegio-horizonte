@@ -11,6 +11,8 @@ export interface SidebarNavItem {
     href: string | null;
     icon: string;
     disabled: boolean;
+    active_routes?: string[];
+    activeRoutes?: string[];
     children?: SidebarNavItem[];
 }
 
@@ -26,6 +28,7 @@ export type PageProps<
         user: User | null;
     };
     sidebarNav: SidebarNavItem[];
+    current_route: string | null;
     flash?: FlashMessages;
     /** Web pública (PublicSiteController) */
     canLogin?: boolean;

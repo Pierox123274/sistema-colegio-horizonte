@@ -6,6 +6,7 @@ use App\Http\Controllers\Academic\EducationalLevelController;
 use App\Http\Controllers\Academic\GradeController;
 use App\Http\Controllers\Academic\SectionController;
 use App\Http\Controllers\AcademicYearController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CashMovementController;
 use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\EnrollmentController;
@@ -139,6 +140,11 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
     Route::middleware(['role:Administrador|Secretaria|Docente'])->group(function () {
         Route::get('/intranet/enrollments', [EnrollmentController::class, 'index'])->name('intranet.enrollments.index');
         Route::get('/intranet/enrollments/{enrollment}', [EnrollmentController::class, 'show'])->name('intranet.enrollments.show');
+        Route::get('/intranet/attendance', [AttendanceController::class, 'index'])->name('intranet.attendance.index');
+        Route::get('/intranet/attendance/reports', [AttendanceController::class, 'reports'])->name('intranet.attendance.reports.index');
+        Route::get('/intranet/attendance/students/{student}', [AttendanceController::class, 'studentHistory'])->whereNumber('student')->name('intranet.attendance.students.show');
+        Route::get('/intranet/attendance/reports/export/pdf', [AttendanceController::class, 'exportPdf'])->name('intranet.attendance.reports.export.pdf');
+        Route::get('/intranet/attendance/reports/export/excel', [AttendanceController::class, 'exportExcel'])->name('intranet.attendance.reports.export.excel');
     });
 
     Route::middleware(['role:Administrador|Secretaria'])->group(function () {
@@ -210,6 +216,12 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
         Route::post('/intranet/sales/{sale}/cancel', [SaleController::class, 'cancel'])->whereNumber('sale')->name('intranet.sales.sales.cancel');
         Route::get('/intranet/sales/reports/export/pdf', [SaleController::class, 'exportPdf'])->name('intranet.sales.reports.export.pdf');
         Route::get('/intranet/sales/reports/export/excel', [SaleController::class, 'exportExcel'])->name('intranet.sales.reports.export.excel');
+    });
+
+    Route::middleware(['role:Administrador|Docente'])->group(function () {
+        Route::get('/intranet/attendance/create', [AttendanceController::class, 'create'])->name('intranet.attendance.create');
+        Route::get('/intranet/attendance/{date}/{section}', [AttendanceController::class, 'sectionDate'])->whereNumber('section')->name('intranet.attendance.section-date');
+        Route::post('/intranet/attendance', [AttendanceController::class, 'store'])->name('intranet.attendance.store');
     });
 
     Route::middleware(['role:Administrador'])->group(function () {
