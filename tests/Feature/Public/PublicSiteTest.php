@@ -3,6 +3,7 @@
 namespace Tests\Feature\Public;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -33,6 +34,6 @@ class PublicSiteTest extends TestCase
         $response = $this->get($path);
 
         $response->assertOk();
-        $response->assertSee($component, false);
+        $response->assertInertia(fn (Assert $page) => $page->component($component));
     }
 }

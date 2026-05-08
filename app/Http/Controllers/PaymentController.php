@@ -97,6 +97,7 @@ class PaymentController extends Controller
         if (! isset($data['status'])) {
             $data['status'] = PaymentEntryStatus::Registrado->value;
         }
+        $data['created_by_user_id'] = $request->user()?->id;
 
         $payment = $this->paymentService->create($data);
 
@@ -115,6 +116,7 @@ class PaymentController extends Controller
             'enrollment',
             'pension.paymentConcept',
             'paymentConcept',
+            'createdByUser:id,name',
         ]);
 
         return Inertia::render('Intranet/Payments/Show', [

@@ -72,6 +72,36 @@ export default function PaymentsShow() {
                     description="Detalle del cobro registrado."
                     actions={
                         <div className="flex flex-wrap gap-3">
+                            <a
+                                href={route('intranet.payments.receipt', payment.id)}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-sm font-semibold text-navy-900 underline-offset-2 hover:underline"
+                            >
+                                Ver comprobante
+                            </a>
+                            <a
+                                href={route(
+                                    'intranet.payments.receipt.pdf',
+                                    payment.id,
+                                )}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-sm font-semibold text-navy-900 underline-offset-2 hover:underline"
+                            >
+                                Descargar PDF
+                            </a>
+                            <a
+                                href={route(
+                                    'intranet.payments.receipt.ticket',
+                                    payment.id,
+                                )}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-sm font-semibold text-navy-900 underline-offset-2 hover:underline"
+                            >
+                                Imprimir ticket
+                            </a>
                             <Link
                                 href={route('intranet.payments.index')}
                                 className="text-sm font-semibold text-navy-900 underline-offset-2 hover:underline"

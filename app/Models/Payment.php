@@ -28,6 +28,7 @@ class Payment extends Model
         'payment_method',
         'paid_at',
         'status',
+        'created_by_user_id',
         'observations',
     ];
 
@@ -82,5 +83,13 @@ class Payment extends Model
     public function paymentConcept(): BelongsTo
     {
         return $this->belongsTo(PaymentConcept::class);
+    }
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function createdByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by_user_id');
     }
 }

@@ -5,6 +5,7 @@ namespace Tests\Feature\Intranet;
 use App\Enums\IntranetRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class IntranetDashboardUiTest extends TestCase
@@ -19,6 +20,6 @@ class IntranetDashboardUiTest extends TestCase
         $response = $this->actingAs($user)->get('/intranet/dashboard');
 
         $response->assertOk();
-        $response->assertSee('Intranet/Dashboard', false);
+        $response->assertInertia(fn (Assert $page) => $page->component('Intranet/Dashboard'));
     }
 }

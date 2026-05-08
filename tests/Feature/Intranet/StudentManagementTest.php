@@ -9,6 +9,7 @@ use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class StudentManagementTest extends TestCase
@@ -56,7 +57,7 @@ class StudentManagementTest extends TestCase
         $response = $this->actingAs($user)->get(route('intranet.students.index'));
 
         $response->assertOk();
-        $response->assertSee('Intranet/Students/Index', false);
+        $response->assertInertia(fn (Assert $page) => $page->component('Intranet/Students/Index'));
     }
 
     public function test_secretaria_puede_crear_estudiante(): void
@@ -187,7 +188,7 @@ class StudentManagementTest extends TestCase
         $response = $this->actingAs($user)->get(route('intranet.students.show', $student));
 
         $response->assertOk();
-        $response->assertSee('Intranet/Students/Show', false);
+        $response->assertInertia(fn (Assert $page) => $page->component('Intranet/Students/Show'));
     }
 
     public function test_detalle_estudiante_incluye_apoderados_vinculados(): void

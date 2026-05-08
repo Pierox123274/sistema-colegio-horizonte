@@ -7,6 +7,7 @@ use App\Models\EducationalLevel;
 use App\Models\Grade;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class AcademicStructureTest extends TestCase
@@ -66,7 +67,7 @@ class AcademicStructureTest extends TestCase
         $this->actingAs($secretaria)
             ->get(route('intranet.academic.levels.index'))
             ->assertOk()
-            ->assertSee('Intranet/Academic/Levels/Index', false);
+            ->assertInertia(fn (Assert $page) => $page->component('Intranet/Academic/Levels/Index'));
 
         $this->actingAs($secretaria)
             ->get(route('intranet.academic.levels.show', $level))

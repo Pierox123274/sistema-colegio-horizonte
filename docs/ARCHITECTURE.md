@@ -99,6 +99,19 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Frontend**: `Pages/Intranet/PaymentConcepts/*`, `Pages/Intranet/Pensions/*`, `Pages/Intranet/Payments/*`; submenú **Finanzas** en `IntranetNavigation` (mismo patrón que Gestión académica).
 - **Fuera de esta fase**: boleta térmica final, PDF de comprobante, inventario y ventas.
 
+## Finanzas — comprobantes PDF y boleta térmica (Fase 10)
+
+- **Entrega HTTP**: `PaymentReceiptController` expone tres endpoints para un pago existente: comprobante HTML, PDF descargable y ticket térmico (`/intranet/payments/{payment}/receipt`, `/pdf`, `/ticket`).
+- **Servicio**: `PaymentReceiptService` centraliza armado de datos del comprobante (numeración `REC-YYYYMMDD-######`, datos institucionales, payload QR demo, formato de fecha/hora).
+- **Persistencia**: pagos incorporan `created_by_user_id` para trazar el usuario que registró el cobro y mostrarlo en el comprobante.
+- **Renderizado**: vistas Blade dedicadas en `resources/views/intranet/payments/`:
+  - `receipt.blade.php` (comprobante profesional imprimible)
+  - `receipt-pdf.blade.php` (plantilla para DomPDF)
+  - `receipt-ticket.blade.php` (ticket térmico 58mm/80mm con `@media print`)
+- **Frontend Inertia**: el detalle de pago `Pages/Intranet/Payments/Show.tsx` agrega acciones de **Ver comprobante**, **Descargar PDF** e **Imprimir ticket** sin alterar el flujo de registro/anulación de pagos.
+- **Autorización**: se mantiene la matriz de finanzas actual (solo `Administrador` y `Secretaria` por middleware + `PaymentPolicy`).
+- **Dependencia**: generación PDF con `barryvdh/laravel-dompdf` (estable y compatible con Laravel 12).
+
 ## Qué queda fuera de fases tempranas
 
 - Boleta térmica y PDF finales, inventario y ventas (roadmap); permisos más granulares por permiso Spatie si se requiere más allá de roles en rutas.

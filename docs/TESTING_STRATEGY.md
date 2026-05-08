@@ -81,3 +81,11 @@ Los escenarios Gherkin se ejecutan como documentación y criterio de aceptación
 | Feature | `tests/Feature/Intranet/FinanceManagementTest.php` (alta de concepto; pensión y unicidad de periodo; pago con actualización de estado de pensión; rechazo por exceso de saldo; monto positivo; Docente/Estudiante/Apoderado sin acceso; código de concepto único) |
 | BDD (Gherkin) | `tests/Bdd/features/payments.feature` |
 | E2E (Cypress) | `cypress/e2e/payments.cy.ts` (invitado redirigido al login en `/intranet/payments`) |
+
+**Fase 10 (comprobantes PDF y ticket térmico)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Intranet/PaymentReceiptTest.php` (Administrador/Secretaria pueden ver comprobante; Docente prohibido; respuesta PDF; respuesta ticket) |
+| BDD (Gherkin) | `tests/Bdd/features/payment_receipts.feature` |
+| E2E (Cypress) | `cypress/e2e/payment-receipts.cy.ts` (invitado redirigido al login en rutas de comprobante, PDF y ticket) |

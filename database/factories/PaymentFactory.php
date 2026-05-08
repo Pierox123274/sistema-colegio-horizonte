@@ -30,6 +30,7 @@ class PaymentFactory extends Factory
             'payment_method' => PaymentMethod::Efectivo->value,
             'paid_at' => now(),
             'status' => PaymentEntryStatus::Registrado->value,
+            'created_by_user_id' => null,
             'observations' => null,
         ];
     }

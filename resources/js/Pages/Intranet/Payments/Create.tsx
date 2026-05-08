@@ -103,6 +103,10 @@ export default function PaymentsCreate() {
     const searchWrapRef = useRef<HTMLDivElement>(null);
 
     const guardianOptions = preview?.guardians ?? [];
+    const allowedPaymentMethods = useMemo(
+        () => new Set(catalog.methods.map((m) => m.value)),
+        [catalog.methods],
+    );
 
     useEffect(() => {
         const allowed = new Set(guardianOptions.map((g) => g.value));
@@ -211,23 +215,58 @@ export default function PaymentsCreate() {
 
     const onPensionChange = (pensionId: string) => {
         if (!pensionId) {
-            form.setData('pension_id', '');
+            form.setData((prev) => ({
+                ...prev,
+                pension_id: '',
+            }));
             return;
         }
         const row = summary?.pensions.find(
             (p) => String(p.id) === pensionId,
         );
         if (!row) {
-            form.setData('pension_id', pensionId);
+            form.setData((prev) => ({
+                ...prev,
+                pension_id: pensionId,
+            }));
             return;
         }
-        form.setData({
+        form.setData((prev) => ({
+            ...prev,
             pension_id: pensionId,
             enrollment_id: String(row.enrollment_id),
             payment_concept_id: String(row.payment_concept_id),
             amount: row.pending,
-        });
+        }));
     };
+
+    const canSubmit = useMemo(() => {
+        const studentId = form.data.student_id.trim();
+        const conceptId = form.data.payment_concept_id.trim();
+        const amount = Number.parseFloat(form.data.amount);
+        const hasValidAmount = Number.isFinite(amount) && amount > 0;
+        const paymentMethod = form.data.payment_method.trim();
+        const hasValidMethod = allowedPaymentMethods.has(paymentMethod);
+        const paidAt = form.data.paid_at.trim();
+        const hasValidPaidAt =
+            paidAt.length > 0 &&
+            !Number.isNaN(new Date(paidAt).getTime());
+
+        return (
+            studentId.length > 0 &&
+            conceptId.length > 0 &&
+            hasValidAmount &&
+            hasValidMethod &&
+            hasValidPaidAt
+        );
+    }, [
+        allowedPaymentMethods,
+        form.data.amount,
+        form.data.paid_at,
+        form.data.payment_concept_id,
+        form.data.payment_method,
+        form.data.student_id,
+    ]);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -650,8 +689,7 @@ export default function PaymentsCreate() {
                             <PrimaryButton
                                 disabled={
                                     form.processing ||
-                                    !form.data.student_id ||
-                                    !form.data.amount
+                                    !canSubmit
                                 }
                             >
                                 Registrar pago

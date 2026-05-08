@@ -10,6 +10,7 @@ use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\PaymentConceptController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymentReceiptController;
 use App\Http\Controllers\PensionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicSiteController;
@@ -164,6 +165,9 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
 
         Route::get('/intranet/payments', [PaymentController::class, 'index'])->name('intranet.payments.index');
         Route::get('/intranet/payments/{payment}', [PaymentController::class, 'show'])->name('intranet.payments.show');
+        Route::get('/intranet/payments/{payment}/receipt', [PaymentReceiptController::class, 'show'])->name('intranet.payments.receipt');
+        Route::get('/intranet/payments/{payment}/receipt/pdf', [PaymentReceiptController::class, 'pdf'])->name('intranet.payments.receipt.pdf');
+        Route::get('/intranet/payments/{payment}/receipt/ticket', [PaymentReceiptController::class, 'ticket'])->name('intranet.payments.receipt.ticket');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

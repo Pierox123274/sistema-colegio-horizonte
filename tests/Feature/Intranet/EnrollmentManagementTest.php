@@ -14,6 +14,7 @@ use App\Models\Section;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class EnrollmentManagementTest extends TestCase
@@ -119,12 +120,12 @@ class EnrollmentManagementTest extends TestCase
         $this->actingAs($docente)
             ->get(route('intranet.enrollments.index'))
             ->assertOk()
-            ->assertSee('Intranet/Enrollments/Index', false);
+            ->assertInertia(fn (Assert $page) => $page->component('Intranet/Enrollments/Index'));
 
         $this->actingAs($docente)
             ->get(route('intranet.enrollments.show', $enrollment))
             ->assertOk()
-            ->assertSee('Intranet/Enrollments/Show', false);
+            ->assertInertia(fn (Assert $page) => $page->component('Intranet/Enrollments/Show'));
 
         $this->actingAs($docente)
             ->get(route('intranet.enrollments.create'))

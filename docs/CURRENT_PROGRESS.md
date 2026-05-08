@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 9** (conceptos de pago, pensiones y pagos) sobre las fases 1–8.
+Última actualización: **Fase 10** (comprobantes PDF y boletas térmicas de pagos) sobre las fases 1–9.
 
 ## Completado — Fase 1
 
@@ -88,6 +88,23 @@
 - [x] UI Inertia: `Pages/Intranet/PaymentConcepts/*`, `Pages/Intranet/Pensions/*`, `Pages/Intranet/Payments/*` con filtros, badges y formulario de pago con búsqueda de estudiante y resumen de deuda; menú lateral **Finanzas** desplegable (`IntranetNavigation`).
 - [x] `PaymentConceptSeeder` opcional; factorías para los tres modelos.
 - [x] Pruebas `tests/Feature/Intranet/FinanceManagementTest.php`, `tests/Bdd/features/payments.feature`, `cypress/e2e/payments.cy.ts`.
+
+## Completado — Fase 10 (comprobantes de pago)
+
+- [x] Dependencia PDF instalada: `barryvdh/laravel-dompdf`.
+- [x] `PaymentReceiptController` + `PaymentReceiptService` para comprobante HTML, PDF y ticket térmico.
+- [x] Rutas creadas:
+  - `/intranet/payments/{payment}/receipt`
+  - `/intranet/payments/{payment}/receipt/pdf`
+  - `/intranet/payments/{payment}/receipt/ticket`
+- [x] Vistas Blade de comprobante en `resources/views/intranet/payments/`:
+  - `receipt.blade.php`
+  - `receipt-pdf.blade.php`
+  - `receipt-ticket.blade.php` (58mm/80mm, `@media print`).
+- [x] Datos institucionales configurables por `config/institution.php` (nombre, identificador demo, dirección demo, mensaje institucional y QR demo opcional).
+- [x] Trazabilidad de usuario registrador: `payments.created_by_user_id`.
+- [x] Botones en detalle de pago (`Pages/Intranet/Payments/Show.tsx`): Ver comprobante, Descargar PDF, Imprimir ticket.
+- [x] Pruebas fase 10: `tests/Feature/Intranet/PaymentReceiptTest.php`, `tests/Bdd/features/payment_receipts.feature`, `cypress/e2e/payment-receipts.cy.ts`.
 
 ## Pendiente / siguientes fases (ROADMAP)
 

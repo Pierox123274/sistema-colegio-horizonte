@@ -104,7 +104,7 @@ class PaymentService
                 $this->pensionService->refreshStatus($pension);
             }
 
-            return $payment->fresh(['student', 'guardian', 'enrollment', 'pension', 'paymentConcept']);
+            return $payment->fresh(['student', 'guardian', 'enrollment', 'pension', 'paymentConcept', 'createdByUser']);
         });
     }
 

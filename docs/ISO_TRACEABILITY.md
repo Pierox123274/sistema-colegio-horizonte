@@ -86,6 +86,22 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | **ISO/IEC 25010** | 25010 | Validaciones de negocio (saldo pendiente, duplicados) y UX de tablas/filtros |
 | **ISO/IEC 29119** | 29119 | Pruebas Feature + escenarios Gherkin + smoke E2E |
 
+## Mapeo (Fase 10 — comprobantes PDF y ticket térmico)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| **RF-09** Boletas térmicas | 9001, 25010 | Ruta `/intranet/payments/{payment}/receipt/ticket`, `PaymentReceiptController::ticket`, `resources/views/intranet/payments/receipt-ticket.blade.php` |
+| **RF-10** PDF | 9001, 25010 | Ruta `/intranet/payments/{payment}/receipt/pdf`, `PaymentReceiptController::pdf`, `resources/views/intranet/payments/receipt-pdf.blade.php`, `barryvdh/laravel-dompdf` |
+| **RF-08** Pagos (evidencia formal de cobro) | 9001, 25010 | `PaymentReceiptService`, `receipt.blade.php`, numeración de comprobante `REC-*`, botones en `Pages/Intranet/Payments/Show.tsx` |
+| **RF-18** Seguridad (control de acceso por rol) | 27001, 25010 | Middleware `role:Administrador|Secretaria` en rutas de comprobante + autorización `PaymentPolicy::view` |
+| **RNF-03** Seguridad avanzada | 27001 | Sin apertura a Docente/Estudiante/Apoderado; solo visualización de pago autorizado |
+| **RNF-09** Trazabilidad | 9001 | Campo `payments.created_by_user_id`, código de pago + número de comprobante + fecha/hora en comprobante |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/Intranet/PaymentReceiptTest.php`, `tests/Bdd/features/payment_receipts.feature`, `cypress/e2e/payment-receipts.cy.ts` |
+| **ISO 9001** | 9001 | Flujo requisito → implementación → evidencia documental (HTML/PDF/ticket) |
+| **ISO/IEC 27001** | 27001 | Restricción de acceso a datos financieros y comprobantes |
+| **ISO/IEC 25010** | 25010 | Usabilidad (acciones directas desde detalle), mantenibilidad (servicio dedicado), compatibilidad de impresión térmica |
+| **ISO/IEC 29119** | 29119 | Cobertura Feature, BDD y E2E base de rutas críticas |
+
 ## Mapeo inicial (Fase 1 — arquitectura base)
 
 | Requerimiento / objetivo (referencia) | ISO principal | Artefacto en el repo |
