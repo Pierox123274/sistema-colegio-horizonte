@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 17** (comunicados y notificaciones) sobre las fases 1–16.
+Última actualización: **Fase 18** (reportes y dashboard analítico) sobre las fases 1–17.
 
 ## Completado — Fase 1
 
@@ -209,9 +209,19 @@
 - [x] UI: componentes `Components/Announcements/*`, páginas admin/inbox/portales, `NotificationBell` en cabecera, panel `RecentAnnouncementsPanel` en dashboards.
 - [x] Pruebas: `tests/Feature/Announcements/AnnouncementManagementTest.php` (8 casos).
 
+## Completado — Fase 18 (reportes y dashboard analítico)
+
+- [x] Servicios `AnalyticsService`, `AcademicAnalyticsService`, `FinancialAnalyticsService`, `InventoryAnalyticsService` (reutilizan datos de módulos existentes).
+- [x] `AnalyticsPolicy` y marcador `AnalyticsDashboard`; rutas admin `intranet/analytics`, `intranet/reports/analytics/*`; docente `teacher/analytics`.
+- [x] Dashboard ejecutivo (académico, financiero, inventario/ventas, usuarios, comunicados) con permisos por rol.
+- [x] Portal docente analítico (secciones asignadas).
+- [x] Gráficos Recharts (barras, líneas, donut) + KPI cards + filtros año/fechas.
+- [x] Exportación PDF/CSV por subreporte.
+- [x] Pruebas `tests/Feature/Intranet/AnalyticsDashboardTest.php`, `tests/Bdd/features/analytics_dashboard.feature`, `cypress/e2e/analytics-dashboard.cy.ts`.
+
 ## Pendiente / siguientes fases (ROADMAP)
 
-- Boleta térmica y PDF de comprobante; inventario y ventas; reportes financieros ampliados; permisos granulares por módulo si aplica.
+- Boleta térmica y PDF de comprobante ampliados; permisos granulares por módulo si aplica.
 - Portal apoderado (rol Apoderado) si aplica en roadmap.
 
 ## Notas

@@ -41,6 +41,13 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Controladores delgados**: `TeacherDashboardController`, `TeacherAttendanceController`, `TeacherGradesController`, `TeacherStudentsController`, `TeacherReportsController` renderizan páginas Inertia dedicadas y delegan datos en **servicios y políticas ya existentes** (`StudentService`, `AttendancePolicy`, `GradeRecordPolicy`, etc.). El registro masivo de asistencia y notas sigue en las rutas `intranet.*` para no duplicar validación ni almacenamiento.
 - **Navegación**: `App\Support\TeacherNavigation` alimenta `teacherNav` en `HandleInertiaRequests`; el menú ERP (`IntranetNavigation`) incluye enlace **Portal docente** para los mismos roles.
 
+## Analítica y reportes (Fase 18)
+
+- **Servicios**: `AnalyticsService` (orquestación y permisos por rol), `AcademicAnalyticsService`, `FinancialAnalyticsService`, `InventoryAnalyticsService`; reutilizan `AcademicGradeService::metrics`, consultas sobre asistencia, pagos, pensiones, ventas e inventario.
+- **Autorización**: `AnalyticsPolicy` sobre `App\Support\AnalyticsDashboard` (admin total; secretaría académico/financiero; docente solo sus secciones vía `TeacherContextService`).
+- **Rutas**: `intranet/analytics`, `intranet/reports/analytics/{type}` (+ export PDF/CSV); `teacher/analytics`.
+- **Frontend**: `Components/Analytics/*` (KPI, filtros, gráficos Recharts), páginas `Intranet/Analytics`, `Intranet/Reports/Analytics`, `Teacher/Analytics`.
+
 ## Comunicados y notificaciones (Fase 17)
 
 - **Dominio**: `Announcement`, `AnnouncementRecipient`, `AnnouncementRead`; prioridad y audiencia por enum; ventana de publicación `starts_at` / `ends_at`; adjuntos en disco público `storage/app/public/announcements`.

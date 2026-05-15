@@ -15,6 +15,8 @@ use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\IntranetAnalyticsController;
+use App\Http\Controllers\IntranetAnalyticsReportsController;
 use App\Http\Controllers\IntranetAnnouncementInboxController;
 use App\Http\Controllers\InventoryMovementController;
 use App\Http\Controllers\PaymentConceptController;
@@ -35,6 +37,7 @@ use App\Http\Controllers\StudentGradesController;
 use App\Http\Controllers\StudentPaymentsController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\TeacherAnalyticsController;
 use App\Http\Controllers\TeacherAnnouncementController;
 use App\Http\Controllers\TeacherAssignmentController;
 use App\Http\Controllers\TeacherAssignmentsController;
@@ -107,6 +110,7 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/announcements', [TeacherAnnouncementController::class, 'index'])->name('announcements.index');
         Route::get('/announcements/{announcement}', [TeacherAnnouncementController::class, 'show'])->name('announcements.show');
         Route::post('/announcements/{announcement}/read', [TeacherAnnouncementController::class, 'markRead'])->name('announcements.read');
+        Route::get('/analytics', [TeacherAnalyticsController::class, 'index'])->name('analytics.index');
     });
 
     Route::middleware($intranetRoles)->prefix('intranet/announcements/inbox')->name('intranet.announcements.inbox.')->group(function () {
@@ -126,6 +130,17 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::delete('/{announcement}', [AnnouncementController::class, 'destroy'])->name('destroy');
         Route::post('/{announcement}/deactivate', [AnnouncementController::class, 'deactivate'])->name('deactivate');
         Route::post('/{announcement}/resend', [AnnouncementController::class, 'resend'])->name('resend');
+    });
+
+    Route::middleware(['role:Administrador|Secretaria'])->prefix('intranet/analytics')->name('intranet.analytics.')->group(function () {
+        Route::get('/', [IntranetAnalyticsController::class, 'index'])->name('index');
+    });
+
+    Route::middleware(['role:Administrador|Secretaria'])->prefix('intranet/reports/analytics')->name('intranet.reports.analytics.')->group(function () {
+        Route::get('/', [IntranetAnalyticsReportsController::class, 'index'])->name('index');
+        Route::get('/{type}/pdf', [IntranetAnalyticsReportsController::class, 'exportPdf'])->name('export.pdf');
+        Route::get('/{type}/csv', [IntranetAnalyticsReportsController::class, 'exportCsv'])->name('export.csv');
+        Route::get('/{type}', [IntranetAnalyticsReportsController::class, 'show'])->name('show');
     });
 
     Route::middleware(['role:Administrador|Secretaria|Docente'])->group(function () {

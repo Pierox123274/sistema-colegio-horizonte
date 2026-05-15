@@ -479,12 +479,44 @@ final class IntranetNavigation
                 'icon' => 'calendar-check',
                 'disabled' => true,
             ]]),
-            [
+            ...($user->hasAnyRole([
+                IntranetRole::Administrador->value,
+                IntranetRole::Secretaria->value,
+            ]) ? [[
+                'label' => 'Analítica',
+                'href' => route('intranet.analytics.index', absolute: false),
+                'icon' => 'bar-chart-3',
+                'disabled' => false,
+                'active_routes' => [
+                    'intranet.analytics.index',
+                    'intranet.reports.analytics.index',
+                    'intranet.reports.analytics.show',
+                ],
+                'children' => [
+                    [
+                        'label' => 'Dashboard ejecutivo',
+                        'href' => route('intranet.analytics.index', absolute: false),
+                        'icon' => 'layout-dashboard',
+                        'disabled' => false,
+                        'active_routes' => ['intranet.analytics.index'],
+                    ],
+                    [
+                        'label' => 'Reportes analíticos',
+                        'href' => route('intranet.reports.analytics.index', absolute: false),
+                        'icon' => 'file-bar-chart',
+                        'disabled' => false,
+                        'active_routes' => [
+                            'intranet.reports.analytics.index',
+                            'intranet.reports.analytics.show',
+                        ],
+                    ],
+                ],
+            ]] : [[
                 'label' => 'Reportes',
                 'href' => null,
                 'icon' => 'bar-chart-3',
                 'disabled' => true,
-            ],
+            ]]),
             [
                 'label' => 'Configuración',
                 'href' => null,

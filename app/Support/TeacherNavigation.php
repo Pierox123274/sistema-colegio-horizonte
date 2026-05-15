@@ -69,6 +69,13 @@ final class TeacherNavigation
                 'activeRoutes' => ['teacher.reports.index'],
             ],
             [
+                'label' => 'Analítica',
+                'href' => route('teacher.analytics.index', absolute: false),
+                'icon' => 'bar-chart-3',
+                'disabled' => false,
+                'activeRoutes' => ['teacher.analytics.index'],
+            ],
+            [
                 'label' => 'Comunicados',
                 'href' => route('teacher.announcements.index', absolute: false),
                 'icon' => 'megaphone',

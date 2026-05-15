@@ -175,6 +175,14 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | **ISO/IEC 25010** | 25010 | Usabilidad: interfaz simplificada y accesos rápidos |
 | **ISO/IEC 29119** | 29119 | Cobertura de autorización y páginas críticas del portal |
 
+## Mapeo (Fase 18 — analítica y reportes)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| Reportes y dashboards institucionales | 9001, 25010 | `AnalyticsService`, rutas `intranet.analytics.*`, `intranet.reports.analytics.*`, `teacher.analytics.*` |
+| **RF-18** Seguridad por rol | 27001, 25010 | `AnalyticsPolicy`; secretaría sin inventario; docente acotado a secciones |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/Intranet/AnalyticsDashboardTest.php`, BDD y Cypress de analítica |
+
 ## Mapeo (Fase 17 — comunicados)
 
 | Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
