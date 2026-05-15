@@ -175,6 +175,16 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | **ISO/IEC 25010** | 25010 | Usabilidad: interfaz simplificada y accesos rápidos |
 | **ISO/IEC 29119** | 29119 | Cobertura de autorización y páginas críticas del portal |
 
+## Mapeo (Fase 16 — portal estudiante)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| **RF-03** Consulta académica (experiencia estudiante) | 9001, 25010 | Rutas `student.*`, controladores `Student*Controller`, páginas `Pages/Student/*`, `StudentLayout` |
+| **RF-11** Pagos (consulta) | 9001 | `StudentPaymentsController` + `PaymentService::studentFinancialSummary` (solo lectura) |
+| **RF-18** Seguridad (acceso por rol) | 27001, 25010 | Middleware `role:Estudiante|Administrador`; `students.user_id`; estudiante solo ve su ficha |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/Student/StudentPortalTest.php` |
+| **ISO/IEC 27001** | 27001 | Sin exposición de módulos ERP de registro/edición; datos acotados al `student_id` resuelto |
+
 ## Mapeo (Fase 15.1 — usuarios y asignaciones docentes)
 
 | Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |

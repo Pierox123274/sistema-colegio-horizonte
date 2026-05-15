@@ -32,6 +32,8 @@ export type PageProps<
     intranetHomeHref?: string;
     /** Menú del portal docente; vacío si el rol no aplica. */
     teacherNav?: SidebarNavItem[];
+    /** Menú del portal estudiante; vacío si el rol no aplica. */
+    studentNav?: SidebarNavItem[];
     current_route: string | null;
     flash?: FlashMessages;
     /** Web pública (PublicSiteController) */

@@ -8,7 +8,7 @@ Este documento fija la arquitectura base del proyecto **Laravel 12 + Inertia + R
 2. **Orquestación fina**: los controladores delegan en **Actions** (un caso de uso por clase o por método explícito) y en **Services** cuando el flujo crece o se reutiliza entre puntos de entrada.
 3. **Modelos delgados**: Eloquent para persistencia y relaciones; reglas complejas o transacciones multi-modelo preferentemente fuera del modelo (Services/Actions).
 4. **DTOs en los bordes**: objetos de transferencia para agrupar datos entre capas (respuestas a Inertia, integraciones externas) cuando un array suelto dificulta el mantenimiento.
-5. **Frontend por contexto**: páginas públicas bajo `Pages/Public`, intranet bajo `Pages/Intranet`, portal docente bajo `Pages/Teacher`; componentes y layouts compartidos en `Components` y `Layouts`.
+5. **Frontend por contexto**: páginas públicas bajo `Pages/Public`, intranet bajo `Pages/Intranet`, portal docente bajo `Pages/Teacher`, portal estudiante bajo `Pages/Student`; componentes y layouts compartidos en `Components` y `Layouts`.
 
 ## Estructura backend (`app/`)
 
@@ -41,6 +41,13 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Controladores delgados**: `TeacherDashboardController`, `TeacherAttendanceController`, `TeacherGradesController`, `TeacherStudentsController`, `TeacherReportsController` renderizan páginas Inertia dedicadas y delegan datos en **servicios y políticas ya existentes** (`StudentService`, `AttendancePolicy`, `GradeRecordPolicy`, etc.). El registro masivo de asistencia y notas sigue en las rutas `intranet.*` para no duplicar validación ni almacenamiento.
 - **Navegación**: `App\Support\TeacherNavigation` alimenta `teacherNav` en `HandleInertiaRequests`; el menú ERP (`IntranetNavigation`) incluye enlace **Portal docente** para los mismos roles.
 
+## Portal estudiante (Fase 16)
+
+- **Rutas HTTP**: prefijo `/student` con middleware `auth`, `verified` y `role:Estudiante|Administrador` (Docente, Secretaria y Apoderado no entran).
+- **Vinculación cuenta ↔ ficha**: columna `students.user_id` (nullable, único); `StudentContextService::resolveStudentFor()` y `requireStudentFor()` para el rol Estudiante.
+- **Controladores delgados**: `StudentDashboardController`, `StudentGradesController`, `StudentAttendanceController`, `StudentPaymentsController`, `StudentProfileController`; solo lectura; reutilizan `AcademicGradeService`, `AttendanceService` y `PaymentService`.
+- **Navegación**: `App\Support\StudentNavigation` → prop `studentNav` en `HandleInertiaRequests`; redirección post-login y desde `/intranet/dashboard` vía `AuthRedirect` (estudiante sin administración).
+
 ## Administración de usuarios y carga docente (Fase 15.1)
 
 - **Dominio**: `TeacherAssignment` (docente, año, nivel, grado, sección, curso opcional, tutor de aula, activo); `users.is_active`.
@@ -56,8 +63,9 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 | `Pages/Public` | Web institucional: `Public/Home`, `Public/Nosotros`, etc. Rutas en `PublicSiteController`; layout `PublicLayout`; componentes en `Components/Public/`. |
 | `Pages/Intranet` | Área autenticada (dashboard, módulos operativos). |
 | `Pages/Teacher` | Portal docente (Fase 15): dashboard y accesos académicos simplificados; layout `TeacherLayout`. |
+| `Pages/Student` | Portal estudiante (Fase 16): notas, asistencia, pagos y perfil; layout `StudentLayout`. |
 | `Pages/Auth`, `Pages/Profile` | Breeze; el perfil usa el layout de intranet (`IntranetLayout`) para coherencia con el área autenticada. |
-| `Layouts` | `PublicLayout` (web pública: navbar + footer). `IntranetLayout` (intranet). `TeacherLayout` (portal docente). `GuestLayout` / `AuthenticatedLayout` (Breeze). |
+| `Layouts` | `PublicLayout` (web pública: navbar + footer). `IntranetLayout` (intranet). `TeacherLayout` (portal docente). `StudentLayout` (portal estudiante). `GuestLayout` / `AuthenticatedLayout` (Breeze). |
 | `Components` | `Components/Public/` (navbar, secciones landing, footer). `Components/Intranet/` (shell y widgets intranet). |
 | `types` | Tipos compartidos TypeScript (`User`, `PageProps`, props por página). |
 

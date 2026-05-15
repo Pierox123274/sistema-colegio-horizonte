@@ -25,7 +25,12 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SaleReceiptController;
+use App\Http\Controllers\StudentAttendanceController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentDashboardController;
+use App\Http\Controllers\StudentGradesController;
+use App\Http\Controllers\StudentPaymentsController;
+use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherAssignmentController;
 use App\Http\Controllers\TeacherAssignmentsController;
@@ -57,8 +62,23 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
             return redirect()->route('teacher.dashboard');
         }
 
+        if ($user !== null
+            && $user->hasRole(IntranetRole::Estudiante->value)
+            && ! $user->hasRole(IntranetRole::Administrador->value)
+        ) {
+            return redirect()->route('student.dashboard');
+        }
+
         return Inertia::render('Intranet/Dashboard');
     })->name('dashboard');
+
+    Route::middleware(['role:Estudiante|Administrador'])->prefix('student')->name('student.')->group(function () {
+        Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/grades', [StudentGradesController::class, 'index'])->name('grades.index');
+        Route::get('/attendance', [StudentAttendanceController::class, 'index'])->name('attendance.index');
+        Route::get('/payments', [StudentPaymentsController::class, 'index'])->name('payments.index');
+        Route::get('/profile', [StudentProfileController::class, 'show'])->name('profile.show');
+    });
 
     Route::middleware(['role:Docente|Administrador'])->prefix('teacher')->name('teacher.')->group(function () {
         Route::get('/dashboard', [TeacherDashboardController::class, 'index'])->name('dashboard');

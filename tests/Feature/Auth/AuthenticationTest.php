@@ -3,6 +3,7 @@
 namespace Tests\Feature\Auth;
 
 use App\Enums\IntranetRole;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -21,6 +22,7 @@ class AuthenticationTest extends TestCase
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
         $user = User::factory()->create();
+        $user->syncRoles([IntranetRole::Secretaria->value]);
 
         $response = $this->post('/login', [
             'email' => $user->email,
@@ -29,6 +31,21 @@ class AuthenticationTest extends TestCase
 
         $this->assertAuthenticated();
         $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
+    public function test_estudiante_login_redirige_al_portal_estudiante(): void
+    {
+        $user = User::factory()->create();
+        $user->syncRoles([IntranetRole::Estudiante->value]);
+        Student::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('student.dashboard', absolute: false));
     }
 
     public function test_docente_login_redirige_al_portal_docente(): void

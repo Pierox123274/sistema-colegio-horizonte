@@ -46,6 +46,13 @@ Fase 2 añade pruebas de intranet y roles (`tests/Feature/Intranet`, ampliacione
 |------|-----------|
 | Feature | `tests/Feature/Intranet/AdminUserAndTeacherAssignmentTest.php` (alta usuario docente/secretaría, prohibición secretaría en admin, asignación docente y filtrado de estudiantes, usuario inactivo no inicia sesión) |
 
+**Fase 16 (portal estudiante)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Student/StudentPortalTest.php` (estudiante con ficha vinculada; solo sus notas; login y redirección; prohibición docente/apoderado/secretaría; administrador supervisión) |
+| Feature | Ajustes en `tests/Feature/Auth/AuthenticationTest.php` e `Intranet/IntranetAuthorizationTest.php` (redirección estudiante) |
+
 **Fase 15 (portal docente)** incluye:
 
 | Capa | Artefacto |

@@ -11,7 +11,7 @@ final class AuthRedirect
      * Ruta de destino tras autenticación según rol (Spatie).
      *
      * Prioridad: Administrador → intranet; Docente (sin administración) → portal docente;
-     * resto de roles intranet hasta existan dashboards dedicados.
+     * Estudiante (sin administración) → portal estudiante; resto → intranet.
      */
     public static function redirectPathForUser(User $user): string
     {
@@ -21,6 +21,10 @@ final class AuthRedirect
 
         if ($user->hasRole(IntranetRole::Docente->value)) {
             return route('teacher.dashboard', absolute: false);
+        }
+
+        if ($user->hasRole(IntranetRole::Estudiante->value)) {
+            return route('student.dashboard', absolute: false);
         }
 
         return route('dashboard', absolute: false);

@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Support\IntranetNavigation;
+use App\Support\StudentNavigation;
 use App\Support\TeacherNavigation;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -47,6 +48,7 @@ class HandleInertiaRequests extends Middleware
             'sidebarNav' => IntranetNavigation::items($user),
             'intranetHomeHref' => IntranetNavigation::sidebarHomeHref($user),
             'teacherNav' => TeacherNavigation::items($user),
+            'studentNav' => StudentNavigation::items($user),
             'current_route' => fn () => $request->route()?->getName(),
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),

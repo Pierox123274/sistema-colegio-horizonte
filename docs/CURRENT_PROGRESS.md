@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 15.1** (usuarios y asignaciones docentes) sobre las fases 1–15.
+Última actualización: **Fase 16** (portal estudiante) sobre las fases 1–15.1.
 
 ## Completado — Fase 1
 
@@ -191,9 +191,19 @@
 - [x] Sidebar en gestión académica: Cursos, Evaluaciones, Registro de notas, Historial académico, Reportes académicos.
 - [x] Pruebas fase 14: `tests/Feature/Intranet/AcademicGradesManagementTest.php`, `tests/Bdd/features/academic_grades.feature`, `cypress/e2e/academic-grades.cy.ts`.
 
+## Completado — Fase 16 (portal estudiante)
+
+- [x] Vinculación `students.user_id` (nullable, único) y relaciones `User` ↔ `Student`.
+- [x] Rutas `/student/dashboard`, `/student/grades`, `/student/attendance`, `/student/payments`, `/student/profile` con middleware `role:Estudiante|Administrador`.
+- [x] `StudentContextService`, `StudentNavigation`, controladores `Student*Controller`, `StudentLayout` y páginas `Pages/Student/**` (solo lectura).
+- [x] Redirección post-login y desde `/intranet/dashboard` para estudiante sin administración → portal estudiante (`AuthRedirect`).
+- [x] Seeder demo `StudentPortalDemoSeeder` (`estudiante@demo.com` / `password`).
+- [x] Pruebas: `tests/Feature/Student/StudentPortalTest.php`; ajustes en `AuthenticationTest` e `IntranetAuthorizationTest`.
+
 ## Pendiente / siguientes fases (ROADMAP)
 
 - Boleta térmica y PDF de comprobante; inventario y ventas; reportes financieros ampliados; permisos granulares por módulo si aplica.
+- Portal apoderado (rol Apoderado) si aplica en roadmap.
 
 ## Notas
 

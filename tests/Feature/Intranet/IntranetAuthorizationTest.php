@@ -3,6 +3,7 @@
 namespace Tests\Feature\Intranet;
 
 use App\Enums\IntranetRole;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -50,6 +51,17 @@ class IntranetAuthorizationTest extends TestCase
         $response->assertOk();
     }
 
+    public function test_estudiante_sin_administrador_es_redirigido_desde_intranet_dashboard_al_portal_estudiante(): void
+    {
+        $user = User::factory()->create();
+        $user->syncRoles([IntranetRole::Estudiante->value]);
+        Student::factory()->create(['user_id' => $user->id]);
+
+        $this->actingAs($user)
+            ->get('/intranet/dashboard')
+            ->assertRedirect(route('student.dashboard', absolute: false));
+    }
+
     public function test_docente_sin_administrador_es_redirigido_desde_intranet_dashboard_al_portal_docente(): void
     {
         $user = User::factory()->create();
@@ -79,7 +91,6 @@ class IntranetAuthorizationTest extends TestCase
         return [
             'administrador' => [IntranetRole::Administrador->value],
             'secretaria' => [IntranetRole::Secretaria->value],
-            'estudiante' => [IntranetRole::Estudiante->value],
             'apoderado' => [IntranetRole::Apoderado->value],
         ];
     }
