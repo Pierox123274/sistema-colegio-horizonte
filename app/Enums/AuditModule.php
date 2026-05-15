@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Enums;
+
+enum AuditModule: string
+{
+    case Auth = 'auth';
+    case Security = 'security';
+    case Students = 'students';
+    case Guardians = 'guardians';
+    case Academic = 'academic';
+    case Enrollment = 'enrollment';
+    case Finance = 'finance';
+    case Inventory = 'inventory';
+    case Sales = 'sales';
+    case Attendance = 'attendance';
+    case Grades = 'grades';
+    case Announcements = 'announcements';
+    case Analytics = 'analytics';
+    case Users = 'users';
+
+    /**
+     * @return list<array{value: string, label: string}>
+     */
+    public static function options(): array
+    {
+        return [
+            ['value' => self::Auth->value, 'label' => 'Autenticación'],
+            ['value' => self::Security->value, 'label' => 'Seguridad'],
+            ['value' => self::Students->value, 'label' => 'Estudiantes'],
+            ['value' => self::Guardians->value, 'label' => 'Apoderados'],
+            ['value' => self::Academic->value, 'label' => 'Académico'],
+            ['value' => self::Enrollment->value, 'label' => 'Matrículas'],
+            ['value' => self::Finance->value, 'label' => 'Finanzas'],
+            ['value' => self::Inventory->value, 'label' => 'Inventario'],
+            ['value' => self::Sales->value, 'label' => 'Ventas'],
+            ['value' => self::Attendance->value, 'label' => 'Asistencia'],
+            ['value' => self::Grades->value, 'label' => 'Notas'],
+            ['value' => self::Announcements->value, 'label' => 'Comunicados'],
+            ['value' => self::Analytics->value, 'label' => 'Analítica'],
+            ['value' => self::Users->value, 'label' => 'Usuarios'],
+        ];
+    }
+}

@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AuditAction;
+use App\Enums\AuditModule;
 use App\Models\User;
 use App\Services\AnalyticsService;
+use App\Services\AuditService;
 use App\Support\AnalyticsDashboard;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -15,7 +18,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class IntranetAnalyticsReportsController extends Controller
 {
     public function __construct(
-        private readonly AnalyticsService $analytics
+        private readonly AnalyticsService $analytics,
+        private readonly AuditService $audit,
     ) {}
 
     public function index(Request $request): Response
@@ -67,6 +71,14 @@ class IntranetAnalyticsReportsController extends Controller
             'generated_at' => now()->translatedFormat('d/m/Y H:i'),
         ]);
 
+        $this->audit->log(
+            AuditAction::Export,
+            AuditModule::Analytics,
+            $user,
+            description: 'Exportación PDF: '.$type,
+            request: $request,
+        );
+
         return $pdf->download('reporte-'.$type.'-'.now()->format('Ymd-His').'.pdf');
     }
 
@@ -80,6 +92,14 @@ class IntranetAnalyticsReportsController extends Controller
 
         $filters = $this->analytics->normalizeFilters($request->all());
         $report = $this->analytics->reportPayload($user, $type, $filters);
+
+        $this->audit->log(
+            AuditAction::Export,
+            AuditModule::Analytics,
+            $user,
+            description: 'Exportación CSV: '.$type,
+            request: $request,
+        );
 
         return response()->streamDownload(function () use ($report, $type): void {
             $out = fopen('php://output', 'w');

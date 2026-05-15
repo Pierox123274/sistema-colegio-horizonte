@@ -2,16 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AuditAction;
+use App\Enums\AuditModule;
+use App\Enums\AuditSeverity;
 use App\Enums\IntranetRole;
 use App\Http\Requests\Intranet\StoreIntranetUserRequest;
 use App\Http\Requests\Intranet\UpdateIntranetUserRequest;
 use App\Models\User;
+use App\Services\AuditService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class AdminUserController extends Controller
 {
+    public function __construct(
+        private readonly AuditService $audit,
+    ) {}
+
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', User::class);
@@ -69,6 +77,18 @@ class AdminUserController extends Controller
         $user = User::query()->create($data);
         $user->syncRoles([$role]);
 
+        $this->audit->log(
+            AuditAction::Create,
+            AuditModule::Users,
+            $request->user(),
+            User::class,
+            $user->id,
+            description: 'Usuario creado',
+            newValues: ['email' => $user->email, 'role' => $role],
+            severity: AuditSeverity::Info,
+            request: $request,
+        );
+
         return redirect()
             ->route('intranet.admin.users.index')
             ->with('success', 'Usuario creado correctamente.');
@@ -107,8 +127,39 @@ class AdminUserController extends Controller
             unset($data['password']);
         }
 
+        $user->load('roles');
+        $previousRole = $user->roles->first()?->name;
+
         $user->update($data);
         $user->syncRoles([$role]);
+
+        $this->audit->log(
+            AuditAction::Update,
+            AuditModule::Users,
+            $request->user(),
+            User::class,
+            $user->id,
+            description: 'Usuario actualizado',
+            oldValues: ['role' => $previousRole],
+            newValues: ['role' => $role],
+            severity: AuditSeverity::Info,
+            request: $request,
+        );
+
+        if ($previousRole !== $role) {
+            $this->audit->log(
+                AuditAction::RoleChange,
+                AuditModule::Users,
+                $request->user(),
+                User::class,
+                $user->id,
+                description: 'Cambio de rol de usuario',
+                oldValues: ['role' => $previousRole],
+                newValues: ['role' => $role],
+                severity: AuditSeverity::Warning,
+                request: $request,
+            );
+        }
 
         return redirect()
             ->route('intranet.admin.users.index')

@@ -482,6 +482,49 @@ final class IntranetNavigation
             ...($user->hasAnyRole([
                 IntranetRole::Administrador->value,
                 IntranetRole::Secretaria->value,
+                IntranetRole::Docente->value,
+            ]) ? [[
+                'label' => 'Seguridad y auditoría',
+                'href' => null,
+                'icon' => 'shield-check',
+                'disabled' => false,
+                'children' => array_values(array_filter([
+                    [
+                        'label' => 'Auditoría',
+                        'href' => route('intranet.security.audit-logs.index', absolute: false),
+                        'icon' => 'scroll-text',
+                        'disabled' => false,
+                        'activeRoutes' => ['intranet.security.audit-logs.index'],
+                    ],
+                    $user->hasAnyRole([
+                        IntranetRole::Administrador->value,
+                        IntranetRole::Secretaria->value,
+                    ]) ? [
+                        'label' => 'Accesos recientes',
+                        'href' => route('intranet.security.access-monitor.index', absolute: false),
+                        'icon' => 'activity',
+                        'disabled' => false,
+                        'activeRoutes' => ['intranet.security.access-monitor.index'],
+                    ] : null,
+                    $user->hasRole(IntranetRole::Administrador->value) ? [
+                        'label' => 'Sesiones activas',
+                        'href' => route('intranet.security.sessions.index', absolute: false),
+                        'icon' => 'monitor-smartphone',
+                        'disabled' => false,
+                        'activeRoutes' => ['intranet.security.sessions.index'],
+                    ] : null,
+                    $user->hasRole(IntranetRole::Administrador->value) ? [
+                        'label' => 'Intentos fallidos',
+                        'href' => route('intranet.security.login-attempts.index', absolute: false),
+                        'icon' => 'shield-alert',
+                        'disabled' => false,
+                        'activeRoutes' => ['intranet.security.login-attempts.index'],
+                    ] : null,
+                ])),
+            ]] : []),
+            ...($user->hasAnyRole([
+                IntranetRole::Administrador->value,
+                IntranetRole::Secretaria->value,
             ]) ? [[
                 'label' => 'Analítica',
                 'href' => route('intranet.analytics.index', absolute: false),

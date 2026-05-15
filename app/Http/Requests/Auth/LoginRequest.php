@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use App\Models\User;
+use App\Services\SecurityService;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -41,10 +42,15 @@ class LoginRequest extends FormRequest
      */
     public function authenticate(): void
     {
+        $email = (string) $this->string('email');
+        $security = app(SecurityService::class);
+
+        $security->ensureLoginNotLocked($email, $this);
         $this->ensureIsNotRateLimited();
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
+            $security->recordLoginAttempt($email, false, 'invalid_credentials', null, $this);
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
@@ -54,10 +60,15 @@ class LoginRequest extends FormRequest
         $authUser = Auth::user();
         if ($authUser instanceof User && ! $authUser->is_active) {
             Auth::logout();
+            $security->recordLoginAttempt($email, false, 'inactive_account', $authUser, $this);
 
             throw ValidationException::withMessages([
                 'email' => 'Su cuenta está inactiva. Comuníquese con administración.',
             ]);
+        }
+
+        if ($authUser instanceof User) {
+            $security->recordLoginAttempt($email, true, null, $authUser, $this);
         }
 
         RateLimiter::clear($this->throttleKey());
@@ -70,7 +81,9 @@ class LoginRequest extends FormRequest
      */
     public function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        $max = config('security.login_max_attempts', 5);
+
+        if (! RateLimiter::tooManyAttempts($this->throttleKey(), $max)) {
             return;
         }
 

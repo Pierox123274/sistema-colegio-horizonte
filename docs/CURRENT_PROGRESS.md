@@ -219,6 +219,17 @@
 - [x] Exportación PDF/CSV por subreporte.
 - [x] Pruebas `tests/Feature/Intranet/AnalyticsDashboardTest.php`, `tests/Bdd/features/analytics_dashboard.feature`, `cypress/e2e/analytics-dashboard.cy.ts`.
 
+## Completado — Fase 19 (seguridad avanzada, auditoría e ISO)
+
+- [x] Tablas `audit_logs`, `login_attempts`, `user_sessions`; enums `AuditAction`, `AuditModule`, `AuditResult`, `AuditSeverity`; `config/security.php`.
+- [x] Servicios `AuditService`, `SecurityService`, `SessionSecurityService`.
+- [x] Middleware `LogUserActivity`, `VerifyActiveSession`, `PreventSuspiciousAccess` (registro global en `bootstrap/app.php`).
+- [x] Integración auth: intentos de login, bloqueo temporal, auditoría login/logout, registro de sesión, invalidación al cambiar contraseña.
+- [x] `SecurityPolicy` + marcador `SecurityDashboard`; rutas `intranet/security/*` (auditoría, sesiones, intentos, monitoreo).
+- [x] UI Inertia `Pages/Intranet/Security/*`, componentes `Components/Security/*`, menú **Seguridad y auditoría** en `IntranetNavigation`.
+- [x] Auditoría explícita en usuarios admin y exportaciones analíticas; trazabilidad ISO (quién, cuándo, desde dónde, qué cambió).
+- [x] Pruebas `tests/Feature/Security/AuditSecurityTest.php`, `tests/Bdd/features/security_audit.feature`, `cypress/e2e/security-audit.cy.ts`.
+
 ## Pendiente / siguientes fases (ROADMAP)
 
 - Boleta térmica y PDF de comprobante ampliados; permisos granulares por módulo si aplica.

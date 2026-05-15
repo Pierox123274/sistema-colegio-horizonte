@@ -175,6 +175,17 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | **ISO/IEC 25010** | 25010 | Usabilidad: interfaz simplificada y accesos rápidos |
 | **ISO/IEC 29119** | 29119 | Cobertura de autorización y páginas críticas del portal |
 
+## Mapeo (Fase 19 — seguridad y auditoría)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| Trazabilidad institucional (quién, cuándo, dónde, qué) | 27001, 9001 | `audit_logs`, `AuditService`, middleware `LogUserActivity` |
+| Control de accesos y sesiones | 27001, 25010 | `user_sessions`, `SessionSecurityService`, `VerifyActiveSession` |
+| Protección ante fuerza bruta | 27001 | `login_attempts`, `SecurityService::ensureLoginNotLocked`, `config/security.php` |
+| Evidencia para auditoría ISO | 9001, 29119 | UI `intranet/security/*`, exportes auditados, `AuditSecurityTest` |
+| **RF-18** Seguridad por rol | 27001 | `SecurityPolicy`; secretaría sin módulos sensibles; docente historial propio |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/Security/AuditSecurityTest.php`, BDD y Cypress de seguridad |
+
 ## Mapeo (Fase 18 — analítica y reportes)
 
 | Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |

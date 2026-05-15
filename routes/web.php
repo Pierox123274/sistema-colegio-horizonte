@@ -18,6 +18,7 @@ use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\IntranetAnalyticsController;
 use App\Http\Controllers\IntranetAnalyticsReportsController;
 use App\Http\Controllers\IntranetAnnouncementInboxController;
+use App\Http\Controllers\IntranetSecurityController;
 use App\Http\Controllers\InventoryMovementController;
 use App\Http\Controllers\PaymentConceptController;
 use App\Http\Controllers\PaymentController;
@@ -141,6 +142,21 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/{type}/pdf', [IntranetAnalyticsReportsController::class, 'exportPdf'])->name('export.pdf');
         Route::get('/{type}/csv', [IntranetAnalyticsReportsController::class, 'exportCsv'])->name('export.csv');
         Route::get('/{type}', [IntranetAnalyticsReportsController::class, 'show'])->name('show');
+    });
+
+    Route::middleware(['role:Administrador|Secretaria|Docente'])->prefix('intranet/security')->name('intranet.security.')->group(function () {
+        Route::get('/audit-logs', [IntranetSecurityController::class, 'auditLogs'])->name('audit-logs.index');
+        Route::post('/sessions/revoke-others', [IntranetSecurityController::class, 'revokeOtherSessions'])->name('sessions.revoke-others');
+    });
+
+    Route::middleware(['role:Administrador|Secretaria'])->prefix('intranet/security')->name('intranet.security.')->group(function () {
+        Route::get('/access-monitor', [IntranetSecurityController::class, 'accessMonitor'])->name('access-monitor.index');
+    });
+
+    Route::middleware(['role:Administrador'])->prefix('intranet/security')->name('intranet.security.')->group(function () {
+        Route::get('/sessions', [IntranetSecurityController::class, 'sessions'])->name('sessions.index');
+        Route::get('/login-attempts', [IntranetSecurityController::class, 'loginAttempts'])->name('login-attempts.index');
+        Route::post('/sessions/{userSession}/revoke', [IntranetSecurityController::class, 'revokeSession'])->name('sessions.revoke');
     });
 
     Route::middleware(['role:Administrador|Secretaria|Docente'])->group(function () {

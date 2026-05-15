@@ -41,6 +41,16 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Controladores delgados**: `TeacherDashboardController`, `TeacherAttendanceController`, `TeacherGradesController`, `TeacherStudentsController`, `TeacherReportsController` renderizan páginas Inertia dedicadas y delegan datos en **servicios y políticas ya existentes** (`StudentService`, `AttendancePolicy`, `GradeRecordPolicy`, etc.). El registro masivo de asistencia y notas sigue en las rutas `intranet.*` para no duplicar validación ni almacenamiento.
 - **Navegación**: `App\Support\TeacherNavigation` alimenta `teacherNav` en `HandleInertiaRequests`; el menú ERP (`IntranetNavigation`) incluye enlace **Portal docente** para los mismos roles.
 
+## Seguridad, auditoría e ISO (Fase 19)
+
+- **Persistencia**: `audit_logs` (acción, módulo, entidad, IP, user agent, old/new values, severidad), `login_attempts`, `user_sessions` (dispositivo, expiración, bandera sospechosa).
+- **Servicios**: `AuditService` (registro y consulta con filtros por rol), `SecurityService` (intentos, bloqueo, IPs sospechosas), `SessionSecurityService` (registro, expiración, revocación).
+- **Middleware global (web)**: `PreventSuspiciousAccess`, `VerifyActiveSession`, `LogUserActivity` (mutaciones POST/PUT/PATCH/DELETE).
+- **Autorización**: `SecurityPolicy` sobre `App\Support\SecurityDashboard` (admin total; secretaría lectura acotada; docente solo su historial; estudiante/apoderado sin acceso).
+- **Rutas**: `intranet/security/audit-logs`, `sessions`, `login-attempts`, `access-monitor`.
+- **Configuración**: `config/security.php` (intentos, lockout, vida de sesión, umbrales IP).
+- **Integración auth**: `LoginRequest`, `AuthenticatedSessionController`, `PasswordController`; auditoría en `AdminUserController` y exportes analíticos.
+
 ## Analítica y reportes (Fase 18)
 
 - **Servicios**: `AnalyticsService` (orquestación y permisos por rol), `AcademicAnalyticsService`, `FinancialAnalyticsService`, `InventoryAnalyticsService`; reutilizan `AcademicGradeService::metrics`, consultas sobre asistencia, pagos, pensiones, ventas e inventario.

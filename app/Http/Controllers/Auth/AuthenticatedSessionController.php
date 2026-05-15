@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\AuditAction;
+use App\Enums\AuditModule;
+use App\Enums\AuditSeverity;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Services\AuditService;
+use App\Services\SessionSecurityService;
 use App\Support\AuthRedirect;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,6 +19,11 @@ use Inertia\Response;
 
 class AuthenticatedSessionController extends Controller
 {
+    public function __construct(
+        private readonly AuditService $audit,
+        private readonly SessionSecurityService $sessions,
+    ) {}
+
     /**
      * Display the login view.
      */
@@ -34,8 +44,21 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = $request->user();
+        if ($user !== null) {
+            $this->sessions->registerSession($user, $request);
+            $this->audit->log(
+                AuditAction::Login,
+                AuditModule::Auth,
+                $user,
+                description: 'Inicio de sesión exitoso',
+                severity: AuditSeverity::Info,
+                request: $request,
+            );
+        }
+
         return redirect()->intended(
-            AuthRedirect::redirectPathForUser($request->user()),
+            AuthRedirect::redirectPathForUser($user),
         );
     }
 
@@ -44,6 +67,20 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $user = $request->user();
+
+        if ($user !== null) {
+            $this->audit->log(
+                AuditAction::Logout,
+                AuditModule::Auth,
+                $user,
+                description: 'Cierre de sesión',
+                severity: AuditSeverity::Info,
+                request: $request,
+            );
+            $this->sessions->terminateSession($request);
+        }
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

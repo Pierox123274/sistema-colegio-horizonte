@@ -46,6 +46,14 @@ Fase 2 añade pruebas de intranet y roles (`tests/Feature/Intranet`, ampliacione
 |------|-----------|
 | Feature | `tests/Feature/Intranet/AdminUserAndTeacherAssignmentTest.php` (alta usuario docente/secretaría, prohibición secretaría en admin, asignación docente y filtrado de estudiantes, usuario inactivo no inicia sesión) |
 
+**Fase 19 (seguridad y auditoría)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Security/AuditSecurityTest.php` (auditoría login/logout, bloqueo por intentos, sesiones, permisos por rol, export con log, docente filtrado) |
+| BDD (Gherkin) | `tests/Bdd/features/security_audit.feature` |
+| E2E (Cypress) | `cypress/e2e/security-audit.cy.ts` |
+
 **Fase 18 (analítica)** incluye:
 
 | Capa | Artefacto |
