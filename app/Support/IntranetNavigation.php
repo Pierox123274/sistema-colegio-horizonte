@@ -221,6 +221,36 @@ final class IntranetNavigation
 
         $canAdministration = $user->hasRole(IntranetRole::Administrador->value);
 
+        if ($user->hasRole(IntranetRole::Administrador->value)) {
+            $nav[] = [
+                'label' => 'Comunicados',
+                'href' => route('intranet.announcements.index', absolute: false),
+                'icon' => 'megaphone',
+                'disabled' => false,
+                'activeRoutes' => [
+                    'intranet.announcements.index',
+                    'intranet.announcements.create',
+                    'intranet.announcements.show',
+                    'intranet.announcements.edit',
+                ],
+            ];
+        }
+
+        if ($user->hasRole(IntranetRole::Secretaria->value)
+            && ! $user->hasRole(IntranetRole::Administrador->value)
+        ) {
+            $nav[] = [
+                'label' => 'Comunicados',
+                'href' => route('intranet.announcements.inbox.index', absolute: false),
+                'icon' => 'megaphone',
+                'disabled' => false,
+                'activeRoutes' => [
+                    'intranet.announcements.inbox.index',
+                    'intranet.announcements.inbox.show',
+                ],
+            ];
+        }
+
         if ($canAdministration) {
             $nav[] = [
                 'label' => 'Administración',

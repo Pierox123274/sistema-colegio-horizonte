@@ -68,6 +68,16 @@ final class TeacherNavigation
                 'disabled' => false,
                 'activeRoutes' => ['teacher.reports.index'],
             ],
+            [
+                'label' => 'Comunicados',
+                'href' => route('teacher.announcements.index', absolute: false),
+                'icon' => 'megaphone',
+                'disabled' => false,
+                'activeRoutes' => [
+                    'teacher.announcements.index',
+                    'teacher.announcements.show',
+                ],
+            ],
         ];
     }
 }

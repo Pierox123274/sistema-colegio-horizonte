@@ -1,3 +1,4 @@
+import RecentAnnouncementsPanel from '@/Components/Announcements/RecentAnnouncementsPanel';
 import AssignmentsOverview, {
     type AssignmentTableRow,
     type SectionOverview,
@@ -84,6 +85,8 @@ export default function TeacherDashboard() {
 
             <PageContainer>
                 <SectionTitle title="Registro académico" description={scopeNote} />
+
+                <RecentAnnouncementsPanel />
 
                 {academic_year ? (
                     <div className="mb-6 rounded-xl border border-plomo/15 bg-white px-4 py-3 text-sm shadow-sm">

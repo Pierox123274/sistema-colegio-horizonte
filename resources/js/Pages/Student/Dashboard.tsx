@@ -1,4 +1,5 @@
 import StudentPortalEmpty from '@/Components/Student/StudentPortalEmpty';
+import RecentAnnouncementsPanel from '@/Components/Announcements/RecentAnnouncementsPanel';
 import { Card } from '@/Components/Intranet/Card';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
 import { SectionTitle } from '@/Components/Intranet/SectionTitle';
@@ -91,6 +92,8 @@ export default function StudentDashboard() {
                     <StudentPortalEmpty message={empty_message} portalScoped={portal_scoped} />
                 ) : (
                     <>
+                        <RecentAnnouncementsPanel />
+
                         {enrollment && (
                             <Card className="mb-6 border-l-4 border-l-brand-yellow">
                                 <p className="text-xs font-semibold uppercase tracking-wide text-plomo">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\AnnouncementService;
 use App\Support\IntranetNavigation;
 use App\Support\StudentNavigation;
 use App\Support\TeacherNavigation;
@@ -54,6 +55,9 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
+            'announcementBell' => fn () => $user !== null
+                ? app(AnnouncementService::class)->headerPayloadFor($user)
+                : null,
         ];
     }
 }

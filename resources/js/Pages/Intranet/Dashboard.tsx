@@ -1,3 +1,4 @@
+import RecentAnnouncementsPanel from '@/Components/Announcements/RecentAnnouncementsPanel';
 import { Card } from '@/Components/Intranet/Card';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
 import { SectionTitle } from '@/Components/Intranet/SectionTitle';
@@ -43,6 +44,8 @@ export default function Dashboard() {
                     title={`Hola, ${auth.user?.name?.split(' ')[0] ?? 'equipo'}`}
                     description="Resumen institucional con datos de demostración. Las métricas reales se conectarán cuando los módulos estén activos."
                 />
+
+                <RecentAnnouncementsPanel />
 
                 <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                     {demoStats.map((s) => (

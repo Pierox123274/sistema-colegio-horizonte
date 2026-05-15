@@ -34,6 +34,12 @@ export type PageProps<
     teacherNav?: SidebarNavItem[];
     /** Menú del portal estudiante; vacío si el rol no aplica. */
     studentNav?: SidebarNavItem[];
+    /** Campana de comunicados (no leídos + recientes). */
+    announcementBell?: {
+        unread_count: number;
+        recent: AnnouncementCardPayload[];
+        index_href: string;
+    } | null;
     current_route: string | null;
     flash?: FlashMessages;
     /** Web pública (PublicSiteController) */
@@ -211,4 +217,23 @@ export type GuardianStudentLinkDraft = {
 
 export type GuardianFullFormState = GuardianCoreFields & {
     students: GuardianStudentLinkDraft[];
+};
+
+export type AnnouncementCardPayload = {
+    id: number;
+    title: string;
+    content_excerpt: string;
+    priority: string;
+    priority_label: string;
+    audience_type: string;
+    audience_label: string;
+    starts_at: string;
+    starts_at_label: string;
+    ends_at: string | null;
+    ends_at_label: string | null;
+    has_attachment: boolean;
+    is_read: boolean;
+    is_active: boolean;
+    created_by: { id: number; name: string } | null;
+    show_href: string;
 };

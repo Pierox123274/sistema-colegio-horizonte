@@ -175,6 +175,15 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | **ISO/IEC 25010** | 25010 | Usabilidad: interfaz simplificada y accesos rápidos |
 | **ISO/IEC 29119** | 29119 | Cobertura de autorización y páginas críticas del portal |
 
+## Mapeo (Fase 17 — comunicados)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| Comunicación institucional / avisos | 9001, 25010 | `Announcement`, `AnnouncementService`, rutas `intranet.announcements.*`, portales `teacher/student` e inbox |
+| **RF-18** Seguridad (publicación y lectura) | 27001, 25010 | `AnnouncementPolicy`; audiencia por rol Spatie o destinatarios; solo activos y vigentes para lectores |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/Announcements/AnnouncementManagementTest.php` |
+| **ISO/IEC 25010** (usabilidad) | 25010 | `NotificationBell`, `RecentAnnouncementsPanel`, badges de prioridad |
+
 ## Mapeo (Fase 16 — portal estudiante)
 
 | Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |

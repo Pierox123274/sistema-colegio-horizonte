@@ -8,12 +8,14 @@ use App\Http\Controllers\Academic\SectionController;
 use App\Http\Controllers\AcademicGradeController;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CashMovementController;
 use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\IntranetAnnouncementInboxController;
 use App\Http\Controllers\InventoryMovementController;
 use App\Http\Controllers\PaymentConceptController;
 use App\Http\Controllers\PaymentController;
@@ -25,6 +27,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SaleReceiptController;
+use App\Http\Controllers\StudentAnnouncementController;
 use App\Http\Controllers\StudentAttendanceController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentDashboardController;
@@ -32,6 +35,7 @@ use App\Http\Controllers\StudentGradesController;
 use App\Http\Controllers\StudentPaymentsController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\TeacherAnnouncementController;
 use App\Http\Controllers\TeacherAssignmentController;
 use App\Http\Controllers\TeacherAssignmentsController;
 use App\Http\Controllers\TeacherAttendanceController;
@@ -52,7 +56,7 @@ Route::get('/contacto', [PublicSiteController::class, 'contacto'])->name('public
 
 $intranetRoles = 'role:'.IntranetRole::middlewarePipe();
 
-Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
+Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use ($intranetRoles) {
     Route::get('/intranet/dashboard', function (Request $request) {
         $user = $request->user();
         if ($user !== null
@@ -78,6 +82,9 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
         Route::get('/attendance', [StudentAttendanceController::class, 'index'])->name('attendance.index');
         Route::get('/payments', [StudentPaymentsController::class, 'index'])->name('payments.index');
         Route::get('/profile', [StudentProfileController::class, 'show'])->name('profile.show');
+        Route::get('/announcements', [StudentAnnouncementController::class, 'index'])->name('announcements.index');
+        Route::get('/announcements/{announcement}', [StudentAnnouncementController::class, 'show'])->name('announcements.show');
+        Route::post('/announcements/{announcement}/read', [StudentAnnouncementController::class, 'markRead'])->name('announcements.read');
     });
 
     Route::middleware(['role:Docente|Administrador'])->prefix('teacher')->name('teacher.')->group(function () {
@@ -97,6 +104,28 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
         Route::get('/reports/attendance/excel', [TeacherReportsController::class, 'attendanceExcel'])->name('reports.attendance.excel');
         Route::get('/reports/grades/pdf', [TeacherReportsController::class, 'gradesPdf'])->name('reports.grades.pdf');
         Route::get('/reports/grades/excel', [TeacherReportsController::class, 'gradesExcel'])->name('reports.grades.excel');
+        Route::get('/announcements', [TeacherAnnouncementController::class, 'index'])->name('announcements.index');
+        Route::get('/announcements/{announcement}', [TeacherAnnouncementController::class, 'show'])->name('announcements.show');
+        Route::post('/announcements/{announcement}/read', [TeacherAnnouncementController::class, 'markRead'])->name('announcements.read');
+    });
+
+    Route::middleware($intranetRoles)->prefix('intranet/announcements/inbox')->name('intranet.announcements.inbox.')->group(function () {
+        Route::get('/', [IntranetAnnouncementInboxController::class, 'index'])->name('index');
+        Route::get('/{announcement}', [IntranetAnnouncementInboxController::class, 'show'])->name('show');
+        Route::post('/{announcement}/read', [IntranetAnnouncementInboxController::class, 'markRead'])->name('read');
+    });
+
+    Route::middleware(['role:Administrador'])->prefix('intranet/announcements')->name('intranet.announcements.')->group(function () {
+        Route::get('/', [AnnouncementController::class, 'index'])->name('index');
+        Route::get('/create', [AnnouncementController::class, 'create'])->name('create');
+        Route::post('/', [AnnouncementController::class, 'store'])->name('store');
+        Route::get('/{announcement}', [AnnouncementController::class, 'show'])->name('show');
+        Route::get('/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('edit');
+        Route::put('/{announcement}', [AnnouncementController::class, 'update'])->name('update');
+        Route::patch('/{announcement}', [AnnouncementController::class, 'update']);
+        Route::delete('/{announcement}', [AnnouncementController::class, 'destroy'])->name('destroy');
+        Route::post('/{announcement}/deactivate', [AnnouncementController::class, 'deactivate'])->name('deactivate');
+        Route::post('/{announcement}/resend', [AnnouncementController::class, 'resend'])->name('resend');
     });
 
     Route::middleware(['role:Administrador|Secretaria|Docente'])->group(function () {

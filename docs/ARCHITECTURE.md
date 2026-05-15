@@ -41,6 +41,14 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Controladores delgados**: `TeacherDashboardController`, `TeacherAttendanceController`, `TeacherGradesController`, `TeacherStudentsController`, `TeacherReportsController` renderizan páginas Inertia dedicadas y delegan datos en **servicios y políticas ya existentes** (`StudentService`, `AttendancePolicy`, `GradeRecordPolicy`, etc.). El registro masivo de asistencia y notas sigue en las rutas `intranet.*` para no duplicar validación ni almacenamiento.
 - **Navegación**: `App\Support\TeacherNavigation` alimenta `teacherNav` en `HandleInertiaRequests`; el menú ERP (`IntranetNavigation`) incluye enlace **Portal docente** para los mismos roles.
 
+## Comunicados y notificaciones (Fase 17)
+
+- **Dominio**: `Announcement`, `AnnouncementRecipient`, `AnnouncementRead`; prioridad y audiencia por enum; ventana de publicación `starts_at` / `ends_at`; adjuntos en disco público `storage/app/public/announcements`.
+- **Servicio**: `AnnouncementService` (CRUD admin, visibilidad por rol o destinatarios personalizados, conteo de no leídos, payload de campana y tarjetas).
+- **Entrega HTTP**: `AnnouncementController` (admin); `TeacherAnnouncementController`, `StudentAnnouncementController`, `IntranetAnnouncementInboxController` (solo lectura + marcar leído).
+- **Autorización**: `AnnouncementPolicy` (gestión solo Administrador).
+- **Frontend compartido**: `Components/Announcements/*`, prop `announcementBell` en `HandleInertiaRequests`; `NotificationBell` en cabecera intranet/portales.
+
 ## Portal estudiante (Fase 16)
 
 - **Rutas HTTP**: prefijo `/student` con middleware `auth`, `verified` y `role:Estudiante|Administrador` (Docente, Secretaria y Apoderado no entran).
@@ -63,7 +71,8 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 | `Pages/Public` | Web institucional: `Public/Home`, `Public/Nosotros`, etc. Rutas en `PublicSiteController`; layout `PublicLayout`; componentes en `Components/Public/`. |
 | `Pages/Intranet` | Área autenticada (dashboard, módulos operativos). |
 | `Pages/Teacher` | Portal docente (Fase 15): dashboard y accesos académicos simplificados; layout `TeacherLayout`. |
-| `Pages/Student` | Portal estudiante (Fase 16): notas, asistencia, pagos y perfil; layout `StudentLayout`. |
+| `Pages/Student` | Portal estudiante (Fase 16): notas, asistencia, pagos y perfil; layout `StudentLayout`. Comunicados en `Pages/Student/Announcements/*` (Fase 17). |
+| `Components/Announcements` | UI compartida de comunicados: campana, tarjetas, listados de portal e panel en dashboards (Fase 17). |
 | `Pages/Auth`, `Pages/Profile` | Breeze; el perfil usa el layout de intranet (`IntranetLayout`) para coherencia con el área autenticada. |
 | `Layouts` | `PublicLayout` (web pública: navbar + footer). `IntranetLayout` (intranet). `TeacherLayout` (portal docente). `StudentLayout` (portal estudiante). `GuestLayout` / `AuthenticatedLayout` (Breeze). |
 | `Components` | `Components/Public/` (navbar, secciones landing, footer). `Components/Intranet/` (shell y widgets intranet). |

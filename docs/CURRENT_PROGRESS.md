@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 16** (portal estudiante) sobre las fases 1–15.1.
+Última actualización: **Fase 17** (comunicados y notificaciones) sobre las fases 1–16.
 
 ## Completado — Fase 1
 
@@ -199,6 +199,15 @@
 - [x] Redirección post-login y desde `/intranet/dashboard` para estudiante sin administración → portal estudiante (`AuthRedirect`).
 - [x] Seeder demo `StudentPortalDemoSeeder` (`estudiante@demo.com` / `password`).
 - [x] Pruebas: `tests/Feature/Student/StudentPortalTest.php`; ajustes en `AuthenticationTest` e `IntranetAuthorizationTest`.
+
+## Completado — Fase 17 (comunicados y notificaciones)
+
+- [x] Tablas `announcements`, `announcement_recipients`, `announcement_reads`; enums `AnnouncementPriority`, `AnnouncementAudienceType`.
+- [x] `AnnouncementService` (CRUD admin, visibilidad por rol/destinatarios, ventana `starts_at`/`ends_at`, lecturas, adjuntos en `storage/app/public/announcements`, campana en cabecera).
+- [x] `AnnouncementPolicy` (gestión solo Administrador; lectura según audiencia).
+- [x] Rutas: admin `intranet/announcements/*`; lectura docente `teacher/announcements/*`; estudiante `student/announcements/*`; bandeja secretaría/apoderado `intranet/announcements/inbox/*`.
+- [x] UI: componentes `Components/Announcements/*`, páginas admin/inbox/portales, `NotificationBell` en cabecera, panel `RecentAnnouncementsPanel` en dashboards.
+- [x] Pruebas: `tests/Feature/Announcements/AnnouncementManagementTest.php` (8 casos).
 
 ## Pendiente / siguientes fases (ROADMAP)
 

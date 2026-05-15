@@ -51,6 +51,16 @@ final class StudentNavigation
                 'activeRoutes' => ['student.payments.index'],
             ],
             [
+                'label' => 'Comunicados',
+                'href' => route('student.announcements.index', absolute: false),
+                'icon' => 'megaphone',
+                'disabled' => false,
+                'activeRoutes' => [
+                    'student.announcements.index',
+                    'student.announcements.show',
+                ],
+            ],
+            [
                 'label' => 'Mi perfil',
                 'href' => route('student.profile.show', absolute: false),
                 'icon' => 'user',

@@ -1,6 +1,7 @@
+import NotificationBell from '@/Components/Announcements/NotificationBell';
 import Dropdown from '@/Components/Dropdown';
 import type { User } from '@/types';
-import { Bell, ChevronDown, Menu } from 'lucide-react';
+import { ChevronDown, Menu } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 function initials(name: string): string {
@@ -55,14 +56,7 @@ export function Header({
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-                    <button
-                        type="button"
-                        className="hidden h-10 w-10 items-center justify-center rounded-lg border border-plomo/10 text-plomo transition hover:border-navy-900/15 hover:bg-navy-50 hover:text-navy-900 sm:flex"
-                        title="Notificaciones (demo)"
-                        aria-label="Notificaciones"
-                    >
-                        <Bell className="h-5 w-5" strokeWidth={1.5} />
-                    </button>
+                    <NotificationBell />
 
                     <div className="hidden flex-col items-end text-right sm:flex">
                         <span className="max-w-[10rem] truncate text-sm font-semibold text-navy-900">
