@@ -8,6 +8,21 @@ use App\Models\User;
 final class IntranetNavigation
 {
     /**
+     * Destino del logotipo / “inicio” en el sidebar intranet: docente (sin admin) → portal docente.
+     */
+    public static function sidebarHomeHref(?User $user): string
+    {
+        if ($user !== null
+            && $user->hasRole(IntranetRole::Docente->value)
+            && ! $user->hasRole(IntranetRole::Administrador->value)
+        ) {
+            return route('teacher.dashboard', absolute: false);
+        }
+
+        return route('dashboard', absolute: false);
+    }
+
+    /**
      * Navegación lateral de la intranet.
      *
      * @return list<array{label: string, href: string|null, icon: string, disabled: bool, active_routes?: list<string>, activeRoutes?: list<string>, children?: list<array{label: string, href: string|null, icon: string, disabled: bool, active_routes?: list<string>, activeRoutes?: list<string>}>}>
@@ -53,14 +68,27 @@ final class IntranetNavigation
             IntranetRole::Docente->value,
         ]);
 
-        $nav = [
-            [
-                'label' => 'Dashboard',
-                'href' => route('dashboard', absolute: false),
-                'icon' => 'layout-dashboard',
-                'disabled' => false,
-            ],
+        $docenteSinAdministrador = $user->hasRole(IntranetRole::Docente->value)
+            && ! $user->hasRole(IntranetRole::Administrador->value);
+
+        $dashboardItem = [
+            'label' => $docenteSinAdministrador ? 'Inicio docente' : 'Dashboard',
+            'href' => self::sidebarHomeHref($user),
+            'icon' => 'layout-dashboard',
+            'disabled' => false,
         ];
+
+        if ($docenteSinAdministrador) {
+            $dashboardItem['activeRoutes'] = [
+                'teacher.dashboard',
+                'teacher.attendance.index',
+                'teacher.grades.index',
+                'teacher.students.index',
+                'teacher.reports.index',
+            ];
+        }
+
+        $nav = [$dashboardItem];
 
         if ($canViewAcademic) {
             $nav[] = [
@@ -117,6 +145,58 @@ final class IntranetNavigation
                             'intranet.academic.classrooms.edit',
                         ],
                     ],
+                    [
+                        'label' => 'Cursos',
+                        'href' => route('intranet.academic.subjects.index', absolute: false),
+                        'icon' => 'book-marked',
+                        'disabled' => false,
+                        'activeRoutes' => [
+                            'intranet.academic.subjects.index',
+                            'intranet.academic.subjects.show',
+                            'intranet.academic.subjects.create',
+                            'intranet.academic.subjects.edit',
+                        ],
+                    ],
+                    [
+                        'label' => 'Evaluaciones',
+                        'href' => route('intranet.academic.evaluations.index', absolute: false),
+                        'icon' => 'clipboard-check',
+                        'disabled' => false,
+                        'activeRoutes' => [
+                            'intranet.academic.evaluations.index',
+                            'intranet.academic.evaluations.show',
+                            'intranet.academic.evaluations.create',
+                            'intranet.academic.evaluations.edit',
+                        ],
+                    ],
+                    [
+                        'label' => 'Registro de notas',
+                        'href' => route('intranet.academic.grades.records.index', absolute: false),
+                        'icon' => 'receipt',
+                        'disabled' => false,
+                        'activeRoutes' => ['intranet.academic.grades.records.index'],
+                    ],
+                    [
+                        'label' => 'Historial académico',
+                        'href' => route('intranet.academic.grades.history.index', absolute: false),
+                        'icon' => 'user-check',
+                        'disabled' => false,
+                        'activeRoutes' => [
+                            'intranet.academic.grades.history.index',
+                            'intranet.academic.grades.students.show',
+                        ],
+                    ],
+                    [
+                        'label' => 'Reportes académicos',
+                        'href' => route('intranet.academic.grades.reports.index', absolute: false),
+                        'icon' => 'file-bar-chart',
+                        'disabled' => false,
+                        'activeRoutes' => [
+                            'intranet.academic.grades.reports.index',
+                            'intranet.academic.grades.reports.export.pdf',
+                            'intranet.academic.grades.reports.export.excel',
+                        ],
+                    ],
                 ],
             ];
         }
@@ -138,6 +218,41 @@ final class IntranetNavigation
             'icon' => 'user-circle',
             'disabled' => ! $canManageGuardians,
         ];
+
+        $canAdministration = $user->hasRole(IntranetRole::Administrador->value);
+
+        if ($canAdministration) {
+            $nav[] = [
+                'label' => 'Administración',
+                'href' => null,
+                'icon' => 'shield',
+                'disabled' => false,
+                'children' => [
+                    [
+                        'label' => 'Usuarios',
+                        'href' => route('intranet.admin.users.index', absolute: false),
+                        'icon' => 'users',
+                        'disabled' => false,
+                        'activeRoutes' => [
+                            'intranet.admin.users.index',
+                            'intranet.admin.users.create',
+                            'intranet.admin.users.edit',
+                        ],
+                    ],
+                    [
+                        'label' => 'Asignaciones docentes',
+                        'href' => route('intranet.admin.teacher-assignments.index', absolute: false),
+                        'icon' => 'user-cog',
+                        'disabled' => false,
+                        'activeRoutes' => [
+                            'intranet.admin.teacher-assignments.index',
+                            'intranet.admin.teacher-assignments.create',
+                            'intranet.admin.teacher-assignments.edit',
+                        ],
+                    ],
+                ],
+            ];
+        }
 
         $financeNav = [];
         if ($canFinance) {

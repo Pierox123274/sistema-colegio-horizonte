@@ -19,8 +19,10 @@ import {
     Settings,
     Receipt,
     ShoppingCart,
+    Shield,
     User,
     UserCircle,
+    UserCog,
     Users,
     Wallet,
     UserCheck,
@@ -54,6 +56,8 @@ const NAV_ICONS: Record<string, LucideIcon> = {
     'file-bar-chart': FileBarChart,
     'bar-chart-3': BarChart3,
     settings: Settings,
+    shield: Shield,
+    'user-cog': UserCog,
 };
 
 export function intranetNavIcon(key?: string | null): LucideIcon {

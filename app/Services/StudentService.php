@@ -2,17 +2,35 @@
 
 namespace App\Services;
 
+use App\Enums\EnrollmentStatus;
+use App\Models\AcademicYear;
 use App\Models\Student;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 
 class StudentService
 {
-    public function paginateForIndex(Request $request, int $perPage = 15): LengthAwarePaginator
+    /**
+     * @param  list<int>|null  $sectionIdsForActiveYear  Matrícula vigente en año activo y secciones dadas; null = sin filtro por sección.
+     */
+    public function paginateForIndex(Request $request, int $perPage = 15, ?array $sectionIdsForActiveYear = null): LengthAwarePaginator
     {
         $query = Student::query()
             ->orderBy('last_name')
             ->orderBy('first_name');
+
+        if ($sectionIdsForActiveYear !== null) {
+            $activeYear = AcademicYear::query()->where('is_active', true)->first();
+            if ($activeYear === null || $sectionIdsForActiveYear === []) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $query->whereHas('enrollments', function ($q) use ($activeYear, $sectionIdsForActiveYear): void {
+                    $q->where('academic_year_id', $activeYear->id)
+                        ->where('status', EnrollmentStatus::Matriculado->value)
+                        ->whereIn('section_id', $sectionIdsForActiveYear);
+                });
+            }
+        }
 
         if ($search = trim((string) $request->query('search', ''))) {
             $query->where(function ($q) use ($search): void {

@@ -24,6 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_active',
     ];
 
     /**
@@ -46,6 +47,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -95,5 +97,29 @@ class User extends Authenticatable
     public function attendancesRecorded(): HasMany
     {
         return $this->hasMany(Attendance::class, 'recorded_by_user_id');
+    }
+
+    /**
+     * @return HasMany<Evaluation, $this>
+     */
+    public function evaluationsCreated(): HasMany
+    {
+        return $this->hasMany(Evaluation::class, 'created_by_user_id');
+    }
+
+    /**
+     * @return HasMany<GradeRecord, $this>
+     */
+    public function gradeRecordsRecorded(): HasMany
+    {
+        return $this->hasMany(GradeRecord::class, 'recorded_by_user_id');
+    }
+
+    /**
+     * @return HasMany<TeacherAssignment, $this>
+     */
+    public function teacherAssignments(): HasMany
+    {
+        return $this->hasMany(TeacherAssignment::class);
     }
 }

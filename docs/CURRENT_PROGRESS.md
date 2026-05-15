@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 13** (asistencia académica) sobre las fases 1–12.
+Última actualización: **Fase 15.1** (usuarios y asignaciones docentes) sobre las fases 1–15.
 
 ## Completado — Fase 1
 
@@ -155,6 +155,41 @@
 - [x] Exportación de asistencia en PDF y CSV compatible con Excel.
 - [x] Sidebar desplegable **Asistencia** con accesos a registrar, historial y reportes.
 - [x] Pruebas fase 13: `tests/Feature/Intranet/AttendanceManagementTest.php`, `tests/Bdd/features/attendance.feature`, `cypress/e2e/attendance.cy.ts`.
+
+## Completado — Fase 15 (portal docente)
+
+- [x] Rutas `/teacher/dashboard`, `/teacher/attendance`, `/teacher/grades`, `/teacher/students`, `/teacher/reports` con middleware `role:Docente|Administrador` (Secretaria, Estudiante y Apoderado excluidos).
+- [x] Controladores `Teacher*Controller` delgados; reutilización de `StudentService`, políticas de `Attendance` y `GradeRecord`, y enlaces al ERP para registro masivo y exportaciones.
+- [x] `TeacherNavigation` + prop compartida `teacherNav`; ítem **Portal docente** en `IntranetNavigation` para docente y administrador.
+- [x] Frontend: `Layouts/TeacherLayout.tsx`, páginas `Pages/Teacher/**` (dashboard con tarjetas, listados y accesos rápidos).
+- [x] Pruebas: `tests/Feature/Teacher/TeacherPortalTest.php`, `tests/Bdd/features/teacher_portal.feature`, `cypress/e2e/teacher-portal.cy.ts`.
+
+## Completado — Fase 15.1 (usuarios y asignaciones docentes)
+
+- [x] Campo `users.is_active`; login rechaza cuentas inactivas (`LoginRequest`).
+- [x] Modelo `TeacherAssignment` y migración; política `TeacherAssignmentPolicy`; rutas `intranet.admin.*` solo **Administrador**.
+- [x] `AdminUserController` (listado con filtros, alta, edición), `TeacherAssignmentController`; Form Requests `StoreIntranetUserRequest`, `UpdateIntranetUserRequest`, `StoreTeacherAssignmentRequest`, `UpdateTeacherAssignmentRequest`.
+- [x] `UserPolicy` extendida (gestión de usuarios solo administrador; perfil sigue permitiendo auto-actualización); `StudentPolicy` y `StudentService` limitan al **docente sin admin/secretaría** a estudiantes matriculados en sus secciones del año activo según asignaciones.
+- [x] `TeacherContextService` para secciones activas, resumen de dashboard docente y autorización de ficha estudiante.
+- [x] Portal docente: dashboard, estudiantes, asistencia y notas filtrados por secciones asignadas; avisos si no hay asignaciones.
+- [x] Sidebar intranet: grupo **Administración** (Usuarios, Asignaciones docentes); iconos `shield` y `user-cog` en `navIcons`.
+- [x] UI Inertia: `Pages/Intranet/Admin/Users/*`, `Pages/Intranet/Admin/TeacherAssignments/*`.
+- [x] Pruebas: `tests/Feature/Intranet/AdminUserAndTeacherAssignmentTest.php`; ajuste en `StudentManagementTest` (detalle con administrador).
+
+## Completado — Fase 14 (calificaciones y evaluaciones académicas)
+
+- [x] Modelos y tablas: `subjects`, `evaluations`, `grade_records` con relaciones a estudiantes, estructura académica y año académico.
+- [x] Backend: `SubjectController`, `EvaluationController`, `AcademicGradeController`; servicios `SubjectService`, `EvaluationService`, `AcademicGradeService`; Form Requests y Policies.
+- [x] Registro masivo de notas por evaluación cargando únicamente estudiantes con matrícula activa en sección/año de la evaluación.
+- [x] Reglas: nota entre 0 y 20; unicidad por `evaluation_id + student_id`; actualización de nota existente sin duplicar.
+- [x] Promedios y analítica: promedio por curso, promedio general, ranking y lista de riesgo académico.
+- [x] Historial académico por estudiante y exportación de reportes PDF/CSV compatible con Excel.
+- [x] Frontend Inertia:
+  - `Pages/Intranet/Academic/Subjects/*`
+  - `Pages/Intranet/Academic/Evaluations/*`
+  - `Pages/Intranet/Academic/Grades/{RecordsIndex,StudentHistory}.tsx`
+- [x] Sidebar en gestión académica: Cursos, Evaluaciones, Registro de notas, Historial académico, Reportes académicos.
+- [x] Pruebas fase 14: `tests/Feature/Intranet/AcademicGradesManagementTest.php`, `tests/Bdd/features/academic_grades.feature`, `cypress/e2e/academic-grades.cy.ts`.
 
 ## Pendiente / siguientes fases (ROADMAP)
 

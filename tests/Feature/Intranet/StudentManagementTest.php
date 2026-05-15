@@ -183,7 +183,7 @@ class StudentManagementTest extends TestCase
     {
         $student = Student::factory()->create();
 
-        $user = $this->userWithRole(IntranetRole::Docente);
+        $user = $this->userWithRole(IntranetRole::Administrador);
 
         $response = $this->actingAs($user)->get(route('intranet.students.show', $student));
 

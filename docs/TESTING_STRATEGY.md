@@ -40,6 +40,22 @@ Cada módulo de negocio debería tener al menos:
 
 Fase 2 añade pruebas de intranet y roles (`tests/Feature/Intranet`, ampliaciones en `tests/Feature/Auth`). Las carpetas `tests/Feature` y `tests/Unit` siguen siendo el estándar; los `.feature` documentan criterios BDD (ISO/IEC 29119).
 
+**Fase 15.1 (usuarios y asignaciones docentes)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Intranet/AdminUserAndTeacherAssignmentTest.php` (alta usuario docente/secretaría, prohibición secretaría en admin, asignación docente y filtrado de estudiantes, usuario inactivo no inicia sesión) |
+
+**Fase 15 (portal docente)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Teacher/TeacherPortalTest.php` (docente y administrador acceden; Secretaria, Estudiante y Apoderado reciben prohibición; páginas asistencia, notas y estudiantes) |
+| BDD (Gherkin) | `tests/Bdd/features/teacher_portal.feature` |
+| E2E (Cypress) | `cypress/e2e/teacher-portal.cy.ts` (invitado redirigido al login en rutas `/teacher/*`) |
+
+> **Nota:** las pruebas Feature que renderizan Inertia con `@vite` requieren que exista el manifiesto de Vite (`npm run build`) cuando se añaden páginas nuevas al build de producción.
+
 **Fase 5 (estudiantes)** incluye:
 
 | Capa | Artefacto |
@@ -113,3 +129,11 @@ Los escenarios Gherkin se ejecutan como documentación y criterio de aceptación
 | Feature | `tests/Feature/Intranet/AttendanceManagementTest.php` (Administrador/Docente registran; Secretaria consulta; Estudiante/Apoderado sin acceso; no duplicidad por estudiante-fecha-sección; export PDF/CSV) |
 | BDD (Gherkin) | `tests/Bdd/features/attendance.feature` |
 | E2E (Cypress) | `cypress/e2e/attendance.cy.ts` (invitado redirigido al login en rutas de asistencia) |
+
+**Fase 14 (calificaciones y evaluaciones académicas)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Intranet/AcademicGradesManagementTest.php` (crear curso/evaluación, registro de notas, no duplicidad, promedio, exportaciones, autorización por rol) |
+| BDD (Gherkin) | `tests/Bdd/features/academic_grades.feature` |
+| E2E (Cypress) | `cypress/e2e/academic-grades.cy.ts` (invitado redirigido al login en rutas académicas de cursos/evaluaciones/notas) |

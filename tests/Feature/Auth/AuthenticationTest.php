@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Enums\IntranetRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -20,6 +21,51 @@ class AuthenticationTest extends TestCase
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
         $user = User::factory()->create();
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
+    public function test_docente_login_redirige_al_portal_docente(): void
+    {
+        $user = User::factory()->create();
+        $user->syncRoles([IntranetRole::Docente->value]);
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('teacher.dashboard', absolute: false));
+    }
+
+    public function test_administrador_login_redirige_a_intranet_dashboard(): void
+    {
+        $user = User::factory()->create();
+        $user->syncRoles([IntranetRole::Administrador->value]);
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
+    public function test_usuario_docente_y_administrador_redirige_a_intranet_dashboard(): void
+    {
+        $user = User::factory()->create();
+        $user->syncRoles([
+            IntranetRole::Docente->value,
+            IntranetRole::Administrador->value,
+        ]);
 
         $response = $this->post('/login', [
             'email' => $user->email,

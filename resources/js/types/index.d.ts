@@ -28,6 +28,10 @@ export type PageProps<
         user: User | null;
     };
     sidebarNav: SidebarNavItem[];
+    /** URL del logotipo en sidebar intranet (docente sin admin → portal docente). */
+    intranetHomeHref?: string;
+    /** Menú del portal docente; vacío si el rol no aplica. */
+    teacherNav?: SidebarNavItem[];
     current_route: string | null;
     flash?: FlashMessages;
     /** Web pública (PublicSiteController) */

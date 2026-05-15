@@ -147,6 +147,42 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | **ISO/IEC 25010** | 25010 | Funcionalidad completa de registro/consulta/reportes y mantenibilidad por Services |
 | **ISO/IEC 29119** | 29119 | Cobertura Feature + BDD + E2E base para módulo asistencia |
 
+## Mapeo (Fase 14 — calificaciones y evaluaciones)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| **RF-13** Evaluaciones y notas | 9001, 25010 | Modelos `Subject`, `Evaluation`, `GradeRecord`; controladores `SubjectController`, `EvaluationController`, `AcademicGradeController`; rutas `intranet.academic.subjects.*`, `intranet.academic.evaluations.*`, `intranet.academic.grades.*` |
+| **RF-16** Reportes académicos | 9001, 25010 | Exportación PDF/CSV en `AcademicGradeController`, vista `resources/views/intranet/academic/grades-report-pdf.blade.php` |
+| **RF-18** Seguridad | 27001, 25010 | Policies `SubjectPolicy`, `EvaluationPolicy`, `GradeRecordPolicy`; middleware por rol en rutas |
+| **RNF-03** Seguridad avanzada | 27001 | `StoreGradeBatchRequest` valida matrícula activa por sección/año y score entre 0 y 20 |
+| **RNF-09** Trazabilidad | 9001 | `grade_records.recorded_by_user_id`, `evaluations.created_by_user_id`, historial por estudiante |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/Intranet/AcademicGradesManagementTest.php`, `tests/Bdd/features/academic_grades.feature`, `cypress/e2e/academic-grades.cy.ts` |
+| **ISO 9001** | 9001 | Requisito → implementación → prueba documentada en módulo académico |
+| **ISO/IEC 27001** | 27001 | Restricción de acceso y validación de integridad con matrículas |
+| **ISO/IEC 25010** | 25010 | Funcionalidad de registro/historial/reportes y mantenibilidad por capas |
+| **ISO/IEC 29119** | 29119 | Evidencia automatizada en Feature + BDD + E2E |
+
+## Mapeo (Fase 15 — portal docente)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| **RF-03** Gestión académica (experiencia docente) | 9001, 25010 | Rutas `teacher.*`, controladores `Teacher*Controller`, páginas `Pages/Teacher/*`, `TeacherLayout` |
+| **RF-18** Seguridad (acceso por rol al portal) | 27001, 25010 | Middleware `role:Docente|Administrador`; exclusión Secretaria/Estudiante/Apoderado; políticas en consultas (`AttendancePolicy`, `GradeRecordPolicy`, `StudentPolicy`) |
+| **RNF-09** Trazabilidad | 9001 | Misma capa de datos que ERP; sin duplicar reglas de asistencia/notas |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/Teacher/TeacherPortalTest.php`, `tests/Bdd/features/teacher_portal.feature`, `cypress/e2e/teacher-portal.cy.ts` |
+| **ISO 9001** | 9001 | Requisito docente → portal dedicado → pruebas Feature |
+| **ISO/IEC 27001** | 27001 | Separación de superficie: portal académico frente a módulos sensibles (finanzas, caja, inventario no expuestos aquí) |
+| **ISO/IEC 25010** | 25010 | Usabilidad: interfaz simplificada y accesos rápidos |
+| **ISO/IEC 29119** | 29119 | Cobertura de autorización y páginas críticas del portal |
+
+## Mapeo (Fase 15.1 — usuarios y asignaciones docentes)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| **RF-18** Seguridad (gestión de cuentas y carga) | 27001, 25010 | `AdminUserController`, `TeacherAssignmentController`, rutas `intranet.admin.*` solo Administrador; `UserPolicy`, `TeacherAssignmentPolicy`; `users.is_active` + bloqueo en `LoginRequest` |
+| **RF-03** Operación académica (docente en aula) | 9001, 25010 | `TeacherAssignment`, `TeacherContextService`, filtrado en `Teacher*Controller` y `StudentService` / `StudentPolicy` |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/Intranet/AdminUserAndTeacherAssignmentTest.php` |
+
 ## Mapeo inicial (Fase 1 — arquitectura base)
 
 | Requerimiento / objetivo (referencia) | ISO principal | Artefacto en el repo |

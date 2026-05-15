@@ -8,7 +8,7 @@ Este documento fija la arquitectura base del proyecto **Laravel 12 + Inertia + R
 2. **Orquestación fina**: los controladores delegan en **Actions** (un caso de uso por clase o por método explícito) y en **Services** cuando el flujo crece o se reutiliza entre puntos de entrada.
 3. **Modelos delgados**: Eloquent para persistencia y relaciones; reglas complejas o transacciones multi-modelo preferentemente fuera del modelo (Services/Actions).
 4. **DTOs en los bordes**: objetos de transferencia para agrupar datos entre capas (respuestas a Inertia, integraciones externas) cuando un array suelto dificulta el mantenimiento.
-5. **Frontend por contexto**: páginas públicas bajo `Pages/Public`, intranet bajo `Pages/Intranet`; componentes y layouts compartidos en `Components` y `Layouts`.
+5. **Frontend por contexto**: páginas públicas bajo `Pages/Public`, intranet bajo `Pages/Intranet`, portal docente bajo `Pages/Teacher`; componentes y layouts compartidos en `Components` y `Layouts`.
 
 ## Estructura backend (`app/`)
 
@@ -35,14 +35,29 @@ Request → Form Request → Controller → Action y/o Service → Model / DB
 
 Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los controladores.
 
+## Portal docente (Fase 15)
+
+- **Rutas HTTP**: prefijo `/teacher` con middleware `auth`, `verified` y `role:Docente|Administrador` (Secretaria, Estudiante y Apoderado no entran).
+- **Controladores delgados**: `TeacherDashboardController`, `TeacherAttendanceController`, `TeacherGradesController`, `TeacherStudentsController`, `TeacherReportsController` renderizan páginas Inertia dedicadas y delegan datos en **servicios y políticas ya existentes** (`StudentService`, `AttendancePolicy`, `GradeRecordPolicy`, etc.). El registro masivo de asistencia y notas sigue en las rutas `intranet.*` para no duplicar validación ni almacenamiento.
+- **Navegación**: `App\Support\TeacherNavigation` alimenta `teacherNav` en `HandleInertiaRequests`; el menú ERP (`IntranetNavigation`) incluye enlace **Portal docente** para los mismos roles.
+
+## Administración de usuarios y carga docente (Fase 15.1)
+
+- **Dominio**: `TeacherAssignment` (docente, año, nivel, grado, sección, curso opcional, tutor de aula, activo); `users.is_active`.
+- **Servicio**: `TeacherContextService` (secciones del docente en el año activo, estadísticas del portal, comprobación de acceso a ficha de estudiante).
+- **Entrega HTTP**: `AdminUserController`, `TeacherAssignmentController`; rutas bajo `/intranet/admin/*` con `role:Administrador`.
+- **Autorización**: `UserPolicy` (solo administrador gestiona listado de usuarios; cualquier usuario autenticado sigue pudiendo actualizar su propio perfil vía reglas `update`); `TeacherAssignmentPolicy`; docente solo ve alumnado de sus secciones (`StudentPolicy` + filtros en `StudentService` y controladores del portal docente).
+- **Frontend**: `Pages/Intranet/Admin/Users/*`, `Pages/Intranet/Admin/TeacherAssignments/*`; entradas en `IntranetNavigation`.
+
 ## Frontend (`resources/js/`)
 
 | Ruta | Uso |
 |------|-----|
 | `Pages/Public` | Web institucional: `Public/Home`, `Public/Nosotros`, etc. Rutas en `PublicSiteController`; layout `PublicLayout`; componentes en `Components/Public/`. |
 | `Pages/Intranet` | Área autenticada (dashboard, módulos operativos). |
+| `Pages/Teacher` | Portal docente (Fase 15): dashboard y accesos académicos simplificados; layout `TeacherLayout`. |
 | `Pages/Auth`, `Pages/Profile` | Breeze; el perfil usa el layout de intranet (`IntranetLayout`) para coherencia con el área autenticada. |
-| `Layouts` | `PublicLayout` (web pública: navbar + footer). `IntranetLayout` (intranet). `GuestLayout` / `AuthenticatedLayout` (Breeze). |
+| `Layouts` | `PublicLayout` (web pública: navbar + footer). `IntranetLayout` (intranet). `TeacherLayout` (portal docente). `GuestLayout` / `AuthenticatedLayout` (Breeze). |
 | `Components` | `Components/Public/` (navbar, secciones landing, footer). `Components/Intranet/` (shell y widgets intranet). |
 | `types` | Tipos compartidos TypeScript (`User`, `PageProps`, props por página). |
 
@@ -56,7 +71,7 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 
 - **Roles** (`App\Enums\IntranetRole` + `spatie/laravel-permission`): Administrador, Secretaria, Docente, Estudiante, Apoderado.
 - Rutas de intranet: middleware `auth`, `verified` y `role:` con la lista de roles del enum.
-- **UserPolicy**: el usuario solo actualiza / elimina su propia cuenta.
+- **UserPolicy**: el administrador gestiona usuarios del sistema (`viewAny`, `create`, `view`, `update` sobre cualquier `User`); cualquier usuario puede actualizar su propia cuenta (perfil); eliminación de cuenta propia reservada al flujo Breeze de perfil.
 - Detalle operativo: `docs/AUTHORIZATION.md`.
 
 ## Módulo de estudiantes (Fase 5)
@@ -64,7 +79,7 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Dominio**: modelo `App\Models\Student`, enums (`EducationalLevel`, `StudentStatus`, `Gender`, `DocumentType`), catálogo de grados `App\Support\StudentGradeCatalog`.
 - **Entrega HTTP**: `StudentController` (delgado), validación en `StoreStudentRequest` / `UpdateStudentRequest`, reglas compartidas en `Http/Requests/Intranet/Concerns/ValidatesStudentAttributes`.
 - **Servicio**: `App\Services\StudentService` (listados filtrados, alta y actualización con normalización de campos opcionales).
-- **Autorización**: `StudentPolicy` + middleware `role:` por ruta (Administrador/Secretaria/Docente para consulta; Administrador/Secretaria para alta/edición); Estudiante y Apoderado excluidos del módulo.
+- **Autorización**: `StudentPolicy` + middleware `role:` por ruta (Administrador/Secretaria/Docente para consulta; Administrador/Secretaria para alta/edición); Estudiante y Apoderado excluidos del módulo. El **docente sin roles administrativos** solo consulta estudiantes matriculados en sus secciones del año activo según `TeacherAssignment` (Fase 15.1).
 - **Frontend**: páginas Inertia `Pages/Intranet/Students/*`, navegación habilitada en `App\Support\IntranetNavigation` solo para roles con acceso.
 
 ## Módulo de apoderados (Fase 6)
@@ -162,6 +177,35 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
   - Docente: registrar y consultar.
   - Secretaria: solo consulta.
   - Estudiante/Apoderado: sin acceso administrativo.
+
+## Calificaciones y evaluaciones (Fase 14)
+
+- **Dominio**:
+  - `Subject`: cursos/asignaturas.
+  - `Evaluation`: evaluación por curso, año, nivel, grado y sección.
+  - `GradeRecord`: nota por estudiante y evaluación (unicidad `evaluation_id + student_id`).
+- **Servicios**:
+  - `SubjectService`: filtros y paginación de cursos.
+  - `EvaluationService`: filtros y paginación de evaluaciones.
+  - `AcademicGradeService`: contexto de registro masivo (matrículas activas), registro/upsert de notas, historial, métricas y reportes.
+- **Entrega HTTP**: `SubjectController`, `EvaluationController`, `AcademicGradeController`.
+- **Validación**:
+  - `Store/UpdateSubjectRequest`
+  - `Store/UpdateEvaluationRequest`
+  - `StoreGradeBatchRequest`
+- **Autorización**:
+  - Administrador: total.
+  - Docente: registra notas, consulta y exporta.
+  - Secretaria: consulta y exporta.
+  - Estudiante/Apoderado: sin acceso administrativo.
+- **Frontend Inertia**:
+  - `Pages/Intranet/Academic/Subjects/*`
+  - `Pages/Intranet/Academic/Evaluations/*`
+  - `Pages/Intranet/Academic/Grades/RecordsIndex.tsx`
+  - `Pages/Intranet/Academic/Grades/StudentHistory.tsx`
+- **Reportes**:
+  - PDF: `resources/views/intranet/academic/grades-report-pdf.blade.php`
+  - CSV (Excel-compatible): `AcademicGradeController::exportExcel`.
 
 ## Qué queda fuera de fases tempranas
 

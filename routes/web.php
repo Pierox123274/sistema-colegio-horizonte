@@ -5,11 +5,14 @@ use App\Http\Controllers\Academic\ClassroomController;
 use App\Http\Controllers\Academic\EducationalLevelController;
 use App\Http\Controllers\Academic\GradeController;
 use App\Http\Controllers\Academic\SectionController;
+use App\Http\Controllers\AcademicGradeController;
 use App\Http\Controllers\AcademicYearController;
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CashMovementController;
 use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\InventoryMovementController;
 use App\Http\Controllers\PaymentConceptController;
@@ -23,6 +26,14 @@ use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SaleReceiptController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\TeacherAssignmentController;
+use App\Http\Controllers\TeacherAttendanceController;
+use App\Http\Controllers\TeacherDashboardController;
+use App\Http\Controllers\TeacherGradesController;
+use App\Http\Controllers\TeacherReportsController;
+use App\Http\Controllers\TeacherStudentsController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -36,9 +47,25 @@ Route::get('/contacto', [PublicSiteController::class, 'contacto'])->name('public
 $intranetRoles = 'role:'.IntranetRole::middlewarePipe();
 
 Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
-    Route::get('/intranet/dashboard', function () {
+    Route::get('/intranet/dashboard', function (Request $request) {
+        $user = $request->user();
+        if ($user !== null
+            && $user->hasRole(IntranetRole::Docente->value)
+            && ! $user->hasRole(IntranetRole::Administrador->value)
+        ) {
+            return redirect()->route('teacher.dashboard');
+        }
+
         return Inertia::render('Intranet/Dashboard');
     })->name('dashboard');
+
+    Route::middleware(['role:Docente|Administrador'])->prefix('teacher')->name('teacher.')->group(function () {
+        Route::get('/dashboard', [TeacherDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/attendance', [TeacherAttendanceController::class, 'index'])->name('attendance.index');
+        Route::get('/grades', [TeacherGradesController::class, 'index'])->name('grades.index');
+        Route::get('/students', [TeacherStudentsController::class, 'index'])->name('students.index');
+        Route::get('/reports', [TeacherReportsController::class, 'index'])->name('reports.index');
+    });
 
     Route::middleware(['role:Administrador|Secretaria|Docente'])->group(function () {
         Route::get('/intranet/students', [StudentController::class, 'index'])->name('intranet.students.index');
@@ -77,6 +104,14 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
         Route::get('/grades', [GradeController::class, 'index'])->name('intranet.academic.grades.index');
         Route::get('/sections', [SectionController::class, 'index'])->name('intranet.academic.sections.index');
         Route::get('/classrooms', [ClassroomController::class, 'index'])->name('intranet.academic.classrooms.index');
+        Route::get('/subjects', [SubjectController::class, 'index'])->name('intranet.academic.subjects.index');
+        Route::get('/evaluations', [EvaluationController::class, 'index'])->name('intranet.academic.evaluations.index');
+        Route::get('/grades/records', [AcademicGradeController::class, 'index'])->name('intranet.academic.grades.records.index');
+        Route::get('/grades/history', [AcademicGradeController::class, 'historyIndex'])->name('intranet.academic.grades.history.index');
+        Route::get('/grades/students/{student}', [AcademicGradeController::class, 'studentHistory'])->whereNumber('student')->name('intranet.academic.grades.students.show');
+        Route::get('/grades/reports', [AcademicGradeController::class, 'reportsIndex'])->name('intranet.academic.grades.reports.index');
+        Route::get('/grades/reports/pdf', [AcademicGradeController::class, 'exportPdf'])->name('intranet.academic.grades.reports.export.pdf');
+        Route::get('/grades/reports/excel', [AcademicGradeController::class, 'exportExcel'])->name('intranet.academic.grades.reports.export.excel');
     });
 
     Route::middleware(['role:Administrador'])->prefix('intranet/academic')->group(function () {
@@ -107,6 +142,18 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
         Route::put('/classrooms/{classroom}', [ClassroomController::class, 'update'])->name('intranet.academic.classrooms.update');
         Route::patch('/classrooms/{classroom}', [ClassroomController::class, 'update']);
         Route::delete('/classrooms/{classroom}', [ClassroomController::class, 'destroy'])->name('intranet.academic.classrooms.destroy');
+
+        Route::get('/subjects/create', [SubjectController::class, 'create'])->name('intranet.academic.subjects.create');
+        Route::post('/subjects', [SubjectController::class, 'store'])->name('intranet.academic.subjects.store');
+        Route::get('/subjects/{subject}/edit', [SubjectController::class, 'edit'])->whereNumber('subject')->name('intranet.academic.subjects.edit');
+        Route::put('/subjects/{subject}', [SubjectController::class, 'update'])->whereNumber('subject')->name('intranet.academic.subjects.update');
+        Route::patch('/subjects/{subject}', [SubjectController::class, 'update'])->whereNumber('subject');
+
+        Route::get('/evaluations/create', [EvaluationController::class, 'create'])->name('intranet.academic.evaluations.create');
+        Route::post('/evaluations', [EvaluationController::class, 'store'])->name('intranet.academic.evaluations.store');
+        Route::get('/evaluations/{evaluation}/edit', [EvaluationController::class, 'edit'])->whereNumber('evaluation')->name('intranet.academic.evaluations.edit');
+        Route::put('/evaluations/{evaluation}', [EvaluationController::class, 'update'])->whereNumber('evaluation')->name('intranet.academic.evaluations.update');
+        Route::patch('/evaluations/{evaluation}', [EvaluationController::class, 'update'])->whereNumber('evaluation');
     });
 
     Route::middleware(['role:Administrador|Secretaria|Docente'])->prefix('intranet/academic')->group(function () {
@@ -114,6 +161,8 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
         Route::get('/grades/{grade}', [GradeController::class, 'show'])->name('intranet.academic.grades.show');
         Route::get('/sections/{section}', [SectionController::class, 'show'])->name('intranet.academic.sections.show');
         Route::get('/classrooms/{classroom}', [ClassroomController::class, 'show'])->name('intranet.academic.classrooms.show');
+        Route::get('/subjects/{subject}', [SubjectController::class, 'show'])->whereNumber('subject')->name('intranet.academic.subjects.show');
+        Route::get('/evaluations/{evaluation}', [EvaluationController::class, 'show'])->whereNumber('evaluation')->name('intranet.academic.evaluations.show');
     });
 
     Route::middleware(['role:Administrador|Secretaria'])->group(function () {
@@ -222,6 +271,7 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
         Route::get('/intranet/attendance/create', [AttendanceController::class, 'create'])->name('intranet.attendance.create');
         Route::get('/intranet/attendance/{date}/{section}', [AttendanceController::class, 'sectionDate'])->whereNumber('section')->name('intranet.attendance.section-date');
         Route::post('/intranet/attendance', [AttendanceController::class, 'store'])->name('intranet.attendance.store');
+        Route::post('/intranet/academic/grades/records', [AcademicGradeController::class, 'store'])->name('intranet.academic.grades.records.store');
     });
 
     Route::middleware(['role:Administrador'])->group(function () {
@@ -258,6 +308,20 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
         Route::post('/intranet/inventory/movements/{inventory_movement}/cancel', [InventoryMovementController::class, 'cancel'])
             ->whereNumber('inventory_movement')
             ->name('intranet.inventory.movements.cancel');
+    });
+
+    Route::middleware(['role:Administrador'])->prefix('intranet/admin')->name('intranet.admin.')->group(function () {
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
+        Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+        Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
+        Route::match(['put', 'patch'], '/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
+
+        Route::get('/teacher-assignments', [TeacherAssignmentController::class, 'index'])->name('teacher-assignments.index');
+        Route::get('/teacher-assignments/create', [TeacherAssignmentController::class, 'create'])->name('teacher-assignments.create');
+        Route::post('/teacher-assignments', [TeacherAssignmentController::class, 'store'])->name('teacher-assignments.store');
+        Route::get('/teacher-assignments/{assignment}/edit', [TeacherAssignmentController::class, 'edit'])->name('teacher-assignments.edit');
+        Route::match(['put', 'patch'], '/teacher-assignments/{assignment}', [TeacherAssignmentController::class, 'update'])->name('teacher-assignments.update');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

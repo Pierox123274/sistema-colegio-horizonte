@@ -45,11 +45,20 @@ type IndexPageProps = PageProps<{
     permissions: {
         manage: boolean;
     };
+    teacher_section_scope?: boolean;
+    has_teaching_assignments?: boolean;
 }>;
 
 export default function StudentsIndex() {
-    const { students, filters, catalog, permissions, flash } =
-        usePage<IndexPageProps>().props;
+    const {
+        students,
+        filters,
+        catalog,
+        permissions,
+        flash,
+        teacher_section_scope,
+        has_teaching_assignments,
+    } = usePage<IndexPageProps>().props;
 
     const [search, setSearch] = useState(String(filters.search ?? ''));
     const [educationalLevel, setEducationalLevel] = useState(
@@ -90,9 +99,21 @@ export default function StudentsIndex() {
                     </div>
                 ) : null}
 
+                {teacher_section_scope && has_teaching_assignments === false ? (
+                    <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                        Como docente, solo vería estudiantes de sus secciones asignadas
+                        en el año activo. Aún no tiene asignaciones: el listado aparecerá
+                        vacío hasta que administración registre una asignación docente.
+                    </div>
+                ) : null}
+
                 <SectionTitle
                     title="Estudiantes"
-                    description="Registro institucional del alumnado. Use filtros para localizar fichas."
+                    description={
+                        teacher_section_scope
+                            ? 'Estudiantes matriculados en sus secciones (año académico activo).'
+                            : 'Registro institucional del alumnado. Use filtros para localizar fichas.'
+                    }
                     actions={
                         permissions.manage ? (
                             <Link

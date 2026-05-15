@@ -50,6 +50,27 @@ class IntranetAuthorizationTest extends TestCase
         $response->assertOk();
     }
 
+    public function test_docente_sin_administrador_es_redirigido_desde_intranet_dashboard_al_portal_docente(): void
+    {
+        $user = User::factory()->create();
+        $user->syncRoles([IntranetRole::Docente->value]);
+
+        $this->actingAs($user)
+            ->get('/intranet/dashboard')
+            ->assertRedirect(route('teacher.dashboard', absolute: false));
+    }
+
+    public function test_docente_con_administrador_puede_ver_intranet_dashboard(): void
+    {
+        $user = User::factory()->create();
+        $user->syncRoles([
+            IntranetRole::Docente->value,
+            IntranetRole::Administrador->value,
+        ]);
+
+        $this->actingAs($user)->get('/intranet/dashboard')->assertOk();
+    }
+
     /**
      * @return array<string, array{0: string}>
      */
@@ -58,7 +79,6 @@ class IntranetAuthorizationTest extends TestCase
         return [
             'administrador' => [IntranetRole::Administrador->value],
             'secretaria' => [IntranetRole::Secretaria->value],
-            'docente' => [IntranetRole::Docente->value],
             'estudiante' => [IntranetRole::Estudiante->value],
             'apoderado' => [IntranetRole::Apoderado->value],
         ];

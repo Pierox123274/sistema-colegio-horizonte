@@ -10,7 +10,7 @@ export default function IntranetLayout({
     title,
     children,
 }: PropsWithChildren<{ title?: ReactNode }>) {
-    const { auth, sidebarNav } = usePage<PageProps>().props;
+    const { auth, sidebarNav, intranetHomeHref } = usePage<PageProps>().props;
     const user = auth.user;
     const [collapsed, setCollapsed] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -56,6 +56,7 @@ export default function IntranetLayout({
                 mobileOpen={mobileOpen}
                 onMobileClose={() => setMobileOpen(false)}
                 primaryRole={primaryRole}
+                homeHref={intranetHomeHref}
             />
 
             <div

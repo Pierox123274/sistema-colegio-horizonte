@@ -16,6 +16,8 @@ type SidebarProps = {
     mobileOpen: boolean;
     onMobileClose: () => void;
     primaryRole: string;
+    /** Destino del logotipo (ej. portal docente para rol Docente). */
+    homeHref?: string;
 };
 
 const EMPTY_NAV_CHILDREN: SidebarNavItem[] = [];
@@ -263,11 +265,13 @@ export function Sidebar({
     mobileOpen,
     onMobileClose,
     primaryRole,
+    homeHref,
 }: SidebarProps) {
     const { url, props } = usePage<PageProps>();
     const currentPath = url.split('?')[0];
     const currentRoute = props.current_route;
     const showLabels = !collapsed || mobileOpen;
+    const brandHref = homeHref ?? route('dashboard');
 
     const asideWidth = collapsed && !mobileOpen ? 'lg:w-[4.5rem]' : 'lg:w-64';
     const translate =
@@ -279,7 +283,7 @@ export function Sidebar({
         >
             <div className="flex h-16 shrink-0 items-center justify-between gap-2 border-b border-white/10 px-3">
                 <Link
-                    href={route('dashboard')}
+                    href={brandHref}
                     onClick={() => onMobileClose()}
                     className={`flex min-w-0 flex-1 items-center gap-3 ${collapsed && !mobileOpen ? 'lg:justify-center' : ''}`}
                 >

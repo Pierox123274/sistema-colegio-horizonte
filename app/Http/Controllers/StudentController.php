@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Enums\DocumentType;
 use App\Enums\EducationalLevel;
 use App\Enums\Gender;
+use App\Enums\IntranetRole;
 use App\Enums\StudentStatus;
 use App\Http\Requests\Intranet\StoreStudentRequest;
 use App\Http\Requests\Intranet\UpdateStudentRequest;
 use App\Models\Guardian;
 use App\Models\Student;
 use App\Services\StudentService;
+use App\Services\TeacherContextService;
 use App\Support\StudentGradeCatalog;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -26,8 +28,20 @@ class StudentController extends Controller
     {
         $this->authorize('viewAny', Student::class);
 
+        $user = $request->user();
+        $sectionScope = null;
+        if ($user !== null
+            && $user->hasRole(IntranetRole::Docente->value)
+            && ! $user->hasAnyRole([
+                IntranetRole::Administrador->value,
+                IntranetRole::Secretaria->value,
+            ])
+        ) {
+            $sectionScope = app(TeacherContextService::class)->activeSectionIdsFor($user);
+        }
+
         return Inertia::render('Intranet/Students/Index', [
-            'students' => $this->studentService->paginateForIndex($request),
+            'students' => $this->studentService->paginateForIndex($request, 15, $sectionScope),
             'filters' => [
                 'search' => $request->query('search', ''),
                 'educational_level' => $request->query('educational_level', ''),
@@ -40,6 +54,8 @@ class StudentController extends Controller
             'permissions' => [
                 'manage' => $request->user()?->can('create', Student::class) ?? false,
             ],
+            'teacher_section_scope' => $sectionScope !== null,
+            'has_teaching_assignments' => $sectionScope === null || $sectionScope !== [],
         ]);
     }
 
