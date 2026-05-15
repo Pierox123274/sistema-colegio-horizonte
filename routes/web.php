@@ -28,6 +28,7 @@ use App\Http\Controllers\SaleReceiptController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherAssignmentController;
+use App\Http\Controllers\TeacherAssignmentsController;
 use App\Http\Controllers\TeacherAttendanceController;
 use App\Http\Controllers\TeacherDashboardController;
 use App\Http\Controllers\TeacherGradesController;
@@ -61,10 +62,21 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () {
 
     Route::middleware(['role:Docente|Administrador'])->prefix('teacher')->name('teacher.')->group(function () {
         Route::get('/dashboard', [TeacherDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/assignments', [TeacherAssignmentsController::class, 'index'])->name('assignments.index');
         Route::get('/attendance', [TeacherAttendanceController::class, 'index'])->name('attendance.index');
+        Route::get('/attendance/register', [TeacherAttendanceController::class, 'create'])->name('attendance.create');
+        Route::get('/attendance/{date}/{section}', [TeacherAttendanceController::class, 'sectionDate'])->whereNumber('section')->name('attendance.section-date');
+        Route::post('/attendance', [TeacherAttendanceController::class, 'store'])->name('attendance.store');
         Route::get('/grades', [TeacherGradesController::class, 'index'])->name('grades.index');
+        Route::get('/grades/records', [TeacherGradesController::class, 'records'])->name('grades.records');
+        Route::post('/grades/records', [TeacherGradesController::class, 'store'])->name('grades.records.store');
         Route::get('/students', [TeacherStudentsController::class, 'index'])->name('students.index');
+        Route::get('/students/{student}', [TeacherStudentsController::class, 'show'])->name('students.show');
         Route::get('/reports', [TeacherReportsController::class, 'index'])->name('reports.index');
+        Route::get('/reports/attendance/pdf', [TeacherReportsController::class, 'attendancePdf'])->name('reports.attendance.pdf');
+        Route::get('/reports/attendance/excel', [TeacherReportsController::class, 'attendanceExcel'])->name('reports.attendance.excel');
+        Route::get('/reports/grades/pdf', [TeacherReportsController::class, 'gradesPdf'])->name('reports.grades.pdf');
+        Route::get('/reports/grades/excel', [TeacherReportsController::class, 'gradesExcel'])->name('reports.grades.excel');
     });
 
     Route::middleware(['role:Administrador|Secretaria|Docente'])->group(function () {

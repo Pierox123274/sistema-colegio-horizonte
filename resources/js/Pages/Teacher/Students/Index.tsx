@@ -9,6 +9,7 @@ import {
     levelBadgeClass,
     statusBadgeClass,
 } from '@/lib/studentLabels';
+import { TeacherAssignmentsEmpty } from '@/Components/Teacher/AssignmentsOverview';
 import TeacherLayout from '@/Layouts/TeacherLayout';
 import type {
     PageProps,
@@ -17,7 +18,7 @@ import type {
     StudentPrimaryGuardianBrief,
 } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ExternalLink, Filter, Users } from 'lucide-react';
+import { Filter, Users } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 
 type PaginatorLink = {
@@ -31,34 +32,45 @@ type LaravelPaginator = {
     links: PaginatorLink[];
 };
 
+type GroupedSection = {
+    section_id: number;
+    label: string;
+    level?: string;
+    grade?: string;
+    section?: string;
+    is_tutor: boolean;
+    courses: Array<{ id: number; name: string }>;
+    students: StudentListRow[];
+};
+
 type IndexPageProps = PageProps<{
     students: LaravelPaginator;
+    grouped_students: GroupedSection[];
     filters: {
         search: string;
         educational_level: string;
         status: string;
+        section_id: string;
     };
     catalog: {
         educational_levels: SelectOption[];
         statuses: SelectOption[];
+        sections: SelectOption[];
     };
-    permissions: {
-        manage: boolean;
-    };
-    links: { intranet_index: string };
     has_teaching_assignments?: boolean;
     teacher_portal_scoped?: boolean;
+    empty_message?: string;
 }>;
 
 export default function TeacherStudentsIndex() {
     const {
         students,
+        grouped_students,
         filters,
         catalog,
-        permissions,
-        links,
         has_teaching_assignments,
         teacher_portal_scoped,
+        empty_message,
     } = usePage<IndexPageProps>().props;
 
     const [search, setSearch] = useState(String(filters.search ?? ''));
@@ -66,6 +78,7 @@ export default function TeacherStudentsIndex() {
         String(filters.educational_level ?? ''),
     );
     const [status, setStatus] = useState(String(filters.status ?? ''));
+    const [sectionId, setSectionId] = useState(String(filters.section_id ?? ''));
 
     const applyFilters = (e?: FormEvent) => {
         e?.preventDefault();
@@ -75,10 +88,13 @@ export default function TeacherStudentsIndex() {
                 search: search || undefined,
                 educational_level: educationalLevel || undefined,
                 status: status || undefined,
+                section_id: sectionId || undefined,
             },
             { preserveState: true, replace: true },
         );
     };
+
+    const showGrouped = teacher_portal_scoped && grouped_students.length > 0;
 
     const rows = students.data ?? [];
 
@@ -92,10 +108,13 @@ export default function TeacherStudentsIndex() {
 
             <PageContainer>
                 {teacher_portal_scoped && has_teaching_assignments === false ? (
-                    <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-                        No tiene secciones docentes asignadas para el año académico activo.
-                        Cuando administración registre una asignación, aquí verá solo a los
-                        estudiantes matriculados en esas secciones.
+                    <div className="mb-6">
+                        <TeacherAssignmentsEmpty
+                            message={
+                                empty_message ??
+                                'Aún no tienes secciones o cursos asignados. Contacta al administrador académico.'
+                            }
+                        />
                     </div>
                 ) : null}
 
@@ -103,17 +122,8 @@ export default function TeacherStudentsIndex() {
                     title="Estudiantes"
                     description={
                         teacher_portal_scoped
-                            ? 'Alumnado matriculado en sus secciones (año activo). La ficha detallada se abre en el módulo institucional.'
-                            : 'Mismo listado filtrable que en el ERP, en vista simplificada para el aula. La ficha detallada se abre en el módulo institucional.'
-                    }
-                    actions={
-                        <Link
-                            href={links.intranet_index}
-                            className="inline-flex items-center gap-2 rounded-lg border border-plomo/20 px-4 py-2 text-sm font-semibold text-navy-900 transition hover:bg-navy-50"
-                        >
-                            <ExternalLink className="h-4 w-4" />
-                            Vista ERP
-                        </Link>
+                            ? 'Alumnado matriculado en sus secciones del año académico activo.'
+                            : 'Listado de estudiantes con filtros de búsqueda.'
                     }
                 />
 
@@ -161,6 +171,29 @@ export default function TeacherStudentsIndex() {
                                 ))}
                             </select>
                         </div>
+                        {catalog.sections.length > 0 ? (
+                            <div className="w-full min-w-[180px] sm:w-auto">
+                                <label
+                                    htmlFor="section_id"
+                                    className="block text-xs font-semibold uppercase tracking-wide text-plomo"
+                                >
+                                    Sección
+                                </label>
+                                <select
+                                    id="section_id"
+                                    value={sectionId}
+                                    onChange={(e) => setSectionId(e.target.value)}
+                                    className="mt-1 w-full rounded-md border border-plomo/20 bg-white px-3 py-2 text-sm text-navy-900 shadow-sm focus:border-navy-900 focus:outline-none focus:ring-1 focus:ring-navy-900"
+                                >
+                                    <option value="">Todas mis secciones</option>
+                                    {catalog.sections.map((o) => (
+                                        <option key={o.value} value={o.value}>
+                                            {o.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        ) : null}
                         <div className="w-full min-w-[160px] sm:w-auto">
                             <label
                                 htmlFor="status"
@@ -192,13 +225,63 @@ export default function TeacherStudentsIndex() {
                     </form>
                 </Card>
 
+                {showGrouped ? (
+                    <div className="space-y-6">
+                        {grouped_students.map((group) => (
+                            <Card key={group.section_id}>
+                                <div className="mb-4 flex flex-wrap items-start justify-between gap-2 border-b border-plomo/10 pb-3">
+                                    <div>
+                                        <h3 className="text-sm font-bold text-navy-900">
+                                            {group.label}
+                                        </h3>
+                                        {group.courses.length > 0 ? (
+                                            <p className="mt-1 text-xs text-plomo">
+                                                Cursos:{' '}
+                                                {group.courses.map((c) => c.name).join(', ')}
+                                            </p>
+                                        ) : null}
+                                    </div>
+                                    <span className="rounded-full bg-navy-50 px-2.5 py-0.5 text-xs font-semibold text-navy-900 ring-1 ring-navy-200">
+                                        {group.is_tutor ? 'Tutor de sección' : 'Docente de curso'}
+                                    </span>
+                                </div>
+                                {group.students.length === 0 ? (
+                                    <p className="text-sm text-plomo">
+                                        Sin estudiantes matriculados en esta sección.
+                                    </p>
+                                ) : (
+                                    <ul className="divide-y divide-plomo/10">
+                                        {group.students.map((s) => (
+                                            <li
+                                                key={s.id}
+                                                className="flex flex-wrap items-center justify-between gap-2 py-3"
+                                            >
+                                                <div>
+                                                    <p className="font-medium text-navy-900">
+                                                        {s.first_name} {s.last_name}
+                                                    </p>
+                                                    <p className="font-mono text-xs text-plomo">
+                                                        {s.code}
+                                                    </p>
+                                                </div>
+                                                <Link
+                                                    href={route('teacher.students.show', s.id)}
+                                                    className="text-sm font-semibold text-navy-900 hover:underline"
+                                                >
+                                                    Ver ficha
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </Card>
+                        ))}
+                    </div>
+                ) : null}
+
                 <TableContainer
-                    title="Listado"
-                    description={`${students.data?.length ?? 0} registros en esta página. ${
-                        permissions.manage
-                            ? 'Tiene permisos de gestión en el ERP.'
-                            : 'Solo lectura (docente).'
-                    }`}
+                    title={showGrouped ? 'Listado detallado' : 'Listado'}
+                    description={`${students.data?.length ?? 0} registros en esta página.`}
                 >
                     {rows.length === 0 ? (
                         <div className="p-6">
@@ -293,10 +376,7 @@ export default function TeacherStudentsIndex() {
                                             </td>
                                             <td className="px-4 py-3 text-right sm:px-6">
                                                 <Link
-                                                    href={route(
-                                                        'intranet.students.show',
-                                                        s.id,
-                                                    )}
+                                                    href={route('teacher.students.show', s.id)}
                                                     className="text-sm font-semibold text-navy-900 underline-offset-2 hover:underline"
                                                 >
                                                     Ver

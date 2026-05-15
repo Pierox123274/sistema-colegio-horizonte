@@ -50,6 +50,22 @@ class StudentService
             $query->where('status', $status);
         }
 
+        if ($request->filled('section_id') && $sectionIdsForActiveYear !== null) {
+            $sectionId = (int) $request->query('section_id');
+            if ($sectionIdsForActiveYear === [] || ! in_array($sectionId, $sectionIdsForActiveYear, true)) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $activeYear = AcademicYear::query()->where('is_active', true)->first();
+                if ($activeYear !== null) {
+                    $query->whereHas('enrollments', function ($q) use ($activeYear, $sectionId): void {
+                        $q->where('academic_year_id', $activeYear->id)
+                            ->where('status', EnrollmentStatus::Matriculado->value)
+                            ->where('section_id', $sectionId);
+                    });
+                }
+            }
+        }
+
         $query->with([
             'guardians' => function ($q): void {
                 $q->wherePivot('is_primary', true);

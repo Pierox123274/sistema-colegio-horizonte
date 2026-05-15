@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\EnrollmentStatus;
-use App\Enums\IntranetRole;
 use App\Models\AcademicYear;
 use App\Models\Attendance;
 use App\Models\Enrollment;
@@ -36,26 +35,15 @@ class TeacherDashboardController extends Controller
             'grade_records_count' => 0,
         ];
 
-        $docenteSolo = $user !== null
-            && $user->hasRole(IntranetRole::Docente->value)
-            && ! $user->hasAnyRole([
-                IntranetRole::Administrador->value,
-                IntranetRole::Secretaria->value,
-            ]);
+        $docenteSolo = $user !== null && $this->teacherContext->isDocentePortalScoped($user);
+
+        $assignmentsOverview = ['academic_year' => null, 'sections' => [], 'course_assignments' => []];
 
         if ($docenteSolo && $user !== null) {
             $sectionIds = $this->teacherContext->activeSectionIdsFor($user);
             $stats = $this->teacherContext->dashboardStats($user, $sectionIds);
-            $assignmentsPayload = $this->teacherContext->activeAssignmentsFor($user)->map(function ($a): array {
-                return [
-                    'id' => $a->id,
-                    'section' => $a->section?->name,
-                    'grade' => $a->section?->grade?->name,
-                    'level' => $a->section?->grade?->educationalLevel?->name,
-                    'subject' => $a->subject?->name,
-                    'is_tutor' => $a->is_tutor,
-                ];
-            })->values()->all();
+            $assignmentsPayload = $this->teacherContext->assignmentsTableFor($user);
+            $assignmentsOverview = $this->teacherContext->assignmentsOverviewFor($user);
         } else {
             $enrolledCount = 0;
             if ($activeYear !== null) {
@@ -76,40 +64,23 @@ class TeacherDashboardController extends Controller
             ];
         }
 
-        $firstSectionId = $sectionIds[0] ?? null;
-        $yearId = $activeYear?->id;
-        $today = now()->toDateString();
-
-        $quickLinks = [
-            'attendance' => route('intranet.attendance.index', absolute: false),
-            'attendance_register' => route('intranet.attendance.create', absolute: false),
-            'grades' => route('intranet.academic.grades.records.index', absolute: false),
-            'grades_reports' => route('intranet.academic.grades.reports.index', absolute: false),
-        ];
-
-        if ($firstSectionId !== null) {
-            $quickLinks['attendance_register'] = route('intranet.attendance.section-date', [
-                'date' => $today,
-                'section' => $firstSectionId,
-            ], false).($yearId ? '?academic_year_id='.$yearId : '');
-            $quickLinks['attendance'] = route('intranet.attendance.reports.index', [
-                'section_id' => $firstSectionId,
-            ], false);
-            $quickLinks['grades'] = route('intranet.academic.grades.records.index', [
-                'section_id' => $firstSectionId,
-            ], false);
-            $quickLinks['grades_reports'] = route('intranet.academic.grades.reports.index', [
-                'section_id' => $firstSectionId,
-            ], false);
-        }
-
         return Inertia::render('Teacher/Dashboard', [
             'academic_year' => $activeYear?->only(['id', 'name', 'year', 'is_active']),
             'stats' => $stats,
             'assignments' => $assignmentsPayload,
+            'assignments_overview' => $assignmentsOverview,
             'has_teaching_assignments' => $assignmentsPayload !== [],
             'teacher_portal_scoped' => $docenteSolo,
-            'links' => $quickLinks,
+            'empty_message' => $this->teacherContext->emptyAssignmentsMessage(),
+            'links' => [
+                'assignments' => route('teacher.assignments.index', absolute: false),
+                'attendance' => route('teacher.attendance.index', absolute: false),
+                'attendance_register' => route('teacher.attendance.create', absolute: false),
+                'grades' => route('teacher.grades.records', absolute: false),
+                'grades_summary' => route('teacher.grades.index', absolute: false),
+                'students' => route('teacher.students.index', absolute: false),
+                'reports' => route('teacher.reports.index', absolute: false),
+            ],
         ]);
     }
 }

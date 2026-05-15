@@ -106,4 +106,83 @@ class TeacherPortalTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page->component('Teacher/Reports/Index'));
     }
+
+    public function test_docente_portal_no_expone_textos_erp(): void
+    {
+        $docente = $this->userWithRole(IntranetRole::Docente);
+
+        $this->actingAs($docente)
+            ->get(route('teacher.dashboard'))
+            ->assertOk()
+            ->assertDontSee('ERP', false)
+            ->assertDontSee('Panel ERP', false);
+
+        $this->actingAs($docente)
+            ->get(route('teacher.attendance.index'))
+            ->assertOk()
+            ->assertDontSee('ERP', false);
+
+        $this->actingAs($docente)
+            ->get(route('teacher.grades.index'))
+            ->assertOk()
+            ->assertDontSee('ERP', false);
+
+        $this->actingAs($docente)
+            ->get(route('teacher.students.index'))
+            ->assertOk()
+            ->assertDontSee('ERP', false)
+            ->assertDontSee('Vista ERP', false);
+
+        $this->actingAs($docente)
+            ->get(route('teacher.reports.index'))
+            ->assertOk()
+            ->assertDontSee('ERP', false);
+
+        $this->actingAs($docente)
+            ->get(route('teacher.assignments.index'))
+            ->assertOk()
+            ->assertDontSee('ERP', false);
+    }
+
+    public function test_docente_puede_abrir_registro_asistencia_y_notas(): void
+    {
+        $docente = $this->userWithRole(IntranetRole::Docente);
+
+        $this->actingAs($docente)
+            ->get(route('teacher.attendance.create'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Teacher/Attendance/Register'));
+
+        $this->actingAs($docente)
+            ->get(route('teacher.grades.records'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Teacher/Grades/Records'));
+    }
+
+    public function test_docente_ve_pagina_mis_asignaciones(): void
+    {
+        $docente = $this->userWithRole(IntranetRole::Docente);
+
+        $this->actingAs($docente)
+            ->get(route('teacher.assignments.index'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Teacher/Assignments/Index')
+                ->has('overview')
+                ->has('overview.summary')
+                ->has('active_tab')
+                ->has('empty_message'));
+    }
+
+    public function test_docente_sin_asignaciones_ve_mensaje_vacio(): void
+    {
+        $docente = $this->userWithRole(IntranetRole::Docente);
+
+        $this->actingAs($docente)
+            ->get(route('teacher.assignments.index'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('has_teaching_assignments', false)
+                ->where('empty_message', fn ($msg) => str_contains($msg, 'administrador académico')));
+    }
 }

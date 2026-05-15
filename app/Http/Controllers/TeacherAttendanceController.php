@@ -2,47 +2,38 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AttendanceStatus;
 use App\Enums\EnrollmentStatus;
-use App\Enums\IntranetRole;
+use App\Http\Requests\Intranet\StoreAttendanceBatchRequest;
 use App\Models\AcademicYear;
 use App\Models\Attendance;
+use App\Models\EducationalLevel;
+use App\Models\Section;
 use App\Models\Student;
+use App\Models\User;
+use App\Services\AttendanceService;
 use App\Services\TeacherContextService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class TeacherAttendanceController extends Controller
 {
+    public function __construct(
+        private readonly AttendanceService $attendanceService,
+        private readonly TeacherContextService $teacherContext
+    ) {}
+
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', Attendance::class);
 
         $user = $request->user();
-        $sectionScope = null;
-        if ($user !== null
-            && $user->hasRole(IntranetRole::Docente->value)
-            && ! $user->hasAnyRole([
-                IntranetRole::Administrador->value,
-                IntranetRole::Secretaria->value,
-            ])
-        ) {
-            $sectionScope = app(TeacherContextService::class)->activeSectionIdsFor($user);
-        }
+        $sectionScope = $this->resolveSectionScope($user);
 
         $studentQuery = Student::query()->orderBy('last_name')->orderBy('first_name');
-        if ($sectionScope !== null && $sectionScope !== []) {
-            $studentQuery->whereHas('enrollments', function ($q) use ($sectionScope): void {
-                $year = AcademicYear::query()->where('is_active', true)->first();
-                if ($year !== null) {
-                    $q->where('academic_year_id', $year->id)
-                        ->where('status', EnrollmentStatus::Matriculado->value)
-                        ->whereIn('section_id', $sectionScope);
-                }
-            });
-        } elseif ($sectionScope !== null && $sectionScope === []) {
-            $studentQuery->whereRaw('1 = 0');
-        }
+        $this->applyEnrollmentScope($studentQuery, $sectionScope);
 
         $catalogStudents = $studentQuery
             ->limit(500)
@@ -55,50 +46,195 @@ class TeacherAttendanceController extends Controller
             ->all();
 
         $recentQuery = Attendance::query()->with(['student:id,code,first_name,last_name', 'section:id,name']);
-        if ($sectionScope !== null && $sectionScope !== []) {
-            $recentQuery->whereIn('section_id', $sectionScope);
-        } elseif ($sectionScope !== null && $sectionScope === []) {
-            $recentQuery->whereRaw('1 = 0');
+        $this->applySectionScope($recentQuery, $sectionScope);
+
+        if ($sectionScope !== null && $request->filled('section_id')) {
+            $sectionFilter = (int) $request->query('section_id');
+            if ($sectionScope === [] || ! in_array($sectionFilter, $sectionScope, true)) {
+                $recentQuery->whereRaw('1 = 0');
+            } else {
+                $recentQuery->where('section_id', $sectionFilter);
+            }
         }
 
-        $firstSectionId = ($sectionScope !== null && $sectionScope !== []) ? $sectionScope[0] : null;
-        $year = AcademicYear::query()->where('is_active', true)->first();
-        $today = now()->toDateString();
-
-        $links = [
-            'register' => route('intranet.attendance.create', absolute: false),
-            'history' => route('intranet.attendance.index', absolute: false),
-            'reports' => route('intranet.attendance.reports.index', absolute: false),
-        ];
-
-        if ($firstSectionId !== null) {
-            $links['register'] = route('intranet.attendance.section-date', [
-                'date' => $today,
-                'section' => $firstSectionId,
-            ], false).($year ? '?academic_year_id='.$year->id : '');
-            $links['history'] = route('intranet.attendance.reports.index', [
-                'section_id' => $firstSectionId,
-            ], false);
-            $links['reports'] = route('intranet.attendance.reports.index', [
-                'section_id' => $firstSectionId,
-            ], false);
+        $sectionOptions = [];
+        if ($sectionScope !== null && $user !== null) {
+            $sectionOptions = $this->teacherContext->sectionFilterOptionsFor($user);
         }
 
         return Inertia::render('Teacher/Attendance/Index', [
             'filters' => [
                 'student_id' => (string) $request->query('student_id', ''),
+                'section_id' => (string) $request->query('section_id', ''),
             ],
             'catalog' => [
                 'students' => $catalogStudents,
+                'sections' => $sectionOptions,
             ],
             'recent_attendances' => $recentQuery
                 ->orderByDesc('attendance_date')
                 ->orderByDesc('id')
                 ->limit(25)
                 ->get(),
-            'links' => $links,
+            'links' => [
+                'register' => route('teacher.attendance.create', absolute: false),
+                'index' => route('teacher.attendance.index', absolute: false),
+                'reports' => route('teacher.reports.index', absolute: false),
+            ],
             'has_teaching_assignments' => $sectionScope === null || $sectionScope !== [],
             'teacher_portal_scoped' => $sectionScope !== null,
+            'empty_message' => $this->teacherContext->emptyAssignmentsMessage(),
         ]);
+    }
+
+    public function create(Request $request): Response
+    {
+        $this->authorize('create', Attendance::class);
+
+        $user = $request->user();
+        $scoped = $user !== null && $this->teacherContext->isDocentePortalScoped($user);
+
+        return Inertia::render('Teacher/Attendance/Register', [
+            'catalog' => $this->buildCatalog($user, $scoped),
+            'batch' => null,
+            'initial' => [
+                'section_id' => (string) $request->query('section_id', ''),
+            ],
+        ]);
+    }
+
+    public function sectionDate(Request $request, string $date, Section $section): Response
+    {
+        $this->authorize('create', Attendance::class);
+
+        $user = $request->user();
+        if ($user !== null) {
+            $this->teacherContext->assertTeacherCanAccessSection($user, $section->id);
+        }
+
+        $section->load('grade');
+        $year = null;
+        if ($request->filled('academic_year_id')) {
+            $year = AcademicYear::query()->find((int) $request->query('academic_year_id'));
+        }
+
+        $batch = $this->attendanceService->batchContext($date, $section, $year);
+
+        $scoped = $user !== null && $this->teacherContext->isDocentePortalScoped($user);
+
+        return Inertia::render('Teacher/Attendance/Register', [
+            'catalog' => $this->buildCatalog($user, $scoped),
+            'batch' => $batch,
+        ]);
+    }
+
+    public function store(StoreAttendanceBatchRequest $request): RedirectResponse
+    {
+        $user = $request->user();
+        if ($user !== null) {
+            $this->teacherContext->assertTeacherCanAccessSection(
+                $user,
+                (int) $request->input('section_id')
+            );
+        }
+
+        $this->attendanceService->registerBatch($request->validated(), (int) $request->user()->id);
+
+        return redirect()
+            ->route('teacher.attendance.index')
+            ->with('success', 'Asistencia registrada correctamente.');
+    }
+
+    /**
+     * @return list<int>|null
+     */
+    private function resolveSectionScope(?User $user): ?array
+    {
+        if ($user === null || ! $this->teacherContext->isDocentePortalScoped($user)) {
+            return null;
+        }
+
+        return $this->teacherContext->activeSectionIdsFor($user);
+    }
+
+    /**
+     * @param  list<int>|null  $sectionScope
+     */
+    private function applySectionScope($query, ?array $sectionScope): void
+    {
+        if ($sectionScope !== null && $sectionScope !== []) {
+            $query->whereIn('section_id', $sectionScope);
+        } elseif ($sectionScope !== null && $sectionScope === []) {
+            $query->whereRaw('1 = 0');
+        }
+    }
+
+    /**
+     * @param  list<int>|null  $sectionScope
+     */
+    private function applyEnrollmentScope($query, ?array $sectionScope): void
+    {
+        if ($sectionScope === null) {
+            return;
+        }
+
+        if ($sectionScope === []) {
+            $query->whereRaw('1 = 0');
+
+            return;
+        }
+
+        $query->whereHas('enrollments', function ($q) use ($sectionScope): void {
+            $year = AcademicYear::query()->where('is_active', true)->first();
+            if ($year !== null) {
+                $q->where('academic_year_id', $year->id)
+                    ->where('status', EnrollmentStatus::Matriculado->value)
+                    ->whereIn('section_id', $sectionScope);
+            }
+        });
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildCatalog(?User $user, bool $scoped): array
+    {
+        if ($scoped && $user !== null) {
+            $catalog = $this->teacherContext->attendanceCatalogFor($user);
+
+            return [
+                'statuses' => AttendanceStatus::options(),
+                'academic_years' => $catalog['academic_years'],
+                'levels' => $catalog['levels'],
+            ];
+        }
+
+        $academicYears = AcademicYear::query()->orderByDesc('year')->get(['id', 'name', 'year', 'is_active']);
+        $levels = EducationalLevel::query()
+            ->with(['grades.sections'])
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        return [
+            'statuses' => AttendanceStatus::options(),
+            'academic_years' => $academicYears->map(fn (AcademicYear $y): array => [
+                'value' => (string) $y->id,
+                'label' => $y->name.' ('.$y->year.')'.($y->is_active ? ' — Activo' : ''),
+                'is_active' => $y->is_active,
+            ])->values()->all(),
+            'levels' => $levels->map(fn ($level): array => [
+                'id' => $level->id,
+                'name' => $level->name,
+                'grades' => $level->grades->map(fn ($grade): array => [
+                    'id' => $grade->id,
+                    'name' => $grade->name,
+                    'sections' => $grade->sections->map(fn (Section $section): array => [
+                        'id' => $section->id,
+                        'name' => $section->name,
+                    ])->values()->all(),
+                ])->values()->all(),
+            ])->values()->all(),
+        ];
     }
 }
