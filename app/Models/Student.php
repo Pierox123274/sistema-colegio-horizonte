@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Student extends Model
 {
@@ -121,5 +122,29 @@ class Student extends Model
     public function gradeRecords(): HasMany
     {
         return $this->hasMany(GradeRecord::class);
+    }
+
+    /**
+     * @return HasMany<DiagnosticAttempt, $this>
+     */
+    public function diagnosticAttempts(): HasMany
+    {
+        return $this->hasMany(DiagnosticAttempt::class);
+    }
+
+    /**
+     * @return HasOne<StudentAdaptiveProfile, $this>
+     */
+    public function adaptiveProfile(): HasOne
+    {
+        return $this->hasOne(StudentAdaptiveProfile::class);
+    }
+
+    /**
+     * @return HasMany<LearningRecommendation, $this>
+     */
+    public function learningRecommendations(): HasMany
+    {
+        return $this->hasMany(LearningRecommendation::class);
     }
 }

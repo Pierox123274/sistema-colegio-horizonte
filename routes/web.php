@@ -15,6 +15,11 @@ use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\IntranetAdaptiveAnalyticsController;
+use App\Http\Controllers\IntranetAdaptiveDiagnosticExamController;
+use App\Http\Controllers\IntranetAdaptiveDiagnosticResultController;
+use App\Http\Controllers\IntranetAdaptiveQuestionBankController;
+use App\Http\Controllers\IntranetAIAnalyticsController;
 use App\Http\Controllers\IntranetAnalyticsController;
 use App\Http\Controllers\IntranetAnalyticsReportsController;
 use App\Http\Controllers\IntranetAnnouncementInboxController;
@@ -31,21 +36,28 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SaleReceiptController;
+use App\Http\Controllers\StudentAIController;
 use App\Http\Controllers\StudentAnnouncementController;
 use App\Http\Controllers\StudentAttendanceController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentDashboardController;
+use App\Http\Controllers\StudentDiagnosticController;
 use App\Http\Controllers\StudentGradesController;
+use App\Http\Controllers\StudentLearningPathController;
 use App\Http\Controllers\StudentPaymentsController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\TeacherAcademicRiskController;
+use App\Http\Controllers\TeacherAIController;
 use App\Http\Controllers\TeacherAnalyticsController;
 use App\Http\Controllers\TeacherAnnouncementController;
 use App\Http\Controllers\TeacherAssignmentController;
 use App\Http\Controllers\TeacherAssignmentsController;
 use App\Http\Controllers\TeacherAttendanceController;
 use App\Http\Controllers\TeacherDashboardController;
+use App\Http\Controllers\TeacherDiagnosticsController;
 use App\Http\Controllers\TeacherGradesController;
+use App\Http\Controllers\TeacherPedagogicalPanelController;
 use App\Http\Controllers\TeacherReportsController;
 use App\Http\Controllers\TeacherStudentsController;
 use Illuminate\Http\Request;
@@ -83,6 +95,11 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
 
     Route::middleware(['role:Estudiante|Administrador'])->prefix('student')->name('student.')->group(function () {
         Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
+        Route::middleware('throttle:ai')->group(function () {
+            Route::get('/ai-tutor', [StudentAIController::class, 'tutor'])->name('ai-tutor.index');
+            Route::post('/ai-tutor/message', [StudentAIController::class, 'message'])->name('ai-tutor.message');
+            Route::get('/recommendations', [StudentAIController::class, 'recommendations'])->name('recommendations.index');
+        });
         Route::get('/grades', [StudentGradesController::class, 'index'])->name('grades.index');
         Route::get('/attendance', [StudentAttendanceController::class, 'index'])->name('attendance.index');
         Route::get('/payments', [StudentPaymentsController::class, 'index'])->name('payments.index');
@@ -90,6 +107,12 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/announcements', [StudentAnnouncementController::class, 'index'])->name('announcements.index');
         Route::get('/announcements/{announcement}', [StudentAnnouncementController::class, 'show'])->name('announcements.show');
         Route::post('/announcements/{announcement}/read', [StudentAnnouncementController::class, 'markRead'])->name('announcements.read');
+        Route::get('/diagnostic/attempt/{attempt}', [StudentDiagnosticController::class, 'attempt'])->name('diagnostic.attempt');
+        Route::post('/diagnostic/attempt/{attempt}/answer', [StudentDiagnosticController::class, 'answer'])->name('diagnostic.answer');
+        Route::post('/diagnostic/{exam}/start', [StudentDiagnosticController::class, 'start'])->name('diagnostic.start');
+        Route::get('/diagnostic/{exam}', [StudentDiagnosticController::class, 'show'])->name('diagnostic.show');
+        Route::get('/diagnostic', [StudentDiagnosticController::class, 'index'])->name('diagnostic.index');
+        Route::get('/learning-path', [StudentLearningPathController::class, 'index'])->name('learning-path.index');
     });
 
     Route::middleware(['role:Docente|Administrador'])->prefix('teacher')->name('teacher.')->group(function () {
@@ -112,7 +135,20 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/announcements', [TeacherAnnouncementController::class, 'index'])->name('announcements.index');
         Route::get('/announcements/{announcement}', [TeacherAnnouncementController::class, 'show'])->name('announcements.show');
         Route::post('/announcements/{announcement}/read', [TeacherAnnouncementController::class, 'markRead'])->name('announcements.read');
+        Route::get('/pedagogical-panel', [TeacherPedagogicalPanelController::class, 'index'])->name('pedagogical-panel.index');
+        Route::get('/diagnostics', [TeacherDiagnosticsController::class, 'index'])->name('diagnostics.index');
+        Route::get('/diagnostics/create', [TeacherDiagnosticsController::class, 'create'])->name('diagnostics.create');
+        Route::post('/diagnostics', [TeacherDiagnosticsController::class, 'store'])->name('diagnostics.store');
+        Route::get('/diagnostics/{exam}', [TeacherDiagnosticsController::class, 'show'])->name('diagnostics.show');
+        Route::get('/diagnostics/{exam}/results', [TeacherDiagnosticsController::class, 'results'])->name('diagnostics.results');
+        Route::get('/academic-risk', [TeacherAcademicRiskController::class, 'index'])->name('academic-risk.index');
         Route::get('/analytics', [TeacherAnalyticsController::class, 'index'])->name('analytics.index');
+        Route::middleware('throttle:ai')->group(function () {
+            Route::get('/ai-insights', [TeacherAIController::class, 'insights'])->name('ai-insights.index');
+            Route::get('/students-risk', [TeacherAIController::class, 'studentsRisk'])->name('students-risk.index');
+        });
+        Route::get('/adaptive-learning', fn () => redirect()->route('teacher.pedagogical-panel.index'))->name('adaptive-learning.index');
+        Route::get('/diagnostic-results', fn () => redirect()->route('teacher.diagnostics.index'))->name('diagnostic-results.index');
     });
 
     Route::middleware($intranetRoles)->prefix('intranet/announcements/inbox')->name('intranet.announcements.inbox.')->group(function () {
@@ -159,6 +195,28 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/jobs', [IntranetSystemOperationsController::class, 'jobs'])->name('jobs.index');
         Route::get('/backups', [IntranetSystemOperationsController::class, 'backups'])->name('backups.index');
         Route::post('/backups', [IntranetSystemOperationsController::class, 'dispatchBackup'])->name('backups.store');
+    });
+
+    Route::middleware(['role:Administrador', 'throttle:ai'])->prefix('intranet/ai-analytics')->name('intranet.ai-analytics.')->group(function () {
+        Route::get('/', [IntranetAIAnalyticsController::class, 'index'])->name('index');
+        Route::post('/refresh', [IntranetAIAnalyticsController::class, 'refresh'])->name('refresh');
+    });
+
+    Route::middleware(['role:Administrador'])->prefix('intranet/adaptive-analytics')->name('intranet.adaptive-analytics.')->group(function () {
+        Route::get('/', [IntranetAdaptiveAnalyticsController::class, 'index'])->name('index');
+    });
+
+    Route::middleware(['role:Administrador|Secretaria'])->prefix('intranet/adaptive')->name('intranet.adaptive.')->group(function () {
+        Route::get('/diagnostic-exams', [IntranetAdaptiveDiagnosticExamController::class, 'index'])->name('diagnostic-exams.index');
+        Route::get('/diagnostic-exams/create', [IntranetAdaptiveDiagnosticExamController::class, 'create'])->name('diagnostic-exams.create');
+        Route::post('/diagnostic-exams', [IntranetAdaptiveDiagnosticExamController::class, 'store'])->name('diagnostic-exams.store');
+        Route::get('/diagnostic-exams/{diagnostic_exam}', [IntranetAdaptiveDiagnosticExamController::class, 'show'])->name('diagnostic-exams.show');
+        Route::get('/diagnostic-exams/{diagnostic_exam}/edit', [IntranetAdaptiveDiagnosticExamController::class, 'edit'])->name('diagnostic-exams.edit');
+        Route::put('/diagnostic-exams/{diagnostic_exam}', [IntranetAdaptiveDiagnosticExamController::class, 'update'])->name('diagnostic-exams.update');
+        Route::patch('/diagnostic-exams/{diagnostic_exam}', [IntranetAdaptiveDiagnosticExamController::class, 'update']);
+
+        Route::get('/questions', [IntranetAdaptiveQuestionBankController::class, 'index'])->name('questions.index');
+        Route::get('/results', [IntranetAdaptiveDiagnosticResultController::class, 'index'])->name('results.index');
     });
 
     Route::middleware(['role:Administrador'])->prefix('intranet/security')->name('intranet.security.')->group(function () {

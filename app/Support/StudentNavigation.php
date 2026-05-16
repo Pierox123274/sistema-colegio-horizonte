@@ -30,6 +30,41 @@ final class StudentNavigation
                 'activeRoutes' => ['student.dashboard'],
             ],
             [
+                'label' => 'Diagnóstico adaptativo',
+                'href' => route('student.diagnostic.index', absolute: false),
+                'icon' => 'clipboard-list',
+                'disabled' => false,
+                'activeRoutes' => [
+                    'student.diagnostic.index',
+                    'student.diagnostic.show',
+                    'student.diagnostic.attempt',
+                ],
+            ],
+            [
+                'label' => 'Ruta de aprendizaje',
+                'href' => route('student.learning-path.index', absolute: false),
+                'icon' => 'arrow-left-right',
+                'disabled' => false,
+                'activeRoutes' => ['student.learning-path.index'],
+            ],
+            [
+                'label' => 'Recomendaciones IA',
+                'href' => route('student.recommendations.index', absolute: false),
+                'icon' => 'sparkles',
+                'disabled' => false,
+                'activeRoutes' => ['student.recommendations.index'],
+            ],
+            [
+                'label' => 'Tutor IA',
+                'href' => route('student.ai-tutor.index', absolute: false),
+                'icon' => 'bot',
+                'disabled' => false,
+                'activeRoutes' => [
+                    'student.ai-tutor.index',
+                    'student.ai-tutor.message',
+                ],
+            ],
+            [
                 'label' => 'Mis notas',
                 'href' => route('student.grades.index', absolute: false),
                 'icon' => 'clipboard-check',

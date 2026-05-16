@@ -301,6 +301,59 @@ final class IntranetNavigation
                         'disabled' => false,
                         'activeRoutes' => ['intranet.system.backups.index'],
                     ],
+                    [
+                        'label' => 'IA institucional',
+                        'href' => route('intranet.ai-analytics.index', absolute: false),
+                        'icon' => 'sparkles',
+                        'disabled' => false,
+                        'activeRoutes' => [
+                            'intranet.ai-analytics.index',
+                            'intranet.ai-analytics.refresh',
+                        ],
+                    ],
+                    [
+                        'label' => 'Aprendizaje adaptativo',
+                        'href' => null,
+                        'icon' => 'arrow-left-right',
+                        'disabled' => false,
+                        'children' => [
+                            [
+                                'label' => 'Analítica institucional',
+                                'href' => route('intranet.adaptive-analytics.index', absolute: false),
+                                'icon' => 'bar-chart-3',
+                                'disabled' => false,
+                                'activeRoutes' => ['intranet.adaptive-analytics.index'],
+                            ],
+                            [
+                                'label' => 'Exámenes diagnóstico',
+                                'href' => route('intranet.adaptive.diagnostic-exams.index', absolute: false),
+                                'icon' => 'clipboard-list',
+                                'disabled' => false,
+                                'activeRoutes' => [
+                                    'intranet.adaptive.diagnostic-exams.index',
+                                    'intranet.adaptive.diagnostic-exams.create',
+                                    'intranet.adaptive.diagnostic-exams.store',
+                                    'intranet.adaptive.diagnostic-exams.show',
+                                    'intranet.adaptive.diagnostic-exams.edit',
+                                    'intranet.adaptive.diagnostic-exams.update',
+                                ],
+                            ],
+                            [
+                                'label' => 'Banco de preguntas',
+                                'href' => route('intranet.adaptive.questions.index', absolute: false),
+                                'icon' => 'clipboard-check',
+                                'disabled' => false,
+                                'activeRoutes' => ['intranet.adaptive.questions.index'],
+                            ],
+                            [
+                                'label' => 'Resultados diagnóstico',
+                                'href' => route('intranet.adaptive.results.index', absolute: false),
+                                'icon' => 'file-bar-chart',
+                                'disabled' => false,
+                                'activeRoutes' => ['intranet.adaptive.results.index'],
+                            ],
+                        ],
+                    ],
                 ],
             ];
         }

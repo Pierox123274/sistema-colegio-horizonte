@@ -51,6 +51,29 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Contenedores**: `Dockerfile`, `docker-compose.yml` (app, nginx, mysql, redis, queue, scheduler), `docker/nginx.conf`.
 - **Seguridad de configuración**: `EnvSecurityValidator` y comando `institution:validate-environment`.
 
+## Tutor IA institucional (Fase 21)
+
+- **Contrato**: `App\AI\Contracts\AIProviderInterface`; implementación **OpenAI** en `App\AI\Providers\OpenAIProvider` (sin claves en código; `config/ai.php` + `.env`).
+- **Proveedores reserva**: `OllamaProvider`, `GeminiProvider`, `ClaudeProvider` (stubs para expansión); `NullAIProvider` cuando la IA está deshabilitada.
+- **Servicios**: `AITutorService` (chat, caché, auditoría con hash de prompt), `AcademicRiskAnalysisService` (riesgo heurístico), `StudentRecommendationService` (reglas pedagógicas).
+- **Jobs**: `GenerateStudentInsightsJob`, `GenerateTeacherInsightsJob`, `GenerateInstitutionInsightsJob` (`ShouldQueue`); scheduler: `GenerateInstitutionInsightsJob` diario en `routes/console.php`.
+- **Autorización**: `AIPolicy` sobre `App\Support\AIDashboard` (tutor estudiante + admin; insights docente + admin; **panel institucional solo Administrador**).
+- **HTTP**: rutas `student/ai-tutor`, `student/recommendations`, `teacher/ai-insights`, `teacher/students-risk`, `intranet/ai-analytics` con `throttle:ai`.
+- **Frontend**: `Pages/Student/AITutor`, `Student/Recommendations`, `Teacher/AIInsights`, `Teacher/StudentsRisk`, `Intranet/AIAnalytics/Index`.
+- **Documentación**: `docs/AI_ARCHITECTURE.md`.
+
+## Aprendizaje adaptativo (Fase 22)
+
+- **Dominio**: `QuestionBank` + `QuestionOption` (ítems por curso/tema con competencias JSON); `DiagnosticExam` (modo fijo o adaptativo, alcance por año/sección/grado/nivel, umbrales de clasificación, `created_by_user_id`, pivote ordenado con puntos); `DiagnosticAttempt` (respuestas, puntaje, nivel clasificado, estado adaptativo); `LearningRecommendation`; `StudentAdaptiveProfile` (último nivel, debilidades, ruta de aprendizaje serializada).
+- **Visibilidad y permisos**: `DiagnosticExamAccessService` (matrícula y exámenes «globales» sin año/sección; asignaciones docentes `TeacherAssignment`); políticas `DiagnosticExamPolicy`, `QuestionBankPolicy` registradas en `AppServiceProvider`; `DiagnosticAttemptPolicy` para interactuar con intentos.
+- **Lógica**: `AdaptiveDiagnosticService` calcula puntajes, ajuste de dificultad en modo adaptativo, genera recomendaciones heurísticas; **no requiere proveedor de IA**.
+- **Analítica**: `AdaptiveAnalyticsService` consolida métricas para docente (secciones, temas débiles, sin diagnóstico) e institución; `AcademicRiskAnalysisService` alimenta **Riesgo académico** en portal docente.
+- **Auditoría**: `AuditModule::AdaptiveLearning` en creación/actualización de exámenes (intranet/docente) y flujo de intentos según servicio.
+- **HTTP estudiante**: `student/diagnostic*`, `student/learning-path` (listado filtrado por `take` + matrícula).
+- **HTTP docente**: `teacher/pedagogical-panel`, `teacher/diagnostics` (+ `create`, `{exam}`, `{exam}/results`), `teacher/academic-risk`; redirecciones desde `teacher/adaptive-learning` y `teacher/diagnostic-results` hacia el nuevo flujo; se mantienen `teacher/analytics`, `teacher/ai-insights`, `teacher/students-risk`.
+- **HTTP intranet (Administrador|Secretaría)**: `intranet/adaptive/diagnostic-exams*`, `intranet/adaptive/questions`, `intranet/adaptive/results` (políticas restringen escritura a roles autorizados); `intranet/adaptive-analytics` (solo Administrador).
+- **Frontend**: `Pages/Student/Diagnostic/*`, `Student/LearningPath`, `Teacher/PedagogicalPanel`, `Teacher/Diagnostics/*`, `Teacher/AcademicRisk`, `Intranet/Adaptive/*`, `Intranet/AdaptiveAnalytics/Index`.
+
 ## Seguridad, auditoría e ISO (Fase 19)
 
 - **Persistencia**: `audit_logs` (acción, módulo, entidad, IP, user agent, old/new values, severidad), `login_attempts`, `user_sessions` (dispositivo, expiración, bandera sospechosa).
@@ -98,7 +121,7 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 | `Pages/Public` | Web institucional: `Public/Home`, `Public/Nosotros`, etc. Rutas en `PublicSiteController`; layout `PublicLayout`; componentes en `Components/Public/`. |
 | `Pages/Intranet` | Área autenticada (dashboard, módulos operativos). |
 | `Pages/Teacher` | Portal docente (Fase 15): dashboard y accesos académicos simplificados; layout `TeacherLayout`. |
-| `Pages/Student` | Portal estudiante (Fase 16): notas, asistencia, pagos y perfil; layout `StudentLayout`. Comunicados en `Pages/Student/Announcements/*` (Fase 17). |
+| `Pages/Student` | Portal estudiante (Fase 16): notas, asistencia, pagos y perfil; layout `StudentLayout`. Comunicados en `Pages/Student/Announcements/*` (Fase 17). Diagnóstico adaptativo y ruta de aprendizaje (Fase 22): `Pages/Student/Diagnostic/*`, `Student/LearningPath`. |
 | `Components/Announcements` | UI compartida de comunicados: campana, tarjetas, listados de portal e panel en dashboards (Fase 17). |
 | `Pages/Auth`, `Pages/Profile` | Breeze; el perfil usa el layout de intranet (`IntranetLayout`) para coherencia con el área autenticada. |
 | `Layouts` | `PublicLayout` (web pública: navbar + footer). `IntranetLayout` (intranet). `TeacherLayout` (portal docente). `StudentLayout` (portal estudiante). `GuestLayout` / `AuthenticatedLayout` (Breeze). |

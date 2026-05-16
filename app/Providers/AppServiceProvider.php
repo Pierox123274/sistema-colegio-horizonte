@@ -2,13 +2,26 @@
 
 namespace App\Providers;
 
+use App\Models\DiagnosticAttempt;
+use App\Models\DiagnosticExam;
+use App\Models\QuestionBank;
+use App\Policies\AdaptiveLearningPolicy;
+use App\Policies\AIPolicy;
 use App\Policies\AnalyticsPolicy;
+use App\Policies\DiagnosticAttemptPolicy;
+use App\Policies\DiagnosticExamPolicy;
+use App\Policies\QuestionBankPolicy;
 use App\Policies\SecurityPolicy;
 use App\Policies\SystemOperationsPolicy;
+use App\Support\AdaptiveLearningDashboard;
+use App\Support\AIDashboard;
 use App\Support\AnalyticsDashboard;
 use App\Support\SecurityDashboard;
 use App\Support\SystemOperationsDashboard;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,9 +40,20 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(AdaptiveLearningDashboard::class, AdaptiveLearningPolicy::class);
+        Gate::policy(DiagnosticAttempt::class, DiagnosticAttemptPolicy::class);
+        Gate::policy(DiagnosticExam::class, DiagnosticExamPolicy::class);
+        Gate::policy(QuestionBank::class, QuestionBankPolicy::class);
+        Gate::policy(AIDashboard::class, AIPolicy::class);
         Gate::policy(AnalyticsDashboard::class, AnalyticsPolicy::class);
         Gate::policy(SecurityDashboard::class, SecurityPolicy::class);
         Gate::policy(SystemOperationsDashboard::class, SystemOperationsPolicy::class);
+
+        RateLimiter::for('ai', function (Request $request): Limit {
+            $max = max(1, (int) config('ai.rate_limit_per_minute', 20));
+
+            return Limit::perMinute($max)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip()));
+        });
 
         Vite::prefetch(concurrency: 3);
     }

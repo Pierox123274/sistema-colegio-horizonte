@@ -54,6 +54,7 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
+                'ai' => fn () => $request->session()->only(['ai_reply', 'ai_meta']),
             ],
             'announcementBell' => fn () => $user !== null
                 ? app(AnnouncementService::class)->headerPayloadFor($user)

@@ -22,6 +22,8 @@ enum AuditAction: string
     case Grade = 'grade';
     case Announcement = 'announcement';
     case View = 'view';
+    case AiQuery = 'ai_query';
+    case Assessment = 'assessment';
 
     /**
      * @return list<array{value: string, label: string}>
@@ -47,6 +49,8 @@ enum AuditAction: string
             ['value' => self::Grade->value, 'label' => 'Nota'],
             ['value' => self::Announcement->value, 'label' => 'Comunicado'],
             ['value' => self::View->value, 'label' => 'Consulta'],
+            ['value' => self::AiQuery->value, 'label' => 'Consulta IA'],
+            ['value' => self::Assessment->value, 'label' => 'Evaluación / diagnóstico'],
         ];
     }
 }

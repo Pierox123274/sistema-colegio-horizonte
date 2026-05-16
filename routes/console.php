@@ -3,6 +3,7 @@
 use App\Jobs\AcademicAlertScanJob;
 use App\Jobs\CreateInstitutionalBackupJob;
 use App\Jobs\FinancialAlertScanJob;
+use App\Jobs\GenerateInstitutionInsightsJob;
 use App\Jobs\InstitutionMetricsSnapshotJob;
 use App\Jobs\SecurityHealthScanJob;
 use App\Jobs\SendInstitutionDailySummaryJob;
@@ -30,3 +31,4 @@ Schedule::job(new AcademicAlertScanJob)->weekdays()->at('06:40');
 Schedule::job(new FinancialAlertScanJob)->weekdays()->at('06:55');
 Schedule::job(new SecurityHealthScanJob)->dailyAt('05:40');
 Schedule::job(new InstitutionMetricsSnapshotJob)->hourly();
+Schedule::job(new GenerateInstitutionInsightsJob)->dailyAt('07:50');

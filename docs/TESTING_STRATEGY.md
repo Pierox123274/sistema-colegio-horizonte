@@ -46,6 +46,22 @@ Fase 2 añade pruebas de intranet y roles (`tests/Feature/Intranet`, ampliacione
 |------|-----------|
 | Feature | `tests/Feature/Intranet/AdminUserAndTeacherAssignmentTest.php` (alta usuario docente/secretaría, prohibición secretaría en admin, asignación docente y filtrado de estudiantes, usuario inactivo no inicia sesión) |
 
+**Fase 21 (Tutor IA institucional)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/AI/AITutorTest.php` (rutas tutor/recomendaciones, insights docente, analítica IA admin, audit IA, OpenAI fake / error) |
+| BDD (Gherkin) | `tests/Bdd/features/ai_tutor.feature` |
+| E2E (Cypress) | `cypress/e2e/ai-tutor.cy.ts` |
+
+**Fase 22 (aprendizaje adaptativo)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/AdaptiveLearning/AdaptiveLearningTest.php` (diagnóstico fijo, perfil y recomendaciones, redirecciones docente, panel pedagógico, listado diagnósticos, índice intranet secretaría, políticas de creación y `take` del estudiante) |
+| BDD (Gherkin) | `tests/Bdd/features/adaptive_learning.feature` |
+| E2E (Cypress) | `cypress/e2e/adaptive-learning.cy.ts` |
+
 **Fase 20 (DevOps institucional)** incluye:
 
 | Capa | Artefacto |

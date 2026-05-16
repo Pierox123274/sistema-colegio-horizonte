@@ -19,6 +19,14 @@ export interface SidebarNavItem {
 export type FlashMessages = {
     success?: string | null;
     error?: string | null;
+    ai?: {
+        ai_reply?: string | null;
+        ai_meta?: {
+            success?: boolean;
+            cached?: boolean;
+            model?: string;
+        } | null;
+    };
 };
 
 export type PageProps<

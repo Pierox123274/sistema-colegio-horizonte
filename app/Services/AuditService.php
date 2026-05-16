@@ -8,6 +8,7 @@ use App\Enums\AuditResult;
 use App\Enums\AuditSeverity;
 use App\Enums\IntranetRole;
 use App\Models\AuditLog;
+use App\Models\LoginAttempt;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -92,7 +93,7 @@ final class AuditService
             'total_events' => (clone $query)->count(),
             'critical_events' => (clone $query)->where('severity', AuditSeverity::Critical->value)->count(),
             'events_today' => (clone $query)->whereDate('created_at', today())->count(),
-            'failed_logins_24h' => \App\Models\LoginAttempt::query()
+            'failed_logins_24h' => LoginAttempt::query()
                 ->where('successful', false)
                 ->where('attempted_at', '>=', now()->subHours(24))
                 ->count(),
@@ -287,6 +288,10 @@ final class AuditService
     private function moduleFromRoute(string $routeName): AuditModule
     {
         return match (true) {
+            str_contains($routeName, 'adaptive-analytics')
+                || str_contains($routeName, 'adaptive-learning')
+                || str_contains($routeName, 'diagnostic')
+                || str_contains($routeName, 'learning-path') => AuditModule::AdaptiveLearning,
             str_contains($routeName, 'student') => AuditModule::Students,
             str_contains($routeName, 'guardian') => AuditModule::Guardians,
             str_contains($routeName, 'enrollment') => AuditModule::Enrollment,

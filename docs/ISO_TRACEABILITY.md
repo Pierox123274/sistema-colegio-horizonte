@@ -231,6 +231,25 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | **RF-03** Operación académica (docente en aula) | 9001, 25010 | `TeacherAssignment`, `TeacherContextService`, filtrado en `Teacher*Controller` y `StudentService` / `StudentPolicy` |
 | **RNF-10** Testing automatizado | 29119 | `tests/Feature/Intranet/AdminUserAndTeacherAssignmentTest.php` |
 
+## Mapeo (Fase 21 — Tutor IA institucional)
+
+| Requerimiento / objetivo | ISO principal | Artefacto |
+|--------------------------|---------------|-----------|
+| Tutor / asistencia inteligente (SYSTEM_REQUIREMENTS, roadmap) | 9001, 25010 | `AITutorService`, `app/AI/Providers/OpenAIProvider`, rutas `student/ai-tutor`, UI `Student/AITutor` |
+| Protección de datos y no exposición de claves | 27001 | `config/ai.php`, variables entorno; sin API keys en repo; `AIPromptSanitizer` |
+| Auditoría de consultas IA | 27001, 9001 | `AuditModule::Ai`, `AuditAction::AiQuery`, metadata `prompt_sha256` |
+| Control de acceso por rol | 27001 | `AIPolicy`, `AIDashboard`; intranet IA solo **Administrador** |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/AI/AITutorTest.php`, BDD `ai_tutor.feature`, Cypress `ai-tutor.cy.ts` |
+
+## Mapeo (Fase 22 — aprendizaje adaptativo)
+
+| Requerimiento / objetivo | ISO principal | Artefacto |
+|--------------------------|---------------|-----------|
+| Diagnóstico y nivelación sin dependencia de proveedor IA externo | 9001, 25010 | `AdaptiveDiagnosticService`, `DiagnosticExamAccessService`, `QuestionBank`, `DiagnosticExam`, rutas `student.diagnostic.*` |
+| Trazabilidad de evaluaciones y acceso por rol | 27001, 9001 | `AuditModule::AdaptiveLearning`, `DiagnosticExamPolicy`, `QuestionBankPolicy`, `DiagnosticAttemptPolicy` |
+| Métricas docente e institucional | 9001 | `AdaptiveAnalyticsService`, `teacher/pedagogical-panel`, `teacher/diagnostics`, `intranet/adaptive/*`, `intranet/adaptive-analytics` |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/AdaptiveLearning/AdaptiveLearningTest.php`, `adaptive_learning.feature`, `adaptive-learning.cy.ts` |
+
 ## Mapeo inicial (Fase 1 — arquitectura base)
 
 | Requerimiento / objetivo (referencia) | ISO principal | Artefacto en el repo |

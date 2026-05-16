@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 20** (DevOps institucional) sobre las fases 1–19.
+Última actualización: **Fase 22** (Diagnóstico adaptativo y nivelación inteligente) sobre las fases 1–21.
 
 ## Completado — Fase 1
 
@@ -240,6 +240,27 @@
 - [x] Docker (`Dockerfile`, `docker-compose.yml`, `docker/nginx.conf`); CI `.github/workflows/ci.yml` (Pint, PHPUnit, npm build).
 - [x] Documentación `DEPLOYMENT.md`, `DEVOPS.md`; variables `DEVOPS_*` en `.env.example`.
 - [x] Pruebas `tests/Feature/System/DevOpsInfrastructureTest.php`, BDD `devops_infrastructure.feature`, Cypress `devops-infrastructure.cy.ts`.
+
+## Completado — Fase 21 (Tutor IA institucional)
+
+- [x] Arquitectura desacoplada `app/AI/` (contrato, `OpenAIProvider`, stubs Ollama/Gemini/Claude, `NullAIProvider`); `config/ai.php` y variables `AI_*` / `OPENAI_*` en `.env.example`.
+- [x] Servicios `AITutorService`, `AcademicRiskAnalysisService`, `StudentRecommendationService`; sanitización `AIPromptSanitizer`; auditoría módulo `ai` / acción `ai_query` (hash, sin prompts completos).
+- [x] Rutas con `throttle:ai`: portal estudiante (`/student/ai-tutor`, `/student/recommendations`), docente (`/teacher/ai-insights`, `/teacher/students-risk`), administrador (`/intranet/ai-analytics`); `AIPolicy` + `AIDashboard`.
+- [x] Jobs `GenerateStudentInsightsJob`, `GenerateTeacherInsightsJob`, `GenerateInstitutionInsightsJob`; programación diaria de insights institucionales en `routes/console.php`.
+- [x] UI Inertia React/TS: `Student/AITutor`, `Student/Recommendations`, `Teacher/AIInsights`, `Teacher/StudentsRisk`, `Intranet/AIAnalytics/Index`; navegación en `StudentNavigation`, `TeacherNavigation`, `IntranetNavigation`.
+- [x] Documentación `docs/AI_ARCHITECTURE.md`; actualización de arquitectura y trazabilidad.
+- [x] Pruebas `tests/Feature/AI/AITutorTest.php`, BDD `ai_tutor.feature`, Cypress `ai-tutor.cy.ts`.
+
+## Completado — Fase 22 (Diagnóstico adaptativo y nivelación inteligente)
+
+- [x] Dominio: `QuestionBank`, `QuestionOption`, `DiagnosticExam` (alcance año/sección/grado/nivel, umbrales, `created_by_user_id`), `DiagnosticAttempt`, `LearningRecommendation`, `StudentAdaptiveProfile`; migración de alcance `add_scope_and_thresholds_to_diagnostic_exams`.
+- [x] Servicios: `AdaptiveDiagnosticService`, `AdaptiveAnalyticsService`, `DiagnosticExamAccessService` (visibilidad estudiante por matrícula; docente por `TeacherAssignment`); clasificación por umbrales del examen.
+- [x] Políticas: `DiagnosticExamPolicy`, `QuestionBankPolicy` (registro explícito en `AppServiceProvider`); `DiagnosticAttemptPolicy` para intentos; `AdaptiveLearningPolicy` + dashboard legacy si aplica.
+- [x] Rutas estudiante: `student/diagnostic*` (autorización `take`), `student/learning-path`.
+- [x] Rutas docente: `teacher/pedagogical-panel`, `teacher/diagnostics` (+ `create`, `{exam}`, `{exam}/results`), `teacher/academic-risk`; redirecciones `teacher/adaptive-learning` → panel pedagógico, `teacher/diagnostic-results` → listado de diagnósticos; menú lateral agrupado (Académico, Inteligencia académica, Comunicación).
+- [x] Rutas intranet: `intranet/adaptive/diagnostic-exams*`, `intranet/adaptive/questions`, `intranet/adaptive/results` (rol Administrador|Secretaría; escritura vía políticas); submenú **Aprendizaje adaptativo** en administración.
+- [x] UI Inertia: `Student/Diagnostic/*`, `Student/LearningPath`, `Teacher/PedagogicalPanel`, `Teacher/Diagnostics/*`, `Teacher/AcademicRisk`, `Intranet/Adaptive/DiagnosticExams/*`, `Intranet/Adaptive/Questions/Index`, `Intranet/Adaptive/Results/Index`, `Intranet/AdaptiveAnalytics/Index`.
+- [x] Pruebas ampliadas: `tests/Feature/AdaptiveLearning/AdaptiveLearningTest.php` (redirecciones docente, secretaría índice intranet, docente no crea fuera de sección, estudiante no ve examen ajeno a matrícula); BDD/Cypress existentes de la fase.
 
 ## Pendiente / siguientes fases (ROADMAP)
 

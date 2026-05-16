@@ -35,8 +35,19 @@ class Subject extends Model
     /**
      * @return HasMany<Evaluation, $this>
      */
-    public function evaluations(): HasMany
+    /**
+     * @return HasMany<QuestionBank, $this>
+     */
+    public function questionBanks(): HasMany
     {
-        return $this->hasMany(Evaluation::class);
+        return $this->hasMany(QuestionBank::class);
+    }
+
+    /**
+     * @return HasMany<DiagnosticExam, $this>
+     */
+    public function diagnosticExams(): HasMany
+    {
+        return $this->hasMany(DiagnosticExam::class);
     }
 }

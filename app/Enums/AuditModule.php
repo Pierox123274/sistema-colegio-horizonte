@@ -18,6 +18,8 @@ enum AuditModule: string
     case Announcements = 'announcements';
     case Analytics = 'analytics';
     case Users = 'users';
+    case Ai = 'ai';
+    case AdaptiveLearning = 'adaptive_learning';
 
     /**
      * @return list<array{value: string, label: string}>
@@ -39,6 +41,8 @@ enum AuditModule: string
             ['value' => self::Announcements->value, 'label' => 'Comunicados'],
             ['value' => self::Analytics->value, 'label' => 'Analítica'],
             ['value' => self::Users->value, 'label' => 'Usuarios'],
+            ['value' => self::Ai->value, 'label' => 'IA institucional'],
+            ['value' => self::AdaptiveLearning->value, 'label' => 'Aprendizaje adaptativo'],
         ];
     }
 }

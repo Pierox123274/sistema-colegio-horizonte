@@ -42,4 +42,5 @@ FASE 17: Tutor inteligente
 FASE 18: Reportes
 FASE 19: Auditoría y seguridad avanzada
 FASE 20: DevOps institucional, automatización y preparación producción
-FASE 21: Despliegue
+FASE 21: Tutor IA institucional (OpenAI desacoplado, riesgo académico, panel admin)
+FASE 22: Diagnóstico adaptativo y nivelación inteligente (banco de preguntas, rutas de aprendizaje, analítica; UX docente unificada: panel pedagógico, diagnósticos, riesgo académico; intranet `intranet/adaptive/*`; sin IA externa obligatoria)
