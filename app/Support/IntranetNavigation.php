@@ -280,6 +280,27 @@ final class IntranetNavigation
                             'intranet.admin.teacher-assignments.edit',
                         ],
                     ],
+                    [
+                        'label' => 'Salud del sistema',
+                        'href' => route('intranet.system.health.index', absolute: false),
+                        'icon' => 'activity',
+                        'disabled' => false,
+                        'activeRoutes' => ['intranet.system.health.index'],
+                    ],
+                    [
+                        'label' => 'Colas y jobs',
+                        'href' => route('intranet.system.jobs.index', absolute: false),
+                        'icon' => 'list-todo',
+                        'disabled' => false,
+                        'activeRoutes' => ['intranet.system.jobs.index'],
+                    ],
+                    [
+                        'label' => 'Respaldos',
+                        'href' => route('intranet.system.backups.index', absolute: false),
+                        'icon' => 'archive',
+                        'disabled' => false,
+                        'activeRoutes' => ['intranet.system.backups.index'],
+                    ],
                 ],
             ];
         }

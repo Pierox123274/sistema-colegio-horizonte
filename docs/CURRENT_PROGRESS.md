@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 18** (reportes y dashboard analítico) sobre las fases 1–17.
+Última actualización: **Fase 20** (DevOps institucional) sobre las fases 1–19.
 
 ## Completado — Fase 1
 
@@ -229,6 +229,17 @@
 - [x] UI Inertia `Pages/Intranet/Security/*`, componentes `Components/Security/*`, menú **Seguridad y auditoría** en `IntranetNavigation`.
 - [x] Auditoría explícita en usuarios admin y exportaciones analíticas; trazabilidad ISO (quién, cuándo, desde dónde, qué cambió).
 - [x] Pruebas `tests/Feature/Security/AuditSecurityTest.php`, `tests/Bdd/features/security_audit.feature`, `cypress/e2e/security-audit.cy.ts`.
+
+## Completado — Fase 20 (DevOps institucional, automatización y producción)
+
+- [x] Programación en `routes/console.php` (limpieza auditoría/sesiones, respaldos, alertas, métricas snapshot).
+- [x] Comandos `institution:*` en `app/Console/Commands/`; servicios `InstitutionBackupService`, `SystemHealthService`; `config/devops.php`.
+- [x] Jobs en cola: respaldo, resumen diario, alertas académicas/financieras, escaneo seguridad, snapshot métricas (IA futura), notificación de comunicado, bienvenida usuario (opcional).
+- [x] Mailables y vistas `resources/views/emails/*`; notificación `InstitutionOperationalAlertNotification`.
+- [x] Panel admin `intranet/system/health`, `jobs`, `backups` + `SystemOperationsPolicy` / `SystemOperationsDashboard`; entradas en `IntranetNavigation`.
+- [x] Docker (`Dockerfile`, `docker-compose.yml`, `docker/nginx.conf`); CI `.github/workflows/ci.yml` (Pint, PHPUnit, npm build).
+- [x] Documentación `DEPLOYMENT.md`, `DEVOPS.md`; variables `DEVOPS_*` en `.env.example`.
+- [x] Pruebas `tests/Feature/System/DevOpsInfrastructureTest.php`, BDD `devops_infrastructure.feature`, Cypress `devops-infrastructure.cy.ts`.
 
 ## Pendiente / siguientes fases (ROADMAP)
 

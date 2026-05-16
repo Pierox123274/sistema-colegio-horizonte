@@ -8,6 +8,7 @@ use App\Enums\AuditSeverity;
 use App\Enums\IntranetRole;
 use App\Http\Requests\Intranet\StoreIntranetUserRequest;
 use App\Http\Requests\Intranet\UpdateIntranetUserRequest;
+use App\Jobs\WelcomeInstitutionUserJob;
 use App\Models\User;
 use App\Services\AuditService;
 use Illuminate\Http\Request;
@@ -88,6 +89,10 @@ class AdminUserController extends Controller
             severity: AuditSeverity::Info,
             request: $request,
         );
+
+        if (config('devops.send_welcome_email', false)) {
+            dispatch(new WelcomeInstitutionUserJob($user->id))->afterCommit();
+        }
 
         return redirect()
             ->route('intranet.admin.users.index')

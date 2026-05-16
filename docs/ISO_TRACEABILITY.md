@@ -175,6 +175,16 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | **ISO/IEC 25010** | 25010 | Usabilidad: interfaz simplificada y accesos rápidos |
 | **ISO/IEC 29119** | 29119 | Cobertura de autorización y páginas críticas del portal |
 
+## Mapeo (Fase 20 — DevOps y continuidad operativa)
+
+| Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |
+|-----------------------------------------------|---------------|----------------------|
+| Continuidad, respaldos y operación controlada | 27001, 9001 | `InstitutionBackupService`, comandos `institution:*`, `storage/app/backups` |
+| Monitoreo y colas | 27001, 25010 | `SystemHealthService`, rutas `intranet.system.*`, jobs `ShouldQueue` |
+| Automatización y evidencia de despliegue | 9001, 29119 | `routes/console.php`, `.github/workflows/ci.yml`, `DEPLOYMENT.md`, `DEVOPS.md` |
+| Preparación datos para analítica / IA | 25010 | `InstitutionMetricsSnapshotJob`, caché `devops.metrics_cache_key` |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/System/DevOpsInfrastructureTest.php`, BDD y Cypress DevOps |
+
 ## Mapeo (Fase 19 — seguridad y auditoría)
 
 | Requerimiento / objetivo (SYSTEM_REQUIREMENTS) | ISO principal | Artefacto en el repo |

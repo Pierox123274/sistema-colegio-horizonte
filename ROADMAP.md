@@ -41,5 +41,5 @@ FASE 16: Machine Learning inicial
 FASE 17: Tutor inteligente
 FASE 18: Reportes
 FASE 19: Auditoría y seguridad avanzada
-FASE 20: Pruebas completas
+FASE 20: DevOps institucional, automatización y preparación producción
 FASE 21: Despliegue

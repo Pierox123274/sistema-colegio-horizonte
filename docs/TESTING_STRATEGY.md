@@ -46,6 +46,14 @@ Fase 2 añade pruebas de intranet y roles (`tests/Feature/Intranet`, ampliacione
 |------|-----------|
 | Feature | `tests/Feature/Intranet/AdminUserAndTeacherAssignmentTest.php` (alta usuario docente/secretaría, prohibición secretaría en admin, asignación docente y filtrado de estudiantes, usuario inactivo no inicia sesión) |
 
+**Fase 20 (DevOps institucional)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/System/DevOpsInfrastructureTest.php` (scheduler listado, health/jobs/backups admin, prohibición secretaría, jobs y respaldo) |
+| BDD (Gherkin) | `tests/Bdd/features/devops_infrastructure.feature` |
+| E2E (Cypress) | `cypress/e2e/devops-infrastructure.cy.ts` |
+
 **Fase 19 (seguridad y auditoría)** incluye:
 
 | Capa | Artefacto |

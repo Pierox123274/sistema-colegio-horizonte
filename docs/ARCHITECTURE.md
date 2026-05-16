@@ -41,6 +41,16 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Controladores delgados**: `TeacherDashboardController`, `TeacherAttendanceController`, `TeacherGradesController`, `TeacherStudentsController`, `TeacherReportsController` renderizan páginas Inertia dedicadas y delegan datos en **servicios y políticas ya existentes** (`StudentService`, `AttendancePolicy`, `GradeRecordPolicy`, etc.). El registro masivo de asistencia y notas sigue en las rutas `intranet.*` para no duplicar validación ni almacenamiento.
 - **Navegación**: `App\Support\TeacherNavigation` alimenta `teacherNav` en `HandleInertiaRequests`; el menú ERP (`IntranetNavigation`) incluye enlace **Portal docente** para los mismos roles.
 
+## DevOps y operaciones (Fase 20)
+
+- **Programación**: tareas institucionales en `routes/console.php` (Laravel 12); comandos `institution:*` para retención, respaldos y validación de entorno.
+- **Colas**: jobs en `app/Jobs/` (`ShouldQueue`) para respaldos, correos automáticos, alertas y snapshot de métricas (`InstitutionMetricsSnapshotJob`) preparatorio para IA.
+- **Respaldos**: `storage/app/backups`, servicio `InstitutionBackupService` (ZIP, SQLite / MySQL vía `mysqldump` si existe).
+- **Observabilidad**: `SystemHealthService` + UI Inertia `Intranet/System/*` (salud, jobs fallidos, listado de respaldos); solo **Administrador** (`SystemOperationsPolicy`).
+- **CI/CD**: GitHub Actions en `.github/workflows/ci.yml` (Pint, tests, build Vite).
+- **Contenedores**: `Dockerfile`, `docker-compose.yml` (app, nginx, mysql, redis, queue, scheduler), `docker/nginx.conf`.
+- **Seguridad de configuración**: `EnvSecurityValidator` y comando `institution:validate-environment`.
+
 ## Seguridad, auditoría e ISO (Fase 19)
 
 - **Persistencia**: `audit_logs` (acción, módulo, entidad, IP, user agent, old/new values, severidad), `login_attempts`, `user_sessions` (dispositivo, expiración, bandera sospechosa).

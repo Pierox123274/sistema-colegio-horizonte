@@ -6,6 +6,7 @@ use App\Enums\AnnouncementAudienceType;
 use App\Enums\AnnouncementPriority;
 use App\Http\Requests\Intranet\StoreAnnouncementRequest;
 use App\Http\Requests\Intranet\UpdateAnnouncementRequest;
+use App\Jobs\NotifyAnnouncementPublishedJob;
 use App\Models\Announcement;
 use App\Models\User;
 use App\Services\AnnouncementService;
@@ -79,12 +80,14 @@ class AnnouncementController extends Controller
     {
         $data = $this->mapValidated($request->validated());
 
-        $this->announcements->create(
+        $announcement = $this->announcements->create(
             $request->user(),
             $data,
             array_map('intval', $request->input('recipient_user_ids', [])),
             $request->file('attachment'),
         );
+
+        dispatch(new NotifyAnnouncementPublishedJob($announcement->id))->afterCommit();
 
         return redirect()
             ->route('intranet.announcements.index')

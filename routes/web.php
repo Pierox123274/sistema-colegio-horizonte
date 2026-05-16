@@ -19,6 +19,7 @@ use App\Http\Controllers\IntranetAnalyticsController;
 use App\Http\Controllers\IntranetAnalyticsReportsController;
 use App\Http\Controllers\IntranetAnnouncementInboxController;
 use App\Http\Controllers\IntranetSecurityController;
+use App\Http\Controllers\IntranetSystemOperationsController;
 use App\Http\Controllers\InventoryMovementController;
 use App\Http\Controllers\PaymentConceptController;
 use App\Http\Controllers\PaymentController;
@@ -151,6 +152,13 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
 
     Route::middleware(['role:Administrador|Secretaria'])->prefix('intranet/security')->name('intranet.security.')->group(function () {
         Route::get('/access-monitor', [IntranetSecurityController::class, 'accessMonitor'])->name('access-monitor.index');
+    });
+
+    Route::middleware(['role:Administrador'])->prefix('intranet/system')->name('intranet.system.')->group(function () {
+        Route::get('/health', [IntranetSystemOperationsController::class, 'health'])->name('health.index');
+        Route::get('/jobs', [IntranetSystemOperationsController::class, 'jobs'])->name('jobs.index');
+        Route::get('/backups', [IntranetSystemOperationsController::class, 'backups'])->name('backups.index');
+        Route::post('/backups', [IntranetSystemOperationsController::class, 'dispatchBackup'])->name('backups.store');
     });
 
     Route::middleware(['role:Administrador'])->prefix('intranet/security')->name('intranet.security.')->group(function () {
