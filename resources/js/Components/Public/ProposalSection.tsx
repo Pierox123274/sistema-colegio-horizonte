@@ -20,7 +20,10 @@ const pillars = [
 
 export function ProposalSection() {
     return (
-        <section className="bg-white py-16 sm:py-24">
+        <section
+            id="comunidad"
+            className="section-institutional scroll-mt-24 py-16 sm:py-24"
+        >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-2xl text-center">
                     <p className="text-xs font-bold uppercase tracking-widest text-brand-red">

@@ -45,3 +45,4 @@ FASE 20: DevOps institucional, automatización y preparación producción
 FASE 21: Tutor IA institucional (OpenAI desacoplado, riesgo académico, panel admin)
 FASE 22: Diagnóstico adaptativo y nivelación inteligente (banco de preguntas, rutas de aprendizaje, analítica; UX docente unificada: panel pedagógico, diagnósticos, riesgo académico; intranet `intranet/adaptive/*`; sin IA externa obligatoria)
 FASE 23: Aula virtual, tareas y evaluaciones online (LMS institucional: aulas por sección/docente, entregas y calificación, exámenes online, calendario, recursos, integración adaptativa Fase 22, dashboards y `intranet/lms`)
+FASE UX/UI: Rediseño premium página pública institucional (colegio, admisión, vida escolar; innovación educativa como complemento; portal separado; dark mode + Framer Motion)

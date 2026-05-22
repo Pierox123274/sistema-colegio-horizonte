@@ -126,18 +126,27 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Autorización**: `UserPolicy` (solo administrador gestiona listado de usuarios; cualquier usuario autenticado sigue pudiendo actualizar su propio perfil vía reglas `update`); `TeacherAssignmentPolicy`; docente solo ve alumnado de sus secciones (`StudentPolicy` + filtros en `StudentService` y controladores del portal docente).
 - **Frontend**: `Pages/Intranet/Admin/Users/*`, `Pages/Intranet/Admin/TeacherAssignments/*`; entradas en `IntranetNavigation`.
 
+## Landing pública institucional (Fase UX/UI)
+
+- **Alcance**: solo frontend público; sin cambios en controladores ERP/LMS/IA.
+- **Enfoque comunicacional**: colegio privado real (prestigio, comunidad, admisión, vida escolar); la tecnología aparece solo en la sección final «Innovación educativa» y en el botón **Portal** (login).
+- **Home**: `InstitutionalHero`, barra de cifras institucionales, `AboutSection`, misión/visión/valores, propuesta, niveles, vida escolar, logros, infraestructura, admisión, testimonios, noticias, innovación (complemento), `CTASection`.
+- **Stack UI**: Tailwind + **Framer Motion** (`Reveal`, contadores) + **lucide-react**; `PublicThemeProvider` (dark/light).
+- **Navegación**: rutas institucionales clásicas + ancla `#vida-escolar`; portal académico separado visualmente del menú.
+- **Datos demo**: `institutionalSiteData.ts` y `publicSiteDemo.ts`.
+
 ## Frontend (`resources/js/`)
 
 | Ruta | Uso |
 |------|-----|
-| `Pages/Public` | Web institucional: `Public/Home`, `Public/Nosotros`, etc. Rutas en `PublicSiteController`; layout `PublicLayout`; componentes en `Components/Public/`. |
+| `Pages/Public` | Web institucional: landing premium en `Public/Home`; páginas `Nosotros`, `Niveles`, etc. Rutas en `PublicSiteController`; layout `PublicLayout`; componentes en `Components/Public/` y `Components/Public/Premium/`. |
 | `Pages/Intranet` | Área autenticada (dashboard, módulos operativos). |
 | `Pages/Teacher` | Portal docente (Fase 15): dashboard y accesos académicos simplificados; layout `TeacherLayout`. |
 | `Pages/Student` | Portal estudiante (Fase 16): notas, asistencia, pagos y perfil; layout `StudentLayout`. Comunicados en `Pages/Student/Announcements/*` (Fase 17). Diagnóstico adaptativo y ruta de aprendizaje (Fase 22): `Pages/Student/Diagnostic/*`, `Student/LearningPath`. |
 | `Components/Announcements` | UI compartida de comunicados: campana, tarjetas, listados de portal e panel en dashboards (Fase 17). |
 | `Pages/Auth`, `Pages/Profile` | Breeze; el perfil usa el layout de intranet (`IntranetLayout`) para coherencia con el área autenticada. |
 | `Layouts` | `PublicLayout` (web pública: navbar + footer). `IntranetLayout` (intranet). `TeacherLayout` (portal docente). `StudentLayout` (portal estudiante). `GuestLayout` / `AuthenticatedLayout` (Breeze). |
-| `Components` | `Components/Public/` (navbar, secciones landing, footer). `Components/Intranet/` (shell y widgets intranet). |
+| `Components` | `Components/Public/` y `Components/Public/Premium/` (landing SaaS, tema, mockups). `Components/Intranet/` (shell y widgets intranet). |
 | `types` | Tipos compartidos TypeScript (`User`, `PageProps`, props por página). |
 
 ## Convenciones de nombres

@@ -71,9 +71,24 @@ use Inertia\Inertia;
 
 Route::get('/', [PublicSiteController::class, 'home'])->name('public.home');
 Route::get('/nosotros', [PublicSiteController::class, 'nosotros'])->name('public.nosotros');
+Route::get('/nosotros/historia', [PublicSiteController::class, 'nosotrosHistoria'])->name('public.nosotros.historia');
+Route::get('/nosotros/mision-vision', [PublicSiteController::class, 'nosotrosMisionVision'])->name('public.nosotros.mision-vision');
+Route::get('/nosotros/valores', [PublicSiteController::class, 'nosotrosValores'])->name('public.nosotros.valores');
+Route::get('/nosotros/infraestructura', [PublicSiteController::class, 'nosotrosInfraestructura'])->name('public.nosotros.infraestructura');
 Route::get('/niveles', [PublicSiteController::class, 'niveles'])->name('public.niveles');
+Route::get('/niveles/inicial', [PublicSiteController::class, 'nivelInicial'])->name('public.niveles.inicial');
+Route::get('/niveles/primaria', [PublicSiteController::class, 'nivelPrimaria'])->name('public.niveles.primaria');
+Route::get('/niveles/secundaria', [PublicSiteController::class, 'nivelSecundaria'])->name('public.niveles.secundaria');
 Route::get('/admision', [PublicSiteController::class, 'admision'])->name('public.admision');
+Route::get('/admision/requisitos', [PublicSiteController::class, 'admisionRequisitos'])->name('public.admision.requisitos');
+Route::get('/admision/matricula', [PublicSiteController::class, 'admisionMatricula'])->name('public.admision.matricula');
+Route::get('/vida-escolar', [PublicSiteController::class, 'vidaEscolar'])->name('public.vida-escolar');
+Route::get('/vida-escolar/actividades', [PublicSiteController::class, 'vidaEscolarActividades'])->name('public.vida-escolar.actividades');
+Route::get('/vida-escolar/talleres', [PublicSiteController::class, 'vidaEscolarTalleres'])->name('public.vida-escolar.talleres');
+Route::get('/vida-escolar/eventos', [PublicSiteController::class, 'vidaEscolarEventos'])->name('public.vida-escolar.eventos');
+Route::get('/galeria', [PublicSiteController::class, 'galeria'])->name('public.galeria');
 Route::get('/noticias', [PublicSiteController::class, 'noticias'])->name('public.noticias');
+Route::get('/noticias/{slug}', [PublicSiteController::class, 'noticiaShow'])->name('public.noticias.show');
 Route::get('/contacto', [PublicSiteController::class, 'contacto'])->name('public.contacto');
 
 $intranetRoles = 'role:'.IntranetRole::middlewarePipe();

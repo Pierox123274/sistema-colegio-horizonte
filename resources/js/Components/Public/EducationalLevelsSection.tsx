@@ -39,13 +39,16 @@ export function EducationalLevelsSection({
     showLinkToFull = true,
 }: EducationalLevelsSectionProps) {
     return (
-        <section className="bg-navy-50 py-16 sm:py-24" id="niveles">
+        <section
+            className="section-institutional-alt section-separator scroll-mt-24 py-16 sm:py-24"
+            id="niveles"
+        >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-2xl text-center">
                     <p className="text-xs font-bold uppercase tracking-widest text-brand-red">
                         Niveles educativos
                     </p>
-                    <h2 className="mt-2 text-3xl font-bold tracking-tight text-navy-900 sm:text-4xl">
+                    <h2 className="mt-2 text-3xl font-bold tracking-tight text-navy-900 dark:text-white sm:text-4xl">
                         Tres etapas, una misma excelencia
                     </h2>
                     <p className="mt-4 text-plomo">
@@ -57,7 +60,8 @@ export function EducationalLevelsSection({
                     {levels.map((level) => (
                         <article
                             key={level.key}
-                            className={`rounded-2xl border-2 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg ${level.accent}`}
+                            id={`nivel-${level.key}`}
+                            className={`scroll-mt-24 rounded-2xl border-2 bg-white p-6 shadow-institutional transition duration-300 hover:-translate-y-1 hover:shadow-institutional-lg dark:bg-slate-900 ${level.accent}`}
                         >
                             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-navy-900 text-white">
                                 <level.icon className="h-6 w-6" strokeWidth={1.75} />

@@ -1,127 +1,130 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { LogIn, Menu, Moon, Sun } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import type { PageProps } from '@/types';
-
-const navLinks = [
-    { label: 'Inicio', routeName: 'public.home' as const },
-    { label: 'Nosotros', routeName: 'public.nosotros' as const },
-    { label: 'Niveles', routeName: 'public.niveles' as const },
-    { label: 'Admisión', routeName: 'public.admision' as const },
-    { label: 'Noticias', routeName: 'public.noticias' as const },
-    { label: 'Contacto', routeName: 'public.contacto' as const },
-];
+import { usePublicTheme } from '@/Components/Public/Premium/PublicThemeProvider';
+import { DesktopNavMenus } from '@/Components/Public/nav/DesktopNavMenus';
+import { MobileNavMenu } from '@/Components/Public/nav/MobileNavMenu';
 
 export function PublicNavbar() {
-    const { canLogin = false, canRegister = false } = usePage<PageProps>().props;
-    const [open, setOpen] = useState(false);
+    const { canLogin = false } = usePage<PageProps>().props;
+    const { url } = usePage();
+    const { isDark, toggleTheme } = usePublicTheme();
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+
+    const onHome = url === '/' || url === '';
+    const lightOnHero = onHome && !scrolled && !isDark;
+
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 24);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
+
+    useEffect(() => {
+        document.body.style.overflow = mobileOpen ? 'hidden' : '';
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [mobileOpen]);
+
+    const navSurface = scrolled
+        ? 'border-slate-200/80 bg-white/80 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#071526]/80 dark:shadow-lg'
+        : lightOnHero
+          ? 'border-transparent bg-gradient-to-b from-[#071526]/60 to-transparent'
+          : 'border-slate-200/70 bg-white/75 backdrop-blur-xl dark:border-white/10 dark:bg-[#071526]/70';
+
+    const linkClass = (routeActive: boolean, menuOpen = false) => {
+        const base =
+            'relative inline-flex items-center gap-1 rounded-xl px-3 py-2 text-sm font-medium transition-colors duration-150';
+        if (lightOnHero) {
+            return `${base} ${
+                routeActive || menuOpen
+                    ? 'bg-white/15 text-white'
+                    : 'text-white/90 hover:bg-white/10 hover:text-white'
+            }`;
+        }
+        return `${base} ${
+            routeActive || menuOpen
+                ? 'bg-slate-100 text-slate-900 dark:bg-white/10 dark:text-amber-400'
+                : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white'
+        }`;
+    };
+
+    const iconBtnClass = lightOnHero
+        ? 'rounded-xl p-2.5 text-white/90 transition hover:bg-white/10 hover:text-white'
+        : 'rounded-xl p-2.5 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white';
 
     return (
-        <header className="sticky top-0 z-50 border-b border-plomo/10 bg-white/90 shadow-sm shadow-navy-900/5 backdrop-blur-md">
-            <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-                <Link
-                    href={route('public.home')}
-                    className="flex items-center gap-2 transition-opacity hover:opacity-90"
-                >
-                    <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-yellow font-serif text-lg font-bold text-navy-950 shadow-sm">
-                        H
-                    </span>
-                    <span className="hidden flex-col leading-tight sm:flex">
-                        <span className="text-sm font-bold tracking-tight text-navy-900">
-                            I.E.P. Horizonte
-                        </span>
-                        <span className="text-[10px] font-semibold uppercase tracking-widest text-brand-red">
-                            Colegio privado
-                        </span>
-                    </span>
-                </Link>
-
-                <nav className="hidden items-center gap-1 lg:flex">
-                    {navLinks.map((item) => (
-                        <Link
-                            key={item.routeName}
-                            href={route(item.routeName)}
-                            className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                                route().current(item.routeName)
-                                    ? 'bg-navy-900 text-white'
-                                    : 'text-plomo hover:bg-navy-50 hover:text-navy-900'
-                            }`}
-                        >
-                            {item.label}
-                        </Link>
-                    ))}
-                </nav>
-
-                <div className="hidden items-center gap-2 lg:flex">
-                    {canRegister && (
-                        <Link
-                            href={route('register')}
-                            className="rounded-lg px-3 py-2 text-sm font-medium text-navy-900 hover:bg-navy-50"
-                        >
-                            Registro
-                        </Link>
-                    )}
-                    {canLogin && (
-                        <Link
-                            href={route('login')}
-                            className="rounded-lg bg-navy-900 px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:bg-navy-950"
-                        >
-                            Intranet
-                        </Link>
-                    )}
-                </div>
-
-                <button
-                    type="button"
-                    className="inline-flex rounded-lg border border-plomo/15 p-2 text-navy-900 lg:hidden"
-                    onClick={() => setOpen((v) => !v)}
-                    aria-expanded={open}
-                    aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
-                >
-                    {open ? (
-                        <X className="h-6 w-6" />
-                    ) : (
-                        <Menu className="h-6 w-6" />
-                    )}
-                </button>
-            </div>
-
-            <div
-                className={`border-t border-plomo/10 bg-white lg:hidden ${open ? 'max-h-[32rem] opacity-100' : 'max-h-0 overflow-hidden opacity-0'} transition-all duration-300 ease-out`}
+        <>
+            <header
+                className={`sticky top-0 z-50 border-b transition-all duration-300 ${navSurface} ${scrolled ? 'h-[4.25rem]' : 'h-[4.75rem]'}`}
             >
-                <nav className="flex flex-col gap-1 px-4 py-4">
-                    {navLinks.map((item) => (
-                        <Link
-                            key={item.routeName}
-                            href={route(item.routeName)}
-                            className="rounded-lg px-3 py-2.5 text-sm font-medium text-navy-900 hover:bg-navy-50"
-                            onClick={() => setOpen(false)}
+                <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+                    <Link href={route('public.home')} className="group flex shrink-0 items-center gap-2.5">
+                        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-300 font-display text-lg font-extrabold text-[#071526] shadow-md transition group-hover:scale-[1.02]">
+                            H
+                        </span>
+                        <span className="hidden flex-col leading-tight sm:flex">
+                            <span
+                                className={`font-display text-sm font-bold ${lightOnHero ? 'text-white' : 'text-slate-900 dark:text-white'}`}
+                            >
+                                I.E.P. Horizonte
+                            </span>
+                            <span
+                                className={`text-[10px] font-semibold uppercase tracking-[0.2em] ${lightOnHero ? 'text-amber-300' : 'text-amber-500 dark:text-amber-400'}`}
+                            >
+                                Excelencia educativa
+                            </span>
+                        </span>
+                    </Link>
+
+                    <DesktopNavMenus url={url} canLogin={canLogin} onHome={onHome} linkClass={linkClass} />
+
+                    <div className="hidden items-center gap-2 lg:flex">
+                        <button
+                            type="button"
+                            onClick={toggleTheme}
+                            className={iconBtnClass}
+                            aria-label={isDark ? 'Modo claro' : 'Modo oscuro'}
                         >
-                            {item.label}
-                        </Link>
-                    ))}
-                    <div className="mt-2 flex flex-col gap-2 border-t border-plomo/10 pt-4">
-                        {canLogin && (
+                            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                        </button>
+                        {canLogin ? (
                             <Link
                                 href={route('login')}
-                                className="rounded-lg bg-navy-900 py-2.5 text-center text-sm font-semibold text-white"
-                                onClick={() => setOpen(false)}
+                                className={`inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 ${
+                                    lightOnHero
+                                        ? 'border border-amber-400/50 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20'
+                                        : 'border border-amber-500/40 bg-[#0f2847] text-white hover:bg-[#1a3d5f] dark:border-amber-400/35 dark:bg-[#0f2847] dark:hover:bg-[#1e3a5f]'
+                                }`}
                             >
-                                Acceso intranet
+                                <LogIn className={`h-4 w-4 ${lightOnHero ? 'text-amber-300' : 'text-amber-400'}`} />
+                                Ingresar
                             </Link>
-                        )}
-                        {canRegister && (
-                            <Link
-                                href={route('register')}
-                                className="rounded-lg border border-plomo/20 py-2.5 text-center text-sm font-medium text-navy-900"
-                                onClick={() => setOpen(false)}
-                            >
-                                Registro
-                            </Link>
-                        )}
+                        ) : null}
                     </div>
-                </nav>
-            </div>
-        </header>
+
+                    <div className="flex items-center gap-1 xl:hidden">
+                        <button type="button" onClick={toggleTheme} className={iconBtnClass} aria-label="Tema">
+                            {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                        </button>
+                        <button
+                            type="button"
+                            className={iconBtnClass}
+                            onClick={() => setMobileOpen(true)}
+                            aria-expanded={mobileOpen}
+                            aria-label="Abrir menú"
+                        >
+                            <Menu className="h-6 w-6" />
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <MobileNavMenu open={mobileOpen} onClose={() => setMobileOpen(false)} canLogin={canLogin} />
+        </>
     );
 }

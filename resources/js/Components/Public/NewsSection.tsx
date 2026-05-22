@@ -9,7 +9,7 @@ export function NewsSection({ limit }: NewsSectionProps) {
     const items = limit ? demoNews.slice(0, limit) : demoNews;
 
     return (
-        <section className="bg-white py-16 sm:py-24" id="noticias">
+        <section className="bg-white py-16 dark:bg-slate-950 sm:py-24" id="noticias">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
                     <div>

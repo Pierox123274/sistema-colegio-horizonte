@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 23** (Aula virtual / LMS) sobre las fases 1–22.
+Última actualización: **Fase UX/UI** (Landing pública premium) sobre las fases 1–23.
 
 ## Completado — Fase 1
 
@@ -271,6 +271,16 @@
 - [x] Rutas: `teacher/classrooms*`, `teacher/calendar`, `student/classrooms*`, `student/calendar`, examen en línea con intentos.
 - [x] UI Inertia: `Teacher/Classrooms/*`, `Teacher/Calendar/Index`, `Student/Classrooms/*`, `Student/Calendar/Index`, `Intranet/LMS/Overview`; KPI `lms` en dashboards; menú intranet **Aula virtual (LMS)**.
 - [x] Pruebas: `tests/Feature/LMS/VirtualClassroomTest.php`, BDD `virtual_classroom.feature`, Cypress `virtual-classroom.cy.ts`.
+
+## Completado — Fase UX/UI (Landing pública institucional)
+
+- [x] Landing `Public/Home` con enfoque **colegio real** (referencia conceptual tipo Andino): identidad, comunidad, admisión, vida escolar, niveles, infraestructura, noticias.
+- [x] Hero institucional (mensaje de valores, imagen campus, CTAs admisión / conocer más) — sin dashboards ni KPIs tecnológicos al inicio.
+- [x] Secciones: estadísticas institucionales, historia/misión/visión/valores, propuesta educativa, niveles, vida escolar, logros, infraestructura, testimonios, noticias.
+- [x] **Innovación educativa** al final (aula virtual, tutor IA, adaptativo, analítica) como complemento pedagógico; enlace al portal separado del menú principal.
+- [x] `PublicNavbar`: Inicio, Nosotros, Niveles, Admisión, Vida escolar, Noticias, Contacto + botón **Portal** (login) visualmente distinto.
+- [x] Dark/light (`PublicThemeProvider`), animaciones suaves (Framer Motion), responsive, glassmorphism sutil.
+- [x] Componentes `Components/Public/Institutional/*` + reutilización de secciones Fase 4; sin cambios en backend.
 
 ## Pendiente / siguientes fases (ROADMAP)
 

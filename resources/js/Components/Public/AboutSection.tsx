@@ -7,24 +7,27 @@ type AboutSectionProps = {
 
 export function AboutSection({ condensed = false }: AboutSectionProps) {
     return (
-        <section className="bg-white py-16 sm:py-24" id="nosotros">
+        <section
+            className="section-institutional section-separator scroll-mt-24 py-16 sm:py-24"
+            id="presentacion"
+        >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
                     <div>
-                        <p className="text-xs font-bold uppercase tracking-widest text-brand-red">
+                        <p className="text-xs font-bold uppercase tracking-widest text-institutional-gold">
                             Nosotros
                         </p>
-                        <h2 className="mt-2 text-3xl font-bold tracking-tight text-navy-900 sm:text-4xl">
+                        <h2 className="mt-2 text-3xl font-bold tracking-tight text-navy-900 dark:text-white sm:text-4xl">
                             Una comunidad que aprende y crece junta
                         </h2>
-                        <p className="mt-4 text-plomo leading-relaxed">
+                        <p className="mt-4 leading-relaxed text-plomo dark:text-slate-400">
                             {condensed
                                 ? 'Más de una década formando líderes con pensamiento crítico, empatía y responsabilidad social. Nuestro equipo docente se actualiza de forma continua.'
                                 : 'En Horizonte creemos que cada estudiante tiene talentos únicos. Acompañamos su desarrollo académico, emocional y social con proyectos interdisciplinarios, deportes, arte y valores cristianos que guían la convivencia.'}
                         </p>
                         {!condensed && (
                             <>
-                                <p className="mt-4 text-plomo leading-relaxed">
+                                <p className="mt-4 leading-relaxed text-plomo dark:text-slate-400">
                                     Nuestra propuesta integra tecnología educativa,
                                     evaluación formativa y comunicación fluida con
                                     las familias para construir un entorno de
