@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 22** (Diagnóstico adaptativo y nivelación inteligente) sobre las fases 1–21.
+Última actualización: **Fase 23** (Aula virtual / LMS) sobre las fases 1–22.
 
 ## Completado — Fase 1
 
@@ -262,10 +262,21 @@
 - [x] UI Inertia: `Student/Diagnostic/*`, `Student/LearningPath`, `Teacher/PedagogicalPanel`, `Teacher/Diagnostics/*`, `Teacher/AcademicRisk`, `Intranet/Adaptive/DiagnosticExams/*`, `Intranet/Adaptive/Questions/Index`, `Intranet/Adaptive/Results/Index`, `Intranet/AdaptiveAnalytics/Index`.
 - [x] Pruebas ampliadas: `tests/Feature/AdaptiveLearning/AdaptiveLearningTest.php` (redirecciones docente, secretaría índice intranet, docente no crea fuera de sección, estudiante no ve examen ajeno a matrícula); BDD/Cypress existentes de la fase.
 
+## Completado — Fase 23 (Aula virtual, tareas y evaluaciones online)
+
+- [x] Migración `2026_05_20_100000_create_lms_tables` (aulas, anuncios, recursos, tareas, entregas, exámenes, preguntas, intentos, calendario académico).
+- [x] Modelos y enums LMS; factories `VirtualClassroomFactory`, `AssignmentFactory`, `OnlineExamFactory`.
+- [x] Servicios: `LMSService`, `AssignmentService`, `OnlineExamService`, `LMSCalendarService`, `LMSDashboardService`, `VirtualClassroomAccessService`, `LMSAdaptiveIntegrationService` (recomendaciones/debilidades tras tareas y exámenes).
+- [x] Políticas LMS + `AuditModule::Lms`; controladores docente/estudiante/admin e intranet `intranet/lms`.
+- [x] Rutas: `teacher/classrooms*`, `teacher/calendar`, `student/classrooms*`, `student/calendar`, examen en línea con intentos.
+- [x] UI Inertia: `Teacher/Classrooms/*`, `Teacher/Calendar/Index`, `Student/Classrooms/*`, `Student/Calendar/Index`, `Intranet/LMS/Overview`; KPI `lms` en dashboards; menú intranet **Aula virtual (LMS)**.
+- [x] Pruebas: `tests/Feature/LMS/VirtualClassroomTest.php`, BDD `virtual_classroom.feature`, Cypress `virtual-classroom.cy.ts`.
+
 ## Pendiente / siguientes fases (ROADMAP)
 
 - Boleta térmica y PDF de comprobante ampliados; permisos granulares por módulo si aplica.
 - Portal apoderado (rol Apoderado) si aplica en roadmap.
+- LMS: UI ampliada (anuncios/recursos CRUD, rúbricas, banco de preguntas múltiples en formulario, sincronización explícita con `GradeRecord` si se requiere).
 
 ## Notas
 

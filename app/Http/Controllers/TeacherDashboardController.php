@@ -9,6 +9,7 @@ use App\Models\Enrollment;
 use App\Models\Evaluation;
 use App\Models\GradeRecord;
 use App\Models\Subject;
+use App\Services\LMSDashboardService;
 use App\Services\TeacherContextService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -20,7 +21,7 @@ class TeacherDashboardController extends Controller
         private readonly TeacherContextService $teacherContext
     ) {}
 
-    public function index(Request $request): Response
+    public function index(Request $request, LMSDashboardService $lmsDashboard): Response
     {
         $user = $request->user();
         $activeYear = AcademicYear::query()->where('is_active', true)->first();
@@ -64,8 +65,11 @@ class TeacherDashboardController extends Controller
             ];
         }
 
+        $lms = $user !== null ? $lmsDashboard->teacherSummary($user) : [];
+
         return Inertia::render('Teacher/Dashboard', [
             'academic_year' => $activeYear?->only(['id', 'name', 'year', 'is_active']),
+            'lms' => $lms,
             'stats' => $stats,
             'assignments' => $assignmentsPayload,
             'assignments_overview' => $assignmentsOverview,
@@ -80,6 +84,8 @@ class TeacherDashboardController extends Controller
                 'grades_summary' => route('teacher.grades.index', absolute: false),
                 'students' => route('teacher.students.index', absolute: false),
                 'reports' => route('teacher.reports.index', absolute: false),
+                'classrooms' => route('teacher.classrooms.index', absolute: false),
+                'calendar' => route('teacher.calendar.index', absolute: false),
             ],
         ]);
     }

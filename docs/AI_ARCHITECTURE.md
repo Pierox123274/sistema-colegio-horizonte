@@ -57,3 +57,9 @@ La **Fase 22** implementa diagnósticos, banco de preguntas, recomendaciones por
 **Separación**: el tutor conversacional (este documento) y el motor adaptativo comparten datos académicos agregados (notas, asistencia, perfiles) pero viven en servicios distintos; la analítica adaptativa institucional incluye `intranet/adaptive-analytics` y el catálogo `intranet/adaptive/*`, independiente del panel `intranet/ai-analytics`.
 
 **Evolución futura (opcional)**: generación automática de ítems o explicaciones vía `AIProviderInterface` puede enriquecer el banco o el feedback al estudiante sin reemplazar el algoritmo base de puntuación y clasificación; cualquier llamada seguiría auditoría `ai_query` y límites `throttle:ai`, no el flujo crítico del examen.
+
+## Relación con aula virtual / LMS (Fase 23)
+
+El módulo LMS (`AssignmentService`, `OnlineExamService`) usa **`LMSAdaptiveIntegrationService`** para actualizar debilidades en `StudentAdaptiveProfile` y crear `LearningRecommendation` cuando una tarea se califica por debajo del umbral (60 %) o cuando un examen online finaliza con puntaje bajo. No depende del tutor conversacional: las reglas son locales, alineadas con la Fase 22.
+
+El **tutor IA** puede consumir en el futuro el mismo contexto (tareas pendientes, resultados de exámenes del aula) vía agregados de `LMSDashboardService` y datos de matrícula; hoy la retroalimentación docente en entregas es texto libre en `AssignmentSubmission.teacher_feedback`.

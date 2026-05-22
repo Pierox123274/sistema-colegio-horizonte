@@ -23,6 +23,7 @@ use App\Http\Controllers\IntranetAIAnalyticsController;
 use App\Http\Controllers\IntranetAnalyticsController;
 use App\Http\Controllers\IntranetAnalyticsReportsController;
 use App\Http\Controllers\IntranetAnnouncementInboxController;
+use App\Http\Controllers\IntranetLMSOverviewController;
 use App\Http\Controllers\IntranetSecurityController;
 use App\Http\Controllers\IntranetSystemOperationsController;
 use App\Http\Controllers\InventoryMovementController;
@@ -39,6 +40,7 @@ use App\Http\Controllers\SaleReceiptController;
 use App\Http\Controllers\StudentAIController;
 use App\Http\Controllers\StudentAnnouncementController;
 use App\Http\Controllers\StudentAttendanceController;
+use App\Http\Controllers\StudentCalendarController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\StudentDiagnosticController;
@@ -46,6 +48,7 @@ use App\Http\Controllers\StudentGradesController;
 use App\Http\Controllers\StudentLearningPathController;
 use App\Http\Controllers\StudentPaymentsController;
 use App\Http\Controllers\StudentProfileController;
+use App\Http\Controllers\StudentVirtualClassroomController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherAcademicRiskController;
 use App\Http\Controllers\TeacherAIController;
@@ -54,12 +57,14 @@ use App\Http\Controllers\TeacherAnnouncementController;
 use App\Http\Controllers\TeacherAssignmentController;
 use App\Http\Controllers\TeacherAssignmentsController;
 use App\Http\Controllers\TeacherAttendanceController;
+use App\Http\Controllers\TeacherCalendarController;
 use App\Http\Controllers\TeacherDashboardController;
 use App\Http\Controllers\TeacherDiagnosticsController;
 use App\Http\Controllers\TeacherGradesController;
 use App\Http\Controllers\TeacherPedagogicalPanelController;
 use App\Http\Controllers\TeacherReportsController;
 use App\Http\Controllers\TeacherStudentsController;
+use App\Http\Controllers\TeacherVirtualClassroomController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -113,6 +118,13 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/diagnostic/{exam}', [StudentDiagnosticController::class, 'show'])->name('diagnostic.show');
         Route::get('/diagnostic', [StudentDiagnosticController::class, 'index'])->name('diagnostic.index');
         Route::get('/learning-path', [StudentLearningPathController::class, 'index'])->name('learning-path.index');
+        Route::get('/classrooms', [StudentVirtualClassroomController::class, 'index'])->name('classrooms.index');
+        Route::get('/classrooms/{classroom}', [StudentVirtualClassroomController::class, 'show'])->name('classrooms.show');
+        Route::post('/classrooms/{classroom}/assignments/{assignment}/submit', [StudentVirtualClassroomController::class, 'submitAssignment'])->name('classrooms.assignments.submit');
+        Route::post('/classrooms/exams/{exam}/start', [StudentVirtualClassroomController::class, 'startExam'])->name('classrooms.exams.start');
+        Route::get('/classrooms/exam-attempt/{attempt}', [StudentVirtualClassroomController::class, 'examAttempt'])->name('classrooms.exam-attempt');
+        Route::post('/classrooms/exam-attempt/{attempt}/answer', [StudentVirtualClassroomController::class, 'answerExam'])->name('classrooms.exam-attempt.answer');
+        Route::get('/calendar', [StudentCalendarController::class, 'index'])->name('calendar.index');
     });
 
     Route::middleware(['role:Docente|Administrador'])->prefix('teacher')->name('teacher.')->group(function () {
@@ -149,6 +161,14 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         });
         Route::get('/adaptive-learning', fn () => redirect()->route('teacher.pedagogical-panel.index'))->name('adaptive-learning.index');
         Route::get('/diagnostic-results', fn () => redirect()->route('teacher.diagnostics.index'))->name('diagnostic-results.index');
+        Route::get('/classrooms', [TeacherVirtualClassroomController::class, 'index'])->name('classrooms.index');
+        Route::get('/classrooms/create', [TeacherVirtualClassroomController::class, 'create'])->name('classrooms.create');
+        Route::post('/classrooms', [TeacherVirtualClassroomController::class, 'store'])->name('classrooms.store');
+        Route::get('/classrooms/{classroom}', [TeacherVirtualClassroomController::class, 'show'])->name('classrooms.show');
+        Route::post('/classrooms/{classroom}/assignments', [TeacherVirtualClassroomController::class, 'storeAssignment'])->name('classrooms.assignments.store');
+        Route::post('/classrooms/{classroom}/assignments/{assignment}/submissions/{submission}/grade', [TeacherVirtualClassroomController::class, 'gradeSubmission'])->name('classrooms.submissions.grade');
+        Route::post('/classrooms/{classroom}/exams', [TeacherVirtualClassroomController::class, 'storeExam'])->name('classrooms.exams.store');
+        Route::get('/calendar', [TeacherCalendarController::class, 'index'])->name('calendar.index');
     });
 
     Route::middleware($intranetRoles)->prefix('intranet/announcements/inbox')->name('intranet.announcements.inbox.')->group(function () {
@@ -204,6 +224,10 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
 
     Route::middleware(['role:Administrador'])->prefix('intranet/adaptive-analytics')->name('intranet.adaptive-analytics.')->group(function () {
         Route::get('/', [IntranetAdaptiveAnalyticsController::class, 'index'])->name('index');
+    });
+
+    Route::middleware(['role:Administrador'])->prefix('intranet/lms')->name('intranet.lms.')->group(function () {
+        Route::get('/', [IntranetLMSOverviewController::class, 'index'])->name('overview');
     });
 
     Route::middleware(['role:Administrador|Secretaria'])->prefix('intranet/adaptive')->name('intranet.adaptive.')->group(function () {

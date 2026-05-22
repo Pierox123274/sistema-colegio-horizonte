@@ -189,7 +189,10 @@ class StudentPortalTest extends TestCase
     {
         $estudiante = $this->estudianteConFicha();
         $student = Student::query()->where('user_id', $estudiante->id)->firstOrFail();
-        $base = Attendance::factory()->create(['student_id' => $student->id]);
+        $base = Attendance::factory()->create([
+            'student_id' => $student->id,
+            'status' => 'presente',
+        ]);
 
         Attendance::factory()->create([
             'student_id' => $student->id,

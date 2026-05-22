@@ -41,7 +41,7 @@ class AttendanceFactory extends Factory
             'grade_id' => $grade->id,
             'section_id' => $section->id,
             'attendance_date' => now()->toDateString(),
-            'status' => fake()->randomElement(AttendanceStatus::values()),
+            'status' => AttendanceStatus::Presente->value,
             'observation' => fake()->optional()->sentence(),
             'recorded_by_user_id' => User::factory(),
         ];

@@ -354,6 +354,13 @@ final class IntranetNavigation
                             ],
                         ],
                     ],
+                    [
+                        'label' => 'Aula virtual (LMS)',
+                        'href' => route('intranet.lms.overview', absolute: false),
+                        'icon' => 'book-marked',
+                        'disabled' => false,
+                        'activeRoutes' => ['intranet.lms.overview'],
+                    ],
                 ],
             ];
         }

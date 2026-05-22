@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\LMSDashboardService;
 use App\Services\StudentContextService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,13 +14,14 @@ class StudentDashboardController extends Controller
         private readonly StudentContextService $studentContext
     ) {}
 
-    public function index(Request $request): Response
+    public function index(Request $request, LMSDashboardService $lmsDashboard): Response
     {
         $user = $request->user();
         abort_if($user === null, 403);
 
         $context = $this->studentContext->portalContext($user);
         $student = $context['student'];
+        $lms = $student !== null ? $lmsDashboard->studentSummary($student) : [];
         $academicYear = $this->studentContext->activeAcademicYear();
 
         $stats = [
@@ -41,6 +43,7 @@ class StudentDashboardController extends Controller
 
         return Inertia::render('Student/Dashboard', [
             'academic_year' => $academicYear?->only(['id', 'name', 'year', 'is_active']),
+            'lms' => $lms,
             'student' => $studentCard,
             'enrollment' => $enrollment,
             'stats' => $stats,

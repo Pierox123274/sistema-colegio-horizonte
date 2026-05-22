@@ -53,6 +53,11 @@ type DashboardProps = PageProps<{
     portal_scoped: boolean;
     empty_message: string;
     links: Record<string, string>;
+    lms: {
+        classrooms_count: number;
+        pending_assignments: number;
+        upcoming_exams: number;
+    };
 }>;
 
 export default function StudentDashboard() {
@@ -66,9 +71,12 @@ export default function StudentDashboard() {
         portal_scoped,
         empty_message,
         links,
+        lms,
     } = usePage<DashboardProps>().props;
 
     const tools = [
+        { href: route('student.classrooms.index'), label: 'Aula virtual', desc: 'Tareas y evaluaciones', icon: GraduationCap },
+        { href: route('student.calendar.index'), label: 'Calendario', desc: 'Próximas fechas', icon: CalendarCheck },
         { href: links.grades, label: 'Mis notas', desc: 'Calificaciones y promedios', icon: ClipboardCheck },
         { href: links.attendance, label: 'Mi asistencia', desc: 'Historial y porcentaje', icon: CalendarCheck },
         { href: links.payments, label: 'Mis pagos', desc: 'Pensiones y comprobantes', icon: Wallet },
@@ -128,6 +136,29 @@ export default function StudentDashboard() {
                                 accent="red"
                             />
                         </div>
+
+                        {lms && lms.classrooms_count > 0 ? (
+                            <div className="mb-8 grid gap-4 sm:grid-cols-3">
+                                <StatsCard
+                                    title="Aulas virtuales"
+                                    value={String(lms.classrooms_count)}
+                                    icon={GraduationCap}
+                                    accent="navy"
+                                />
+                                <StatsCard
+                                    title="Tareas pendientes"
+                                    value={String(lms.pending_assignments)}
+                                    icon={ClipboardCheck}
+                                    accent="yellow"
+                                />
+                                <StatsCard
+                                    title="Evaluaciones"
+                                    value={String(lms.upcoming_exams)}
+                                    icon={CalendarCheck}
+                                    accent="red"
+                                />
+                            </div>
+                        ) : null}
 
                         <div className="mb-8 grid gap-4 md:grid-cols-2">
                             <Card>

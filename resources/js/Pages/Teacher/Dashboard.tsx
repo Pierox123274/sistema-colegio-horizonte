@@ -51,6 +51,14 @@ type DashboardProps = PageProps<{
         grades_summary: string;
         students: string;
         reports: string;
+        classrooms: string;
+        calendar: string;
+    };
+    lms: {
+        classrooms_count: number;
+        pending_review: number;
+        missing_submissions_estimate: number;
+        active_exams: number;
     };
 }>;
 
@@ -64,6 +72,7 @@ export default function TeacherDashboard() {
         teacher_portal_scoped,
         empty_message,
         links,
+        lms,
     } = usePage<DashboardProps>().props;
 
     const scopeNote = teacher_portal_scoped
@@ -71,6 +80,8 @@ export default function TeacherDashboard() {
         : 'Resumen del registro académico y accesos a las herramientas del portal docente.';
 
     const tools = [
+        { href: links.classrooms, label: 'Aula virtual', desc: 'Tareas, materiales y evaluaciones online' },
+        { href: links.calendar, label: 'Calendario académico', desc: 'Fechas de tareas y exámenes' },
         { href: links.assignments, label: 'Mis asignaciones', desc: 'Secciones, cursos y alumnos a su cargo' },
         { href: links.attendance_register, label: 'Registrar asistencia', desc: 'Marcar asistencia por fecha y sección' },
         { href: links.attendance, label: 'Consultar asistencia', desc: 'Últimos registros de sus secciones' },
@@ -132,6 +143,39 @@ export default function TeacherDashboard() {
                         accent="navy"
                     />
                 </div>
+
+                {lms && lms.classrooms_count > 0 ? (
+                    <div className="mb-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                        <StatsCard
+                            title="Aulas virtuales"
+                            value={String(lms.classrooms_count)}
+                            subtitle="Activas a su cargo"
+                            icon={BookMarked}
+                            accent="navy"
+                        />
+                        <StatsCard
+                            title="Entregas por revisar"
+                            value={String(lms.pending_review)}
+                            subtitle="Tareas enviadas"
+                            icon={ClipboardCheck}
+                            accent="yellow"
+                        />
+                        <StatsCard
+                            title="Evaluaciones activas"
+                            value={String(lms.active_exams)}
+                            subtitle="Publicadas"
+                            icon={GraduationCap}
+                            accent="red"
+                        />
+                        <StatsCard
+                            title="Sin entregar (est.)"
+                            value={String(lms.missing_submissions_estimate)}
+                            subtitle="En sus secciones"
+                            icon={Users}
+                            accent="navy"
+                        />
+                    </div>
+                ) : null}
 
                 <Card className="mb-8">
                     <div className="mb-4 flex flex-wrap items-center justify-between gap-3">

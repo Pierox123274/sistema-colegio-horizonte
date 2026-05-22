@@ -74,6 +74,18 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **HTTP intranet (Administrador|Secretaría)**: `intranet/adaptive/diagnostic-exams*`, `intranet/adaptive/questions`, `intranet/adaptive/results` (políticas restringen escritura a roles autorizados); `intranet/adaptive-analytics` (solo Administrador).
 - **Frontend**: `Pages/Student/Diagnostic/*`, `Student/LearningPath`, `Teacher/PedagogicalPanel`, `Teacher/Diagnostics/*`, `Teacher/AcademicRisk`, `Intranet/Adaptive/*`, `Intranet/AdaptiveAnalytics/Index`.
 
+## Aula virtual / LMS (Fase 23)
+
+- **Dominio**: `VirtualClassroom` (año, sección, curso, docente); `VirtualClassroomAnnouncement`; `VirtualResource` (PDF, enlace, etc.); `Assignment` + `AssignmentSubmission` (estados pendiente/entregado/revisado/vencido); `OnlineExam` + `OnlineExamQuestion` + `OnlineExamAttempt`; `AcademicCalendarEvent` (tareas, exámenes, eventos).
+- **Visibilidad**: `VirtualClassroomAccessService` (docente por `TeacherAssignment` o titular del aula; estudiante por matrícula activa en la misma sección/año).
+- **Servicios**: `LMSService`, `AssignmentService`, `OnlineExamService`, `LMSCalendarService`, `LMSDashboardService`; integración adaptativa `LMSAdaptiveIntegrationService` (recomendaciones y debilidades tras calificación baja o examen completado).
+- **Políticas**: `VirtualClassroomPolicy`, `AssignmentPolicy`, `AssignmentSubmissionPolicy`, `OnlineExamPolicy`, `OnlineExamAttemptPolicy` (registro en `AppServiceProvider`).
+- **Auditoría**: `AuditModule::Lms` (creación tarea, entrega, calificación, inicio/fin de examen).
+- **HTTP docente**: `teacher/classrooms*`, `teacher/calendar`.
+- **HTTP estudiante**: `student/classrooms*`, `student/calendar`, intentos de examen `student/classrooms/exam-attempt/{attempt}`.
+- **HTTP intranet**: `intranet/lms` (resumen institucional, solo Administrador).
+- **Frontend**: `Pages/Teacher/Classrooms/*`, `Teacher/Calendar/Index`, `Pages/Student/Classrooms/*`, `Student/Calendar/Index`, `Intranet/LMS/Overview`; KPI LMS en dashboards docente/estudiante.
+
 ## Seguridad, auditoría e ISO (Fase 19)
 
 - **Persistencia**: `audit_logs` (acción, módulo, entidad, IP, user agent, old/new values, severidad), `login_attempts`, `user_sessions` (dispositivo, expiración, bandera sospechosa).

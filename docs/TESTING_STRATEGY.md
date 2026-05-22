@@ -62,6 +62,14 @@ Fase 2 añade pruebas de intranet y roles (`tests/Feature/Intranet`, ampliacione
 | BDD (Gherkin) | `tests/Bdd/features/adaptive_learning.feature` |
 | E2E (Cypress) | `cypress/e2e/adaptive-learning.cy.ts` |
 
+**Fase 23 (aula virtual / LMS)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/LMS/VirtualClassroomTest.php` (aula, tarea, entrega, calificación, examen online, restricciones de acceso, dashboards con `lms`, resumen admin) |
+| BDD (Gherkin) | `tests/Bdd/features/virtual_classroom.feature` |
+| E2E (Cypress) | `cypress/e2e/virtual-classroom.cy.ts` |
+
 **Fase 20 (DevOps institucional)** incluye:
 
 | Capa | Artefacto |

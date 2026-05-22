@@ -67,6 +67,28 @@ final class TeacherNavigation
                         'disabled' => false,
                         'activeRoutes' => ['teacher.students.index', 'teacher.students.show'],
                     ],
+                    [
+                        'label' => 'Aula virtual',
+                        'href' => route('teacher.classrooms.index', absolute: false),
+                        'icon' => 'door-open',
+                        'disabled' => false,
+                        'activeRoutes' => [
+                            'teacher.classrooms.index',
+                            'teacher.classrooms.create',
+                            'teacher.classrooms.store',
+                            'teacher.classrooms.show',
+                            'teacher.classrooms.assignments.store',
+                            'teacher.classrooms.submissions.grade',
+                            'teacher.classrooms.exams.store',
+                        ],
+                    ],
+                    [
+                        'label' => 'Calendario',
+                        'href' => route('teacher.calendar.index', absolute: false),
+                        'icon' => 'calendar-days',
+                        'disabled' => false,
+                        'activeRoutes' => ['teacher.calendar.index'],
+                    ],
                 ],
             ],
             [

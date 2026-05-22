@@ -250,6 +250,16 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | Métricas docente e institucional | 9001 | `AdaptiveAnalyticsService`, `teacher/pedagogical-panel`, `teacher/diagnostics`, `intranet/adaptive/*`, `intranet/adaptive-analytics` |
 | **RNF-10** Testing automatizado | 29119 | `tests/Feature/AdaptiveLearning/AdaptiveLearningTest.php`, `adaptive_learning.feature`, `adaptive-learning.cy.ts` |
 
+## Mapeo (Fase 23 — aula virtual / LMS)
+
+| Requerimiento / objetivo | ISO principal | Artefacto |
+|--------------------------|---------------|-----------|
+| Plataforma educativa integrada al ERP académico | 9001, 25010 | `VirtualClassroom`, `Assignment`, `OnlineExam`, rutas `teacher.classrooms.*`, `student.classrooms.*` |
+| Control de acceso por matrícula y asignación docente | 27001 | `VirtualClassroomAccessService`, políticas LMS, `VirtualClassroomPolicy` |
+| Trazabilidad de entregas y evaluaciones | 9001, 27001 | `AuditModule::Lms`, `AssignmentService`, `OnlineExamService` |
+| Integración con aprendizaje adaptativo | 9001 | `LMSAdaptiveIntegrationService`, `LearningRecommendation` tras calificación baja |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/LMS/VirtualClassroomTest.php`, `virtual_classroom.feature`, `virtual-classroom.cy.ts` |
+
 ## Mapeo inicial (Fase 1 — arquitectura base)
 
 | Requerimiento / objetivo (referencia) | ISO principal | Artefacto en el repo |

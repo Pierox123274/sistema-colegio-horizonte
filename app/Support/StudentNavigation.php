@@ -30,6 +30,27 @@ final class StudentNavigation
                 'activeRoutes' => ['student.dashboard'],
             ],
             [
+                'label' => 'Aula virtual',
+                'href' => route('student.classrooms.index', absolute: false),
+                'icon' => 'door-open',
+                'disabled' => false,
+                'activeRoutes' => [
+                    'student.classrooms.index',
+                    'student.classrooms.show',
+                    'student.classrooms.assignments.submit',
+                    'student.classrooms.exams.start',
+                    'student.classrooms.exam-attempt',
+                    'student.classrooms.exam-attempt.answer',
+                ],
+            ],
+            [
+                'label' => 'Calendario',
+                'href' => route('student.calendar.index', absolute: false),
+                'icon' => 'calendar-days',
+                'disabled' => false,
+                'activeRoutes' => ['student.calendar.index'],
+            ],
+            [
                 'label' => 'Diagnóstico adaptativo',
                 'href' => route('student.diagnostic.index', absolute: false),
                 'icon' => 'clipboard-list',
