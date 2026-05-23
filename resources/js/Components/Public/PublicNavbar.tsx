@@ -2,12 +2,18 @@ import { Link, usePage } from '@inertiajs/react';
 import { LogIn, Menu, Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { PageProps } from '@/types';
+import type { CmsSettings } from '@/types/cms';
 import { usePublicTheme } from '@/Components/Public/Premium/PublicThemeProvider';
 import { DesktopNavMenus } from '@/Components/Public/nav/DesktopNavMenus';
 import { MobileNavMenu } from '@/Components/Public/nav/MobileNavMenu';
 
+type NavbarProps = PageProps & { cmsSettings?: CmsSettings };
+
 export function PublicNavbar() {
-    const { canLogin = false } = usePage<PageProps>().props;
+    const { canLogin = false, cmsSettings } = usePage<NavbarProps>().props;
+    const schoolName = cmsSettings?.schoolName ?? 'I.E.P. Horizonte';
+    const tagline = cmsSettings?.schoolTagline || 'Excelencia educativa';
+    const logoUrl = cmsSettings?.logoUrl;
     const { url } = usePage();
     const { isDark, toggleTheme } = usePublicTheme();
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -64,19 +70,27 @@ export function PublicNavbar() {
             >
                 <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
                     <Link href={route('public.home')} className="group flex shrink-0 items-center gap-2.5">
-                        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-300 font-display text-lg font-extrabold text-[#071526] shadow-md transition group-hover:scale-[1.02]">
-                            H
-                        </span>
+                        {logoUrl ? (
+                            <img
+                                src={logoUrl}
+                                alt={schoolName}
+                                className="h-11 w-auto max-w-[8rem] rounded-lg object-contain"
+                            />
+                        ) : (
+                            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-300 font-display text-lg font-extrabold text-[#071526] shadow-md transition group-hover:scale-[1.02]">
+                                H
+                            </span>
+                        )}
                         <span className="hidden flex-col leading-tight sm:flex">
                             <span
                                 className={`font-display text-sm font-bold ${lightOnHero ? 'text-white' : 'text-slate-900 dark:text-white'}`}
                             >
-                                I.E.P. Horizonte
+                                {schoolName}
                             </span>
                             <span
                                 className={`text-[10px] font-semibold uppercase tracking-[0.2em] ${lightOnHero ? 'text-amber-300' : 'text-amber-500 dark:text-amber-400'}`}
                             >
-                                Excelencia educativa
+                                {tagline}
                             </span>
                         </span>
                     </Link>

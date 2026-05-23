@@ -5,19 +5,28 @@ import { PublicPageHeroImage } from '@/Components/Public/Premium/PublicHeroImage
 import { PublicSectionHeader } from '@/Components/Public/Premium/PublicSectionHeader';
 import { InstitutionalCTA } from '@/Components/Public/ui/InstitutionalCTA';
 import PublicLayout from '@/Layouts/PublicLayout';
+import type { PageProps } from '@/types';
+import type { CmsHero, CmsPageBrief } from '@/types/cms';
+import { usePage } from '@inertiajs/react';
 
-type Props = { level: LevelKey };
+type LevelPageProps = PageProps & {
+    level: LevelKey;
+    cmsPage?: CmsPageBrief | null;
+    cmsHero?: CmsHero | null;
+};
 
-export default function LevelPage({ level }: Props) {
+export default function LevelPage({ level }: { level: LevelKey }) {
+    const { cmsPage, cmsHero } = usePage<LevelPageProps>().props;
     const data = levelContent[level];
     const heroKey = levelHeroImage[level];
 
     return (
         <PublicLayout title={`${data.title} — I.E.P. Horizonte`} description={data.tagline}>
             <PublicPageHeroImage
-                title={data.title}
-                subtitle={data.tagline}
+                title={cmsPage?.title ?? data.title}
+                subtitle={cmsHero?.subtitle ?? cmsPage?.subtitle ?? data.tagline}
                 imageKey={heroKey}
+                imageSrc={cmsHero?.image ?? undefined}
                 breadcrumbs={[
                     { label: 'Niveles', href: route('public.niveles') },
                     { label: data.title.replace('Nivel ', '') },

@@ -2,17 +2,21 @@ import { useState } from 'react';
 import { PublicNewsCard } from './PublicNewsCard';
 import { PublicSectionHeader } from './PublicSectionHeader';
 import { newsWithImages } from '@/Components/Public/data/publicSiteContent';
+import type { CmsNewsCard } from '@/types/cms';
 
 const categories = ['Todas', 'Admisión', 'Vida escolar', 'Logros'];
 
 export function NewsMagazineSection({
     showHeader = true,
     compact = false,
+    articles: articlesProp,
 }: {
     showHeader?: boolean;
     compact?: boolean;
+    articles?: CmsNewsCard[];
 }) {
-    const allArticles = newsWithImages();
+    const allArticles =
+        articlesProp && articlesProp.length > 0 ? articlesProp : newsWithImages();
     const [filter, setFilter] = useState('Todas');
     const filtered =
         filter === 'Todas' ? allArticles : allArticles.filter((a) => a.category === filter);

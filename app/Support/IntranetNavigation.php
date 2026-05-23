@@ -606,6 +606,10 @@ final class IntranetNavigation
             ...($user->hasAnyRole([
                 IntranetRole::Administrador->value,
                 IntranetRole::Secretaria->value,
+            ]) ? [self::cmsNavItem($user)] : []),
+            ...($user->hasAnyRole([
+                IntranetRole::Administrador->value,
+                IntranetRole::Secretaria->value,
             ]) ? [[
                 'label' => 'Analítica',
                 'href' => route('intranet.analytics.index', absolute: false),
@@ -654,5 +658,129 @@ final class IntranetNavigation
                 'disabled' => false,
             ],
         ]);
+    }
+
+    /**
+     * @return array{label: string, href: string|null, icon: string, disabled: bool, children: list<array{label: string, href: string, icon: string, disabled: bool, activeRoutes: list<string>}>}
+     */
+    private static function cmsNavItem(User $user): array
+    {
+        $isAdmin = $user->hasRole(IntranetRole::Administrador->value);
+
+        $children = [
+            [
+                'label' => 'Resumen',
+                'href' => route('intranet.cms.dashboard', absolute: false),
+                'icon' => 'layout-dashboard',
+                'disabled' => false,
+                'activeRoutes' => ['intranet.cms.dashboard'],
+            ],
+            [
+                'label' => 'Páginas',
+                'href' => route('intranet.cms.pages.index', absolute: false),
+                'icon' => 'file-text',
+                'disabled' => false,
+                'activeRoutes' => [
+                    'intranet.cms.pages.index',
+                    'intranet.cms.pages.create',
+                    'intranet.cms.pages.edit',
+                ],
+            ],
+            [
+                'label' => 'Noticias',
+                'href' => route('intranet.cms.news.index', absolute: false),
+                'icon' => 'newspaper',
+                'disabled' => false,
+                'activeRoutes' => [
+                    'intranet.cms.news.index',
+                    'intranet.cms.news.create',
+                    'intranet.cms.news.edit',
+                    'intranet.cms.news-categories.index',
+                ],
+            ],
+            [
+                'label' => 'Galerías',
+                'href' => route('intranet.cms.galleries.index', absolute: false),
+                'icon' => 'images',
+                'disabled' => false,
+                'activeRoutes' => [
+                    'intranet.cms.galleries.index',
+                    'intranet.cms.galleries.create',
+                    'intranet.cms.galleries.edit',
+                ],
+            ],
+            [
+                'label' => 'Testimonios',
+                'href' => route('intranet.cms.testimonials.index', absolute: false),
+                'icon' => 'message-square-quote',
+                'disabled' => false,
+                'activeRoutes' => [
+                    'intranet.cms.testimonials.index',
+                    'intranet.cms.testimonials.create',
+                    'intranet.cms.testimonials.edit',
+                ],
+            ],
+            [
+                'label' => 'Medios',
+                'href' => route('intranet.cms.media.index', absolute: false),
+                'icon' => 'image',
+                'disabled' => false,
+                'activeRoutes' => [
+                    'intranet.cms.media.index',
+                    'intranet.cms.media.browse',
+                    'intranet.cms.media.store',
+                ],
+            ],
+        ];
+
+        if ($isAdmin) {
+            array_splice($children, 1, 0, [
+                [
+                    'label' => 'Homepage',
+                    'href' => route('intranet.cms.homepage.edit', absolute: false),
+                    'icon' => 'layout-template',
+                    'disabled' => false,
+                    'activeRoutes' => ['intranet.cms.homepage.edit', 'intranet.cms.homepage.update'],
+                ],
+                [
+                    'label' => 'Banners',
+                    'href' => route('intranet.cms.hero-slides.index', absolute: false),
+                    'icon' => 'presentation',
+                    'disabled' => false,
+                    'activeRoutes' => [
+                        'intranet.cms.hero-slides.index',
+                        'intranet.cms.hero-slides.create',
+                        'intranet.cms.hero-slides.edit',
+                    ],
+                ],
+            ]);
+
+            $children[] = [
+                'label' => 'Menús',
+                'href' => route('intranet.cms.menus.index', absolute: false),
+                'icon' => 'menu',
+                'disabled' => false,
+                'activeRoutes' => [
+                    'intranet.cms.menus.index',
+                    'intranet.cms.menus.edit',
+                    'intranet.cms.menus.update',
+                ],
+            ];
+            $children[] = [
+                'label' => 'Configuración',
+                'href' => route('intranet.cms.settings.index', absolute: false),
+                'icon' => 'settings',
+                'disabled' => false,
+                'activeRoutes' => ['intranet.cms.settings.index', 'intranet.cms.settings.update'],
+            ];
+        }
+
+        return [
+            'label' => 'Sitio web',
+            'href' => route('intranet.cms.dashboard', absolute: false),
+            'icon' => 'globe',
+            'disabled' => false,
+            'children' => $children,
+        ];
     }
 }

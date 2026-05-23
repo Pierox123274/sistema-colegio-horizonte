@@ -86,6 +86,18 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **HTTP intranet**: `intranet/lms` (resumen institucional, solo Administrador).
 - **Frontend**: `Pages/Teacher/Classrooms/*`, `Teacher/Calendar/Index`, `Pages/Student/Classrooms/*`, `Student/Calendar/Index`, `Intranet/LMS/Overview`; KPI LMS en dashboards docente/estudiante.
 
+## CMS institucional — sitio público (Fase 24)
+
+- **Dominio** (`App\Models\Cms\*`): `CmsPage`, `CmsSection` (bloques JSON por página, p. ej. homepage), `CmsHeroSlide`, `CmsNews` + `CmsNewsCategory`, `CmsGallery` + `CmsGalleryImage`, `CmsTestimonial`, `CmsSetting` (clave/valor), `CmsMenu` + `CmsMenuItem`, `CmsMedia`.
+- **Estados**: `CmsPublicationStatus` (borrador, publicado, archivado); publicación con `published_at` opcional.
+- **Servicios**: `CmsSettingService`, `CmsPublicService` (lectura pública con caché ~1 h), `CmsContentService` (CRUD + auditoría), `CmsMediaService` (subida a `storage` público).
+- **Presentación pública**: `App\Support\CmsPublicPresenter` transforma modelos a props Inertia (hero, noticias, galería, testimonios, SEO, menús).
+- **HTTP público**: `PublicSiteController` inyecta contenido CMS; fallback a datos estáticos en frontend si el CMS está vacío.
+- **HTTP intranet**: prefijo `intranet/cms` — dashboard, recursos REST (páginas, noticias, galerías, testimonios); settings, menús, hero y homepage solo **Administrador**; **Secretaría** edición limitada (sin eliminar ni settings).
+- **Políticas**: `App\Policies\Cms\*`; `AuditModule::Cms`.
+- **Frontend intranet**: `Pages/Intranet/Cms/*`; editor HTML `CmsRichTextEditor` (base para Tiptap).
+- **Seeder**: `CmsContentSeeder` (contenido demo alineado al sitio premium existente).
+
 ## Seguridad, auditoría e ISO (Fase 19)
 
 - **Persistencia**: `audit_logs` (acción, módulo, entidad, IP, user agent, old/new values, severidad), `login_attempts`, `user_sessions` (dispositivo, expiración, bandera sospechosa).

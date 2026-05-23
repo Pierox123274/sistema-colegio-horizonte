@@ -1,14 +1,23 @@
 import { Reveal } from '@/Components/Public/Premium/Reveal';
 import { AnimatedCounter } from '@/Components/Public/Premium/AnimatedCounter';
 
-const stats = [
+const defaultStats = [
     { value: 15, suffix: '+', label: 'Años de experiencia' },
     { value: 3, suffix: '', label: 'Niveles educativos' },
     { value: 850, suffix: '+', label: 'Familias en comunidad' },
     { value: 45, suffix: '+', label: 'Docentes especializados' },
 ];
 
-export function PublicStatsRow({ variant = 'hero' }: { variant?: 'hero' | 'section' }) {
+type StatItem = { value: number; suffix?: string; label: string };
+
+export function PublicStatsRow({
+    variant = 'hero',
+    items,
+}: {
+    variant?: 'hero' | 'section';
+    items?: StatItem[];
+}) {
+    const stats = items && items.length > 0 ? items : defaultStats;
     const isHero = variant === 'hero';
     return (
         <div

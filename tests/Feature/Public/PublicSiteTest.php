@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Public;
 
+use Database\Seeders\CmsContentSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -10,6 +11,12 @@ use Tests\TestCase;
 class PublicSiteTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(CmsContentSeeder::class);
+    }
 
     /**
      * @return array<string, array{0: string, 1: string}>

@@ -4,16 +4,32 @@ import { PublicPageHeroImage } from '@/Components/Public/Premium/PublicHeroImage
 import { PublicSectionHeader } from '@/Components/Public/Premium/PublicSectionHeader';
 import { InstitutionalCTA } from '@/Components/Public/ui/InstitutionalCTA';
 import PublicLayout from '@/Layouts/PublicLayout';
+import type { PageProps } from '@/types';
+import type { CmsGalleryItem, CmsHero, CmsPageBrief } from '@/types/cms';
+import { usePage } from '@inertiajs/react';
+
+type Props = PageProps<{
+    cmsPage?: CmsPageBrief | null;
+    cmsHero?: CmsHero | null;
+    galleryItems?: CmsGalleryItem[];
+}>;
 
 export default function Galeria() {
-    const items = galleryWithImages();
+    const { cmsPage, cmsHero, galleryItems } = usePage<Props>().props;
+    const items =
+        galleryItems && galleryItems.length > 0 ? galleryItems : galleryWithImages();
 
     return (
         <PublicLayout title="Galería — I.E.P. Horizonte" description="Momentos del colegio.">
             <PublicPageHeroImage
-                title="Galería institucional"
-                subtitle="Campus, actividades, eventos y la vida diaria de nuestra comunidad."
+                title={cmsPage?.title ?? 'Galería institucional'}
+                subtitle={
+                    cmsPage?.subtitle ??
+                    cmsHero?.subtitle ??
+                    'Campus, actividades, eventos y la vida diaria de nuestra comunidad.'
+                }
                 imageKey="hero"
+                imageSrc={cmsHero?.image ?? undefined}
                 breadcrumbs={[
                     { label: 'Vida escolar', href: route('public.vida-escolar') },
                     { label: 'Galería' },

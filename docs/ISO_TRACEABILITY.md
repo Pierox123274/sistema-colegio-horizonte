@@ -250,6 +250,15 @@ Matriz liviana entre **objetivos del sistema** (`SYSTEM_REQUIREMENTS.md`), está
 | Métricas docente e institucional | 9001 | `AdaptiveAnalyticsService`, `teacher/pedagogical-panel`, `teacher/diagnostics`, `intranet/adaptive/*`, `intranet/adaptive-analytics` |
 | **RNF-10** Testing automatizado | 29119 | `tests/Feature/AdaptiveLearning/AdaptiveLearningTest.php`, `adaptive_learning.feature`, `adaptive-learning.cy.ts` |
 
+## Mapeo (Fase 24 — CMS institucional)
+
+| Requisito / control | Norma | Evidencia en código |
+|---------------------|-------|---------------------|
+| Contenido público trazable y versionable por estado | 9001 | `CmsPublicationStatus`, `published_at`, `CmsPage` / `CmsNews` |
+| Control de acceso al CMS por rol | 27001 | `App\Policies\Cms\*`, rutas `intranet/cms` con middleware de rol |
+| Auditoría de cambios en contenido institucional | 27001 | `AuditModule::Cms`, `CmsContentService` |
+| **RNF-10** Testing automatizado | 29119 | `tests/Feature/CMS/CmsManagementTest.php`, `cms_management.feature`, `cms-management.cy.ts` |
+
 ## Mapeo (Fase 23 — aula virtual / LMS)
 
 | Requerimiento / objetivo | ISO principal | Artefacto |

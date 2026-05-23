@@ -16,6 +16,7 @@ type PublicHeroImageProps = {
     secondaryCta?: { label: string; href: string };
     showStats?: boolean;
     compact?: boolean;
+    statsItems?: { value: number; suffix?: string; label: string }[];
 };
 
 export function PublicHeroImage({
@@ -28,6 +29,7 @@ export function PublicHeroImage({
     secondaryCta = { label: 'Explorar niveles', href: route('public.niveles') },
     showStats = true,
     compact = false,
+    statsItems,
 }: PublicHeroImageProps) {
     const src = imageSrc ?? publicImage(imageKey);
     const minH = compact ? 'min-h-[50vh]' : 'min-h-[92vh]';
@@ -103,7 +105,9 @@ export function PublicHeroImage({
                 </div>
             </div>
 
-            {showStats && !compact ? <PublicStatsRow variant="hero" /> : null}
+            {showStats && !compact ? (
+                <PublicStatsRow variant="hero" items={statsItems} />
+            ) : null}
         </section>
     );
 }
@@ -114,15 +118,19 @@ export function PublicPageHeroImage({
     subtitle,
     breadcrumbs,
     imageKey,
+    imageSrc,
 }: {
     title: string;
     subtitle?: string;
     breadcrumbs?: { label: string; href?: string }[];
-    imageKey: Parameters<typeof publicImage>[0];
+    imageKey?: Parameters<typeof publicImage>[0];
+    imageSrc?: string;
 }) {
+    const src = imageSrc ?? (imageKey ? publicImage(imageKey) : publicImage('hero'));
+
     return (
         <section className="relative min-h-[42vh] overflow-hidden">
-            <img src={publicImage(imageKey)} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" />
             <div className="absolute inset-0 bg-[#071526]/80" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#071526] to-transparent" />
             <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8">

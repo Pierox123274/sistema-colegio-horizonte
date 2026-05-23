@@ -1,3 +1,7 @@
+import { PublicPageHeroImage } from '@/Components/Public/Premium/PublicHeroImage';
+import type { PageProps } from '@/types';
+import type { CmsHero, CmsPageBrief } from '@/types/cms';
+import { usePage } from '@inertiajs/react';
 import { Breadcrumbs, type BreadcrumbItem } from './Breadcrumbs';
 
 type PageHeroProps = {
@@ -7,7 +11,28 @@ type PageHeroProps = {
     compact?: boolean;
 };
 
+type CmsPageProps = PageProps & {
+    cmsPage?: CmsPageBrief | null;
+    cmsHero?: CmsHero | null;
+};
+
 export function PageHero({ title, subtitle, breadcrumbs, compact = false }: PageHeroProps) {
+    const { cmsPage, cmsHero } = usePage<CmsPageProps>().props;
+    const resolvedTitle = cmsPage?.title ?? title;
+    const resolvedSubtitle = cmsHero?.subtitle ?? cmsPage?.subtitle ?? subtitle;
+    const imageSrc = cmsHero?.image ?? undefined;
+
+    if (imageSrc) {
+        return (
+            <PublicPageHeroImage
+                title={resolvedTitle}
+                subtitle={resolvedSubtitle ?? ''}
+                imageSrc={imageSrc}
+                breadcrumbs={breadcrumbs}
+            />
+        );
+    }
+
     return (
         <div className="relative overflow-hidden border-b border-slate-200/60 bg-gradient-to-br from-institutional-blue-950 via-institutional-blue-900 to-institutional-blue-800 text-white dark:border-white/10">
             <div
@@ -19,11 +44,11 @@ export function PageHero({ title, subtitle, breadcrumbs, compact = false }: Page
             >
                 <Breadcrumbs items={breadcrumbs} light />
                 <h1 className="mt-4 font-display text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
-                    {title}
+                    {resolvedTitle}
                 </h1>
-                {subtitle ? (
+                {resolvedSubtitle ? (
                     <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/78 sm:text-lg">
-                        {subtitle}
+                        {resolvedSubtitle}
                     </p>
                 ) : null}
             </div>

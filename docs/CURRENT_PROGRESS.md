@@ -282,6 +282,18 @@
 - [x] Dark/light (`PublicThemeProvider`), animaciones suaves (Framer Motion), responsive, glassmorphism sutil.
 - [x] Componentes `Components/Public/Institutional/*` + reutilización de secciones Fase 4; sin cambios en backend.
 
+## Completado — Fase 24 (CMS institucional premium)
+
+- [x] Migración `cms_*` (páginas, secciones, hero slides, noticias, categorías, galerías, testimonios, settings, menús, media).
+- [x] Modelos `App\Models\Cms\*`, enums `CmsPublicationStatus`, `CmsMenuLocation`, políticas y auditoría (`AuditModule::Cms`).
+- [x] Servicios `CmsSettingService`, `CmsPublicService` (caché), `CmsContentService`, `CmsMediaService`; presentador `CmsPublicPresenter`.
+- [x] Panel intranet `/intranet/cms` (dashboard, páginas, noticias, galerías, testimonios, hero, homepage, settings, menús, media).
+- [x] `CmsContentSeeder` + contenido demo alineado al sitio público; `PublicSiteController` consume CMS dinámico.
+- [x] Frontend público: Home, noticias, galería y layout con SEO/meta desde CMS (fallback a contenido estático si vacío).
+- [x] UI intranet CMS completa (páginas, noticias, categorías, galerías, testimonios, hero, homepage, settings, menús, media); editor HTML (`CmsRichTextEditor`, base para Tiptap).
+- [ ] Pendiente menor: menús/navbar/footer públicos 100 % desde CMS; Tiptap; `body` CMS en todas las páginas internas estáticas.
+- [x] Pruebas `tests/Feature/CMS/CmsManagementTest.php`, BDD `cms_management.feature`, Cypress `cms-management.cy.ts`.
+
 ## Pendiente / siguientes fases (ROADMAP)
 
 - Boleta térmica y PDF de comprobante ampliados; permisos granulares por módulo si aplica.

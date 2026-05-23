@@ -162,11 +162,17 @@ function NavGroup({
     const children = item.children ?? EMPTY_NAV_CHILDREN;
     const subPanelId = useId();
 
-    const insideGroup = matchesByCurrentRoute(item, currentRoute) || isPathInsideNavGroup(currentRoute, children);
+    const parentHref = item.href && !item.disabled ? item.href : null;
+    const parentPath = parentHref
+        ? parentHref.startsWith('http')
+            ? new URL(parentHref).pathname
+            : parentHref.split('?')[0]
+        : null;
+    const onParentLanding = Boolean(parentPath && currentPath === parentPath);
+    const insideGroup =
+        onParentLanding || isPathInsideNavGroup(currentRoute, children);
 
-    const [expanded, setExpanded] = useState(() =>
-        isPathInsideNavGroup(currentRoute, children),
-    );
+    const [expanded, setExpanded] = useState(() => insideGroup);
 
     const prevInsideRef = useRef(insideGroup);
 
@@ -191,47 +197,95 @@ function NavGroup({
         ? 'bg-white/10 text-white ring-1 ring-white/15'
         : 'text-white/75 hover:bg-white/5 hover:text-white';
 
+    const iconSlot = (
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/5">
+            <Icon className="h-5 w-5" strokeWidth={1.75} />
+        </span>
+    );
+
+    const chevronBtn = (
+        <button
+            type="button"
+            aria-expanded={expanded}
+            aria-controls={subPanelId}
+            aria-label={expanded ? 'Ocultar submenú' : 'Mostrar submenú'}
+            onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setExpanded((open) => !open);
+            }}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-white/60 transition hover:bg-white/10 hover:text-white"
+        >
+            <ChevronDown
+                className={`h-4 w-4 transition-transform duration-300 ease-out ${
+                    expanded ? 'rotate-180' : 'rotate-0'
+                }`}
+                strokeWidth={2}
+                aria-hidden
+            />
+        </button>
+    );
+
     return (
         <div className="space-y-1">
-            <button
-                type="button"
-                aria-expanded={expanded}
-                aria-controls={subPanelId}
-                title={item.label}
-                onClick={() => setExpanded((open) => !open)}
-                className={`${headerBase} ${headerTone} ${
-                    showLabels ? '' : 'justify-center lg:justify-center'
-                }`}
-            >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/5">
-                    <Icon className="h-5 w-5" strokeWidth={1.75} />
-                </span>
-                {showLabels ? (
-                    <>
-                        <span className="min-w-0 flex-1 truncate text-left text-xs font-semibold uppercase tracking-wider text-white/80">
-                            {item.label}
-                        </span>
-                        <ChevronDown
-                            className={`h-4 w-4 shrink-0 text-white/60 transition-transform duration-300 ease-out ${
-                                expanded ? 'rotate-180' : 'rotate-0'
-                            }`}
-                            strokeWidth={2}
-                            aria-hidden
-                        />
-                    </>
-                ) : (
-                    <>
-                        <span className="sr-only">{item.label}</span>
-                        <ChevronDown
-                            className={`h-4 w-4 shrink-0 text-white/60 transition-transform duration-300 ease-out ${
-                                expanded ? 'rotate-180' : 'rotate-0'
-                            }`}
-                            strokeWidth={2}
-                            aria-hidden
-                        />
-                    </>
-                )}
-            </button>
+            {parentHref ? (
+                <div className={`${headerBase} ${headerTone} ${showLabels ? '' : 'justify-center'}`}>
+                    <Link
+                        href={parentHref}
+                        onClick={onNavigate}
+                        title={item.label}
+                        className="flex min-w-0 flex-1 items-center gap-3"
+                    >
+                        {iconSlot}
+                        {showLabels ? (
+                            <span className="min-w-0 flex-1 truncate text-left text-xs font-semibold uppercase tracking-wider text-white/80">
+                                {item.label}
+                            </span>
+                        ) : (
+                            <span className="sr-only">{item.label}</span>
+                        )}
+                    </Link>
+                    {chevronBtn}
+                </div>
+            ) : (
+                <button
+                    type="button"
+                    aria-expanded={expanded}
+                    aria-controls={subPanelId}
+                    title={item.label}
+                    onClick={() => setExpanded((open) => !open)}
+                    className={`${headerBase} ${headerTone} ${
+                        showLabels ? '' : 'justify-center lg:justify-center'
+                    }`}
+                >
+                    {iconSlot}
+                    {showLabels ? (
+                        <>
+                            <span className="min-w-0 flex-1 truncate text-left text-xs font-semibold uppercase tracking-wider text-white/80">
+                                {item.label}
+                            </span>
+                            <ChevronDown
+                                className={`h-4 w-4 shrink-0 text-white/60 transition-transform duration-300 ease-out ${
+                                    expanded ? 'rotate-180' : 'rotate-0'
+                                }`}
+                                strokeWidth={2}
+                                aria-hidden
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <span className="sr-only">{item.label}</span>
+                            <ChevronDown
+                                className={`h-4 w-4 shrink-0 text-white/60 transition-transform duration-300 ease-out ${
+                                    expanded ? 'rotate-180' : 'rotate-0'
+                                }`}
+                                strokeWidth={2}
+                                aria-hidden
+                            />
+                        </>
+                    )}
+                </button>
+            )}
             <div
                 id={subPanelId}
                 className={`grid overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out ${

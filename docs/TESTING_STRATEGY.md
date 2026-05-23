@@ -70,6 +70,14 @@ Fase 2 añade pruebas de intranet y roles (`tests/Feature/Intranet`, ampliacione
 | BDD (Gherkin) | `tests/Bdd/features/virtual_classroom.feature` |
 | E2E (Cypress) | `cypress/e2e/virtual-classroom.cy.ts` |
 
+**Fase 24 (CMS institucional)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/CMS/CmsManagementTest.php` (dashboard, permisos, CRUD noticia, home dinámica, página home) |
+| BDD (Gherkin) | `tests/Bdd/features/cms_management.feature` |
+| E2E (Cypress) | `cypress/e2e/cms-management.cy.ts` |
+
 **Fase 20 (DevOps institucional)** incluye:
 
 | Capa | Artefacto |

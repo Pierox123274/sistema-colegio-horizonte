@@ -15,6 +15,17 @@ use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\Intranet\Cms\CmsDashboardController;
+use App\Http\Controllers\Intranet\Cms\CmsGalleryController;
+use App\Http\Controllers\Intranet\Cms\CmsHeroSlideController;
+use App\Http\Controllers\Intranet\Cms\CmsHomepageController;
+use App\Http\Controllers\Intranet\Cms\CmsMediaController;
+use App\Http\Controllers\Intranet\Cms\CmsMenuController;
+use App\Http\Controllers\Intranet\Cms\CmsNewsCategoryController;
+use App\Http\Controllers\Intranet\Cms\CmsNewsController;
+use App\Http\Controllers\Intranet\Cms\CmsPageController;
+use App\Http\Controllers\Intranet\Cms\CmsSettingController;
+use App\Http\Controllers\Intranet\Cms\CmsTestimonialController;
 use App\Http\Controllers\IntranetAdaptiveAnalyticsController;
 use App\Http\Controllers\IntranetAdaptiveDiagnosticExamController;
 use App\Http\Controllers\IntranetAdaptiveDiagnosticResultController;
@@ -519,6 +530,47 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::post('/teacher-assignments', [TeacherAssignmentController::class, 'store'])->name('teacher-assignments.store');
         Route::get('/teacher-assignments/{assignment}/edit', [TeacherAssignmentController::class, 'edit'])->name('teacher-assignments.edit');
         Route::match(['put', 'patch'], '/teacher-assignments/{assignment}', [TeacherAssignmentController::class, 'update'])->name('teacher-assignments.update');
+    });
+
+    Route::middleware(['role:Administrador|Secretaria'])->prefix('intranet/cms')->name('intranet.cms.')->group(function () {
+        Route::get('/', [CmsDashboardController::class, 'index'])->name('dashboard');
+
+        Route::resource('pages', CmsPageController::class)->except(['show']);
+        Route::resource('news', CmsNewsController::class)->except(['show']);
+        Route::get('news-categories', [CmsNewsCategoryController::class, 'index'])->name('news-categories.index');
+        Route::post('news-categories', [CmsNewsCategoryController::class, 'store'])->name('news-categories.store');
+        Route::put('news-categories/{category}', [CmsNewsCategoryController::class, 'update'])->name('news-categories.update');
+        Route::delete('news-categories/{category}', [CmsNewsCategoryController::class, 'destroy'])->name('news-categories.destroy');
+
+        Route::resource('galleries', CmsGalleryController::class)->except(['show']);
+        Route::post('galleries/{gallery}/images', [CmsGalleryController::class, 'uploadImages'])->name('galleries.images.store');
+        Route::patch('galleries/{gallery}/images/{image}', [CmsGalleryController::class, 'updateImage'])->name('galleries.images.update');
+        Route::delete('galleries/{gallery}/images/{image}', [CmsGalleryController::class, 'destroyImage'])->name('galleries.images.destroy');
+        Route::post('galleries/{gallery}/images/reorder', [CmsGalleryController::class, 'reorderImages'])->name('galleries.images.reorder');
+
+        Route::resource('testimonials', CmsTestimonialController::class)->except(['show']);
+
+        Route::get('media', [CmsMediaController::class, 'index'])->name('media.index');
+        Route::get('media/browse', [CmsMediaController::class, 'browse'])->name('media.browse');
+        Route::post('media', [CmsMediaController::class, 'store'])->name('media.store');
+
+        Route::middleware(['role:Administrador'])->group(function () {
+            Route::get('settings', [CmsSettingController::class, 'index'])->name('settings.index');
+            Route::put('settings', [CmsSettingController::class, 'update'])->name('settings.update');
+
+            Route::get('menus', [CmsMenuController::class, 'index'])->name('menus.index');
+            Route::get('menus/{location}/edit', [CmsMenuController::class, 'edit'])->name('menus.edit');
+            Route::put('menus/{menu}', [CmsMenuController::class, 'update'])->name('menus.update');
+
+            Route::resource('hero-slides', CmsHeroSlideController::class)->except(['show'])->parameters([
+                'hero-slides' => 'hero_slide',
+            ]);
+
+            Route::get('homepage/edit', [CmsHomepageController::class, 'edit'])->name('homepage.edit');
+            Route::put('homepage', [CmsHomepageController::class, 'update'])->name('homepage.update');
+
+            Route::delete('media/{cms_medium}', [CmsMediaController::class, 'destroy'])->name('media.destroy');
+        });
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
