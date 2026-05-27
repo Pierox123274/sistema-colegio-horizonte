@@ -31,12 +31,12 @@ export function Header({
     const secondaryRoles = user.roles.slice(1);
 
     return (
-        <header className="sticky top-0 z-30 border-b border-plomo/15 bg-white/95 shadow-sm shadow-navy-900/5 backdrop-blur-md">
+        <header className="sticky top-0 z-30 border-b border-plomo/15 bg-white/95 shadow-sm shadow-navy-900/5 backdrop-blur-md dark:border-white/10 dark:bg-slate-900/95 dark:shadow-black/20">
             <div className="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
                 <div className="flex min-w-0 flex-1 items-center gap-3">
                     <button
                         type="button"
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-plomo/15 bg-white text-navy-900 shadow-sm transition hover:border-navy-900/20 hover:bg-navy-50 lg:hidden"
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-plomo/15 bg-white text-navy-900 shadow-sm transition hover:border-navy-900/20 hover:bg-navy-50 dark:border-white/15 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700 lg:hidden"
                         onClick={onOpenMobileNav}
                         aria-label="Abrir menú"
                     >
@@ -49,7 +49,7 @@ export function Header({
                         <p className="truncate text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-red">
                             {systemName}
                         </p>
-                        <div className="truncate text-base font-bold leading-tight text-navy-900 sm:text-lg">
+                        <div className="truncate text-base font-bold leading-tight text-navy-900 dark:text-slate-100 sm:text-lg">
                             {pageTitle}
                         </div>
                     </div>
@@ -59,10 +59,10 @@ export function Header({
                     <NotificationDropdown />
 
                     <div className="hidden flex-col items-end text-right sm:flex">
-                        <span className="max-w-[10rem] truncate text-sm font-semibold text-navy-900">
+                        <span className="max-w-[10rem] truncate text-sm font-semibold text-navy-900 dark:text-slate-100">
                             {user.name}
                         </span>
-                        <span className="max-w-[10rem] truncate text-xs text-plomo">
+                        <span className="max-w-[10rem] truncate text-xs text-plomo dark:text-slate-400">
                             {primaryRole}
                             {secondaryRoles.length > 0
                                 ? ` · +${secondaryRoles.length}`
@@ -89,7 +89,7 @@ export function Header({
                             <span className="inline-flex">
                                 <button
                                     type="button"
-                                    className="inline-flex items-center gap-1 rounded-lg border border-plomo/15 bg-white px-2 py-2 text-plomo shadow-sm transition hover:border-navy-900/20 hover:text-navy-900"
+                                    className="inline-flex items-center gap-1 rounded-lg border border-plomo/15 bg-white px-2 py-2 text-plomo shadow-sm transition hover:border-navy-900/20 hover:text-navy-900 dark:border-white/15 dark:bg-slate-800 dark:text-slate-300 dark:hover:text-slate-100"
                                     aria-label="Menú de usuario"
                                 >
                                     <ChevronDown className="h-4 w-4" strokeWidth={2} />
@@ -97,11 +97,11 @@ export function Header({
                             </span>
                         </Dropdown.Trigger>
                         <Dropdown.Content align="right" width="48">
-                            <div className="border-b border-gray-100 px-4 py-3 sm:hidden">
-                                <p className="truncate text-sm font-semibold text-gray-900">
+                            <div className="border-b border-gray-100 px-4 py-3 sm:hidden dark:border-white/10">
+                                <p className="truncate text-sm font-semibold text-gray-900 dark:text-slate-100">
                                     {user.name}
                                 </p>
-                                <p className="truncate text-xs text-gray-500">
+                                <p className="truncate text-xs text-gray-500 dark:text-slate-400">
                                     {user.roles.join(', ')}
                                 </p>
                             </div>

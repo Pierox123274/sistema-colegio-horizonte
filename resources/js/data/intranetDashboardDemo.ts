@@ -1,4 +1,4 @@
-/** Datos de demostración (Fase 3). Sin conexión a BD. */
+/** Datos de demostración para el panel intranet (métricas y actividad). */
 
 export const demoStats = [
     {
@@ -38,7 +38,7 @@ export const demoStats = [
 export const demoActivity = [
     {
         id: '1',
-        title: 'Actualización de lista de útiles (demo)',
+        title: 'Comunicado: inicio de clases (demo)',
         time: 'Hace 25 min',
         tone: 'navy' as const,
     },
@@ -56,9 +56,90 @@ export const demoActivity = [
     },
 ];
 
-export const demoQuickLinks = [
-    { label: 'Nueva matrícula', disabled: true },
-    { label: 'Registrar pago', disabled: true },
-    { label: 'Consultar reportes', disabled: true },
-    { label: 'Ajustes del sistema', disabled: true },
-];
+export type QuickLink = {
+    label: string;
+    href?: string;
+    disabled: boolean;
+};
+
+/** Accesos rápidos según rol (rutas reales cuando el módulo está activo). */
+export function quickLinksForRoles(roles: string[]): QuickLink[] {
+    if (roles.includes('Administrador')) {
+        return [
+            {
+                label: 'Registrar pago',
+                href: route('intranet.payments.create'),
+                disabled: false,
+            },
+            {
+                label: 'Estudiantes',
+                href: route('intranet.students.index'),
+                disabled: false,
+            },
+            {
+                label: 'Centro de notificaciones',
+                href: route('notifications.index'),
+                disabled: false,
+            },
+            {
+                label: 'Salud del sistema',
+                href: route('intranet.system.health.index'),
+                disabled: false,
+            },
+        ];
+    }
+
+    if (roles.includes('Secretaria')) {
+        return [
+            {
+                label: 'Estudiantes',
+                href: route('intranet.students.index'),
+                disabled: false,
+            },
+            {
+                label: 'Matrículas',
+                href: route('intranet.enrollments.index'),
+                disabled: false,
+            },
+            {
+                label: 'Pagos',
+                href: route('intranet.payments.index'),
+                disabled: false,
+            },
+            {
+                label: 'Notificaciones',
+                href: route('notifications.index'),
+                disabled: false,
+            },
+        ];
+    }
+
+    if (roles.includes('Docente')) {
+        return [
+            {
+                label: 'Portal docente',
+                href: route('teacher.dashboard'),
+                disabled: false,
+            },
+            {
+                label: 'Asistencia',
+                href: route('teacher.attendance.index'),
+                disabled: false,
+            },
+            {
+                label: 'Notificaciones',
+                href: route('notifications.index'),
+                disabled: false,
+            },
+        ];
+    }
+
+    return [
+        { label: 'Mi perfil', href: route('profile.edit'), disabled: false },
+        {
+            label: 'Notificaciones',
+            href: route('notifications.index'),
+            disabled: false,
+        },
+    ];
+}

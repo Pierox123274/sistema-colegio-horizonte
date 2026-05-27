@@ -8,33 +8,34 @@ import { PageContainer } from '@/Components/Intranet/PageContainer';
 import { statsIcon } from '@/Components/Intranet/navIcons';
 import {
     demoActivity,
-    demoQuickLinks,
     demoStats,
+    quickLinksForRoles,
 } from '@/data/intranetDashboardDemo';
 import IntranetLayout from '@/Layouts/IntranetLayout';
 import { PageProps } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 
 function roleSummary(roles: string[]): string {
     if (roles.includes('Administrador')) {
-        return 'Vista de administración. Los módulos operativos se habilitarán en fases siguientes del roadmap.';
+        return 'Vista ejecutiva: ERP, LMS, CMS, analítica, seguridad y comunicación operativa desde un solo panel.';
     }
     if (roles.includes('Secretaria')) {
-        return 'Vista orientada a secretaría, matrículas y pensiones (en construcción).';
+        return 'Gestión de matrículas, estudiantes, pensiones y cobranza con acceso a reportes operativos.';
     }
     if (roles.includes('Docente')) {
-        return 'Vista orientada a docentes y evaluaciones (en construcción).';
+        return 'Accede al portal docente para asistencia, notas, aulas virtuales, diagnósticos e IA pedagógica.';
     }
     if (roles.includes('Apoderado')) {
-        return 'Vista orientada a apoderados: pagos y seguimiento (en construcción).';
+        return 'Seguimiento de pagos y comunicados institucionales (portal en evolución).';
     }
-    return 'Vista de estudiante: progreso y tutor (en construcción).';
+    return 'Resumen institucional. Usa el portal estudiante para LMS, tutor IA y gamificación.';
 }
 
 export default function Dashboard() {
     const { auth } = usePage<PageProps>().props;
     const roles = auth.user?.roles ?? [];
+    const quickLinks = quickLinksForRoles(roles);
 
     return (
         <IntranetLayout title="Panel principal">
@@ -43,7 +44,7 @@ export default function Dashboard() {
             <PageContainer>
                 <AppPageHeader
                     title={`Hola, ${auth.user?.name?.split(' ')[0] ?? 'equipo'}`}
-                    description="Resumen institucional con datos de demostración. Las métricas reales se conectarán cuando los módulos estén activos."
+                    description="Resumen institucional. Las tarjetas superiores usan datos de demostración; los accesos rápidos enlazan a módulos activos."
                     eyebrow="Panel ejecutivo"
                 />
 
@@ -114,7 +115,7 @@ export default function Dashboard() {
                             }
                         >
                             <table className="min-w-full text-left text-sm">
-                                <thead className="border-b border-plomo/10 bg-navy-50/80 text-xs font-semibold uppercase tracking-wide text-plomo">
+                                <thead className="border-b border-plomo/10 bg-navy-50/80 text-xs font-semibold uppercase tracking-wide text-plomo dark:border-white/10 dark:bg-slate-800/80 dark:text-slate-400">
                                     <tr>
                                         <th className="px-4 py-3 sm:px-6">
                                             Concepto
@@ -127,8 +128,8 @@ export default function Dashboard() {
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-plomo/10 text-navy-900">
-                                    <tr className="bg-white">
+                                <tbody className="divide-y divide-plomo/10 text-navy-900 dark:divide-white/10 dark:text-slate-100">
+                                    <tr className="bg-white dark:bg-slate-900/50">
                                         <td className="px-4 py-4 sm:px-6">
                                             Matrícula regular 2026 (demo)
                                         </td>
@@ -177,21 +178,31 @@ export default function Dashboard() {
                                 Accesos rápidos
                             </h2>
                             <div className="grid gap-2">
-                                {demoQuickLinks.map((link) => (
-                                    <button
-                                        key={link.label}
-                                        type="button"
-                                        disabled={link.disabled}
-                                        className="flex w-full items-center justify-between rounded-lg border border-plomo/15 bg-navy-50/50 px-3 py-2.5 text-left text-sm font-medium text-navy-900 transition hover:border-navy-900/20 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
-                                    >
-                                        {link.label}
-                                        <ArrowRight className="h-4 w-4 text-plomo" />
-                                    </button>
-                                ))}
+                                {quickLinks.map((link) =>
+                                    link.disabled || !link.href ? (
+                                        <button
+                                            key={link.label}
+                                            type="button"
+                                            disabled
+                                            className="flex w-full items-center justify-between rounded-lg border border-plomo/15 bg-navy-50/50 px-3 py-2.5 text-left text-sm font-medium text-navy-900 opacity-50 dark:border-white/10 dark:bg-slate-800/50 dark:text-slate-200"
+                                        >
+                                            {link.label}
+                                            <ArrowRight className="h-4 w-4 text-plomo" />
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            key={link.label}
+                                            href={link.href}
+                                            className="flex w-full items-center justify-between rounded-lg border border-plomo/15 bg-navy-50/50 px-3 py-2.5 text-left text-sm font-medium text-navy-900 transition hover:border-navy-900/20 hover:bg-white dark:border-white/10 dark:bg-slate-800/50 dark:text-slate-100 dark:hover:border-brand-yellow/30 dark:hover:bg-slate-800"
+                                        >
+                                            {link.label}
+                                            <ArrowRight className="h-4 w-4 text-plomo" />
+                                        </Link>
+                                    )
+                                )}
                             </div>
-                            <p className="mt-3 text-xs text-plomo">
-                                Los accesos se habilitarán con cada módulo del
-                                roadmap.
+                            <p className="mt-3 text-xs text-plomo dark:text-slate-400">
+                                Enlaces operativos según tu rol institucional.
                             </p>
                         </AppCard>
                     </div>

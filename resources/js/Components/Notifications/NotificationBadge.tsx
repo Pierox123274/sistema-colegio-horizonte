@@ -3,10 +3,10 @@ type Props = {
 };
 
 const toneByPriority: Record<string, string> = {
-    low: 'bg-slate-100 text-slate-700',
-    medium: 'bg-sky-100 text-sky-700',
-    high: 'bg-amber-100 text-amber-800',
-    critical: 'bg-red-100 text-red-700',
+    low: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+    medium: 'bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300',
+    high: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
+    critical: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-200',
 };
 
 export default function NotificationBadge({ priority }: Props) {

@@ -102,6 +102,15 @@ Fase 2 añade pruebas de intranet y roles (`tests/Feature/Intranet`, ampliacione
 | BDD (Gherkin) | `tests/Bdd/features/notifications.feature` |
 | E2E (Cypress) | `cypress/e2e/notifications.cy.ts` |
 
+**Fase 29 (QA integral y estabilización)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/System/PlatformQualityAssuranceTest.php` (permisos por rol, rutas ERP/LMS/CMS/IA/gamificación, portales docente/estudiante, navegación) |
+| BDD (Gherkin) | `tests/Bdd/features/platform_quality_assurance.feature` |
+| E2E (Cypress) | `cypress/e2e/platform-quality-assurance.cy.ts` |
+| Guías | `docs/DEMO_GUIDE.md`, `docs/KNOWN_LIMITATIONS.md` |
+
 **Fase 19 (seguridad y auditoría)** incluye:
 
 | Capa | Artefacto |

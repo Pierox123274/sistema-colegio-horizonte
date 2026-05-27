@@ -142,6 +142,13 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Scheduler**: `SendAcademicRemindersJob`, `SendFinancialRemindersJob`, `SendSystemNotificationsJob`.
 - **Dashboards**: panel contextual de notificaciones recientes en admin/docente/estudiante.
 
+## QA integral y demo (Fase 29)
+
+- **Alcance**: revisión transversal de permisos, navegación, UX (dark/light, responsive), performance segura (polling notificaciones) y coherencia demo sin nuevos módulos.
+- **Navegación intranet**: enlace operativo a `notifications.index`; eliminación de ítem lateral “Configuración” deshabilitado; accesos rápidos del dashboard por rol.
+- **Pruebas de regresión**: `PlatformQualityAssuranceTest` + Cypress/BDD de rutas críticas y redirecciones de portales.
+- **Documentación operativa**: `docs/DEMO_GUIDE.md` (recorridos por rol), `docs/KNOWN_LIMITATIONS.md` (deuda conocida pre-producción masiva).
+
 ## Seguridad, auditoría e ISO (Fase 19)
 
 - **Persistencia**: `audit_logs` (acción, módulo, entidad, IP, user agent, old/new values, severidad), `login_attempts`, `user_sessions` (dispositivo, expiración, bandera sospechosa).

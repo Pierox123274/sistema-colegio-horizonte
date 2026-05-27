@@ -653,10 +653,14 @@ final class IntranetNavigation
                 'disabled' => true,
             ]]),
             [
-                'label' => 'Configuración',
-                'href' => null,
-                'icon' => 'settings',
-                'disabled' => true,
+                'label' => 'Notificaciones',
+                'href' => route('notifications.index', absolute: false),
+                'icon' => 'bell',
+                'disabled' => false,
+                'active_routes' => [
+                    'notifications.index',
+                    'settings.notifications.edit',
+                ],
             ],
             [
                 'label' => 'Mi perfil',

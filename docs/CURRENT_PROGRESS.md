@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 28** (Notificaciones y comunicación operativa institucional).
+Última actualización: **Fase 29** (QA integral, estabilización y refinamiento final).
 
 ## Completado — Fase 1
 
@@ -345,6 +345,16 @@
 - [x] Integración automática en creación LMS, pagos y eventos de gamificación (nivel/logro).
 - [x] Plantillas email operativas institucionales en `resources/views/mail/*`.
 - [x] Cobertura inicial de pruebas: `tests/Feature/Notifications/NotificationSystemTest.php`, BDD `notifications.feature`, Cypress `notifications.cy.ts`.
+
+## Completado — Fase 29 (QA integral, estabilización y refinamiento final)
+
+- [x] Revisión de permisos y rutas críticas (admin, secretaría, docente, estudiante) con `PlatformQualityAssuranceTest`.
+- [x] Navegación intranet: ítem **Notificaciones** operativo; eliminado ítem fantasma **Configuración** deshabilitado.
+- [x] Dashboard intranet: accesos rápidos por rol con enlaces reales; copy de contexto actualizado.
+- [x] Polish UX dark mode en cabecera intranet, dropdown de notificaciones, badges y formularios del centro.
+- [x] Performance: polling de notificaciones solo con panel abierto, pestaña visible e intervalo 90 s.
+- [x] Documentación: `KNOWN_LIMITATIONS.md`, `DEMO_GUIDE.md`; actualización de `ARCHITECTURE.md`, `TESTING_STRATEGY.md`, `ROADMAP.md`.
+- [x] Pruebas: `tests/Feature/System/PlatformQualityAssuranceTest.php`, BDD `platform_quality_assurance.feature`, Cypress `platform-quality-assurance.cy.ts`.
 
 ## Pendiente / siguientes fases (ROADMAP)
 

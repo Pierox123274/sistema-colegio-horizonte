@@ -39,7 +39,7 @@ export default function NotificationsCenterPage() {
                             onChange={(e) =>
                                 router.get(route('notifications.index'), { ...filters, category: e.target.value })
                             }
-                            className="rounded-lg border border-plomo/20 bg-white px-3 py-2 text-sm"
+                            className="rounded-lg border border-plomo/20 bg-white px-3 py-2 text-sm dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
                         >
                             <option value="">Todas las categorías</option>
                             {catalog.categories.map((item) => (
@@ -53,7 +53,7 @@ export default function NotificationsCenterPage() {
                             onChange={(e) =>
                                 router.get(route('notifications.index'), { ...filters, status: e.target.value })
                             }
-                            className="rounded-lg border border-plomo/20 bg-white px-3 py-2 text-sm"
+                            className="rounded-lg border border-plomo/20 bg-white px-3 py-2 text-sm dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
                         >
                             {catalog.statuses.map((item) => (
                                 <option key={item.value} value={item.value}>
