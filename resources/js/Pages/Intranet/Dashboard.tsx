@@ -1,9 +1,9 @@
+import { AppCard } from '@/Components/App/AppCard';
+import { AppPageHeader } from '@/Components/App/AppPageHeader';
+import { AppStatCard } from '@/Components/App/AppStatCard';
+import { AppTable } from '@/Components/App/AppTable';
 import RecentAnnouncementsPanel from '@/Components/Announcements/RecentAnnouncementsPanel';
-import { Card } from '@/Components/Intranet/Card';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
-import { SectionTitle } from '@/Components/Intranet/SectionTitle';
-import { StatsCard } from '@/Components/Intranet/StatsCard';
-import { TableContainer } from '@/Components/Intranet/TableContainer';
 import { statsIcon } from '@/Components/Intranet/navIcons';
 import {
     demoActivity,
@@ -40,16 +40,17 @@ export default function Dashboard() {
             <Head title="Panel — Horizonte" />
 
             <PageContainer>
-                <SectionTitle
+                <AppPageHeader
                     title={`Hola, ${auth.user?.name?.split(' ')[0] ?? 'equipo'}`}
                     description="Resumen institucional con datos de demostración. Las métricas reales se conectarán cuando los módulos estén activos."
+                    eyebrow="Panel ejecutivo"
                 />
 
                 <RecentAnnouncementsPanel />
 
                 <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                     {demoStats.map((s) => (
-                        <StatsCard
+                        <AppStatCard
                             key={s.title}
                             title={s.title}
                             value={s.value}
@@ -63,7 +64,7 @@ export default function Dashboard() {
 
                 <div className="grid gap-6 lg:grid-cols-3">
                     <div className="space-y-6 lg:col-span-2">
-                        <Card>
+                        <AppCard>
                             <div className="mb-4 flex items-center justify-between gap-2">
                                 <h2 className="text-sm font-bold uppercase tracking-wider text-navy-900">
                                     Actividad reciente
@@ -99,9 +100,9 @@ export default function Dashboard() {
                                     </li>
                                 ))}
                             </ul>
-                        </Card>
+                        </AppCard>
 
-                        <TableContainer
+                        <AppTable
                             title="Vista previa de tabla"
                             description="Contenedor reutilizable para listados (estudiantes, pagos, etc.). Sin datos reales."
                             toolbar={
@@ -153,11 +154,11 @@ export default function Dashboard() {
                                     </tr>
                                 </tbody>
                             </table>
-                        </TableContainer>
+                        </AppTable>
                     </div>
 
                     <div className="space-y-6">
-                        <Card>
+                        <AppCard>
                             <div className="mb-4 flex items-center gap-2">
                                 <Sparkles className="h-4 w-4 text-brand-yellow" />
                                 <h2 className="text-sm font-bold uppercase tracking-wider text-navy-900">
@@ -167,9 +168,9 @@ export default function Dashboard() {
                             <p className="text-sm leading-relaxed text-plomo">
                                 {roleSummary(roles)}
                             </p>
-                        </Card>
+                        </AppCard>
 
-                        <Card>
+                        <AppCard>
                             <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-navy-900">
                                 Accesos rápidos
                             </h2>
@@ -190,7 +191,7 @@ export default function Dashboard() {
                                 Los accesos se habilitarán con cada módulo del
                                 roadmap.
                             </p>
-                        </Card>
+                        </AppCard>
                     </div>
                 </div>
             </PageContainer>

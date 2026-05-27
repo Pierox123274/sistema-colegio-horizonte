@@ -294,6 +294,15 @@
 - [ ] Pendiente menor: menús/navbar/footer públicos 100 % desde CMS; Tiptap; `body` CMS en todas las páginas internas estáticas.
 - [x] Pruebas `tests/Feature/CMS/CmsManagementTest.php`, BDD `cms_management.feature`, Cypress `cms-management.cy.ts`.
 
+## Completado — Fase 25 (UX/UI global premium institucional)
+
+- [x] Refuerzo de design system global con componentes `Components/App/*` para cards, tablas, headers, badges, tabs, modal, drawer, skeleton y empty states.
+- [x] Hardening visual de primitives (`Card`, `TableContainer`, `StatsCard`, `EmptyState`, `SectionTitle`) con modo dark coherente y sombras institucionales.
+- [x] Layouts `IntranetLayout`, `TeacherLayout`, `StudentLayout` alineados a una superficie visual uniforme premium.
+- [x] Dashboards refinados: `Pages/Intranet/Dashboard`, `Pages/Teacher/Dashboard`, `Pages/Student/Dashboard` con nueva jerarquía visual y bloques reutilizables.
+- [x] Tablas/formularios refinados en módulos críticos (`Intranet/Students/Index`, `Intranet/Payments/Index`) usando `AppFilterBar`, `AppTable`, `AppBadge`, `AppEmptyState`.
+- [x] Tokens utilitarios agregados en `resources/css/app.css` (`app-surface`, `app-focus-ring`, `app-transition`).
+
 ## Pendiente / siguientes fases (ROADMAP)
 
 - Boleta térmica y PDF de comprobante ampliados; permisos granulares por módulo si aplica.

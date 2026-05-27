@@ -1,9 +1,9 @@
+import { AppCard } from '@/Components/App/AppCard';
+import { AppPageHeader } from '@/Components/App/AppPageHeader';
+import { AppStatCard } from '@/Components/App/AppStatCard';
 import StudentPortalEmpty from '@/Components/Student/StudentPortalEmpty';
 import RecentAnnouncementsPanel from '@/Components/Announcements/RecentAnnouncementsPanel';
-import { Card } from '@/Components/Intranet/Card';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
-import { SectionTitle } from '@/Components/Intranet/SectionTitle';
-import { StatsCard } from '@/Components/Intranet/StatsCard';
 import StudentLayout from '@/Layouts/StudentLayout';
 import type { PageProps } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
@@ -87,13 +87,14 @@ export default function StudentDashboard() {
         <StudentLayout title="Inicio">
             <Head title="Portal estudiante" />
             <PageContainer>
-                <SectionTitle
+                <AppPageHeader
                     title={student ? `Hola, ${student.full_name}` : 'Portal estudiante'}
                     description={
                         academic_year
                             ? `Año académico ${academic_year.name} (${academic_year.year})`
                             : 'Consulta tu información académica y financiera.'
                     }
+                    eyebrow="Portal estudiante"
                 />
 
                 {!has_student ? (
@@ -103,7 +104,7 @@ export default function StudentDashboard() {
                         <RecentAnnouncementsPanel />
 
                         {enrollment && (
-                            <Card className="mb-6 border-l-4 border-l-brand-yellow">
+                            <AppCard className="mb-6 border-l-4 border-l-brand-yellow">
                                 <p className="text-xs font-semibold uppercase tracking-wide text-plomo">
                                     Matrícula actual
                                 </p>
@@ -113,23 +114,23 @@ export default function StudentDashboard() {
                                 <p className="text-sm text-plomo">
                                     Código {enrollment.enrollment_code} · {student?.code}
                                 </p>
-                            </Card>
+                            </AppCard>
                         )}
 
                         <div className="mb-8 grid gap-4 sm:grid-cols-3">
-                            <StatsCard
+                            <AppStatCard
                                 title="Registros de notas"
                                 value={String(stats.grade_records_count)}
                                 icon={ClipboardCheck}
                                 accent="navy"
                             />
-                            <StatsCard
+                            <AppStatCard
                                 title="Registros de asistencia"
                                 value={String(stats.attendance_records_count)}
                                 icon={CalendarCheck}
                                 accent="yellow"
                             />
-                            <StatsCard
+                            <AppStatCard
                                 title="Pagos registrados"
                                 value={String(stats.payments_count)}
                                 icon={Wallet}
@@ -139,19 +140,19 @@ export default function StudentDashboard() {
 
                         {lms && lms.classrooms_count > 0 ? (
                             <div className="mb-8 grid gap-4 sm:grid-cols-3">
-                                <StatsCard
+                                <AppStatCard
                                     title="Aulas virtuales"
                                     value={String(lms.classrooms_count)}
                                     icon={GraduationCap}
                                     accent="navy"
                                 />
-                                <StatsCard
+                                <AppStatCard
                                     title="Tareas pendientes"
                                     value={String(lms.pending_assignments)}
                                     icon={ClipboardCheck}
                                     accent="yellow"
                                 />
-                                <StatsCard
+                                <AppStatCard
                                     title="Evaluaciones"
                                     value={String(lms.upcoming_exams)}
                                     icon={CalendarCheck}
@@ -161,7 +162,7 @@ export default function StudentDashboard() {
                         ) : null}
 
                         <div className="mb-8 grid gap-4 md:grid-cols-2">
-                            <Card>
+                            <AppCard>
                                 <h3 className="text-sm font-semibold text-navy-900">Accesos rápidos</h3>
                                 <ul className="mt-4 space-y-3">
                                     {tools.map((tool) => (
@@ -181,9 +182,9 @@ export default function StudentDashboard() {
                                         </li>
                                     ))}
                                 </ul>
-                            </Card>
+                            </AppCard>
 
-                            <Card>
+                            <AppCard>
                                 <h3 className="text-sm font-semibold text-navy-900">Últimas notas</h3>
                                 {stats.recent_grades.length === 0 ? (
                                     <p className="mt-4 text-sm text-plomo">Aún no hay calificaciones registradas.</p>
@@ -204,11 +205,11 @@ export default function StudentDashboard() {
                                         ))}
                                     </ul>
                                 )}
-                            </Card>
+                            </AppCard>
                         </div>
 
                         {academic_history.length > 0 && (
-                            <Card>
+                            <AppCard>
                                 <h3 className="text-sm font-semibold text-navy-900">Historial académico</h3>
                                 <div className="mt-4 overflow-x-auto">
                                     <table className="min-w-full text-sm">
@@ -234,7 +235,7 @@ export default function StudentDashboard() {
                                         </tbody>
                                     </table>
                                 </div>
-                            </Card>
+                            </AppCard>
                         )}
                     </>
                 )}

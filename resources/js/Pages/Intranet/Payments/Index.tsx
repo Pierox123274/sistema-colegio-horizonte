@@ -1,9 +1,10 @@
-import { Card } from '@/Components/Intranet/Card';
-import { EmptyState } from '@/Components/Intranet/EmptyState';
+import { AppBadge } from '@/Components/App/AppBadge';
+import { AppEmptyState } from '@/Components/App/AppEmptyState';
+import { AppFilterBar } from '@/Components/App/AppFilterBar';
+import { AppPageHeader } from '@/Components/App/AppPageHeader';
+import { AppTable } from '@/Components/App/AppTable';
 import { IntranetBreadcrumbs } from '@/Components/Intranet/IntranetBreadcrumbs';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
-import { SectionTitle } from '@/Components/Intranet/SectionTitle';
-import { TableContainer } from '@/Components/Intranet/TableContainer';
 import IntranetLayout from '@/Layouts/IntranetLayout';
 import type { PageProps, SelectOption } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -24,11 +25,6 @@ type Row = {
 
 type PaginatorLink = { url: string | null; label: string; active: boolean };
 type LaravelPaginator = { data: Row[]; links: PaginatorLink[] };
-
-const STATUS_BADGE: Record<string, string> = {
-    registrado: 'bg-emerald-50 text-emerald-900 ring-emerald-200',
-    anulado: 'bg-plomo/15 text-plomo ring-plomo/25',
-};
 
 type P = PageProps<{
     payments: LaravelPaginator;
@@ -93,9 +89,10 @@ export default function PaymentsIndex() {
                     </div>
                 ) : null}
 
-                <SectionTitle
+                <AppPageHeader
                     title="Pagos"
                     description="Registro de cobros y asociación con pensiones."
+                    eyebrow="Finanzas"
                     actions={
                         <Link
                             href={route('intranet.payments.create')}
@@ -107,7 +104,7 @@ export default function PaymentsIndex() {
                     }
                 />
 
-                <Card className="mb-6">
+                <AppFilterBar className="mb-6">
                     <form
                         onSubmit={apply}
                         className="grid gap-4 lg:grid-cols-[1fr_auto_auto_auto_auto_auto_auto_auto]"
@@ -223,12 +220,12 @@ export default function PaymentsIndex() {
                             </button>
                         </div>
                     </form>
-                </Card>
+                </AppFilterBar>
 
-                <TableContainer title="Listado" description={`${rows.length} registros en esta página.`}>
+                <AppTable title="Listado" description={`${rows.length} registros en esta página.`}>
                     {rows.length === 0 ? (
                         <div className="p-6">
-                            <EmptyState
+                            <AppEmptyState
                                 icon={Receipt}
                                 title="Sin pagos"
                                 description="Registre el primer cobro desde el botón superior."
@@ -296,14 +293,15 @@ export default function PaymentsIndex() {
                                             )}
                                         </td>
                                         <td className="px-4 py-3">
-                                            <span
-                                                className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ring-1 ${
-                                                    STATUS_BADGE[r.status] ??
-                                                    'bg-plomo/10'
-                                                }`}
+                                            <AppBadge
+                                                tone={
+                                                    r.status === 'registrado'
+                                                        ? 'success'
+                                                        : 'neutral'
+                                                }
                                             >
                                                 {r.status}
-                                            </span>
+                                            </AppBadge>
                                         </td>
                                         <td className="px-4 py-3 text-right">
                                             <Link
@@ -321,7 +319,7 @@ export default function PaymentsIndex() {
                             </tbody>
                         </table>
                     )}
-                </TableContainer>
+                </AppTable>
 
                 {payments.links?.length > 3 ? (
                     <nav className="mt-6 flex flex-wrap justify-center gap-1">

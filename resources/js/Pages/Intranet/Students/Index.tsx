@@ -1,8 +1,9 @@
-import { Card } from '@/Components/Intranet/Card';
-import { EmptyState } from '@/Components/Intranet/EmptyState';
+import { AppBadge } from '@/Components/App/AppBadge';
+import { AppEmptyState } from '@/Components/App/AppEmptyState';
+import { AppFilterBar } from '@/Components/App/AppFilterBar';
+import { AppPageHeader } from '@/Components/App/AppPageHeader';
+import { AppTable } from '@/Components/App/AppTable';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
-import { SectionTitle } from '@/Components/Intranet/SectionTitle';
-import { TableContainer } from '@/Components/Intranet/TableContainer';
 import {
     EDUCATIONAL_LEVEL_LABELS,
     STATUS_LABELS,
@@ -107,7 +108,7 @@ export default function StudentsIndex() {
                     </div>
                 ) : null}
 
-                <SectionTitle
+                <AppPageHeader
                     title="Estudiantes"
                     description={
                         teacher_section_scope
@@ -118,7 +119,7 @@ export default function StudentsIndex() {
                         permissions.manage ? (
                             <Link
                                 href={route('intranet.students.create')}
-                                className="inline-flex items-center gap-2 rounded-lg bg-navy-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-navy-950"
+                                className="inline-flex items-center gap-2 rounded-lg bg-navy-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-navy-800"
                             >
                                 <Plus className="h-4 w-4" aria-hidden />
                                 Nuevo estudiante
@@ -127,7 +128,7 @@ export default function StudentsIndex() {
                     }
                 />
 
-                <Card className="mb-6">
+                <AppFilterBar className="mb-6">
                     <form
                         onSubmit={applyFilters}
                         className="flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:items-end"
@@ -200,9 +201,9 @@ export default function StudentsIndex() {
                             Aplicar filtros
                         </button>
                     </form>
-                </Card>
+                </AppFilterBar>
 
-                <TableContainer
+                <AppTable
                     title="Listado"
                     description={`${students.data?.length ?? 0} registros en esta página.`}
                     toolbar={
@@ -219,7 +220,7 @@ export default function StudentsIndex() {
                 >
                     {rows.length === 0 ? (
                         <div className="p-6">
-                            <EmptyState
+                            <AppEmptyState
                                 icon={Users}
                                 title="Sin estudiantes"
                                 description="Aún no hay registros que coincidan con los filtros. Cree el primer estudiante o ajuste la búsqueda."
@@ -288,9 +289,7 @@ export default function StudentsIndex() {
                                             {s.document_number ?? '—'}
                                         </td>
                                         <td className="px-4 py-3 sm:px-6">
-                                            <span
-                                                className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${levelBadgeClass(s.educational_level)}`}
-                                            >
+                                            <span className={levelBadgeClass(s.educational_level)}>
                                                 {EDUCATIONAL_LEVEL_LABELS[
                                                     s.educational_level
                                                 ] ?? s.educational_level}
@@ -303,12 +302,10 @@ export default function StudentsIndex() {
                                                 : ''}
                                         </td>
                                         <td className="px-4 py-3 sm:px-6">
-                                            <span
-                                                className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${statusBadgeClass(s.status)}`}
-                                            >
+                                            <AppBadge tone="info">
                                                 {STATUS_LABELS[s.status] ??
                                                     s.status}
-                                            </span>
+                                            </AppBadge>
                                         </td>
                                         <td className="hidden px-4 py-3 text-sm md:table-cell sm:px-6">
                                             {pg ? (
@@ -344,7 +341,7 @@ export default function StudentsIndex() {
                             </tbody>
                         </table>
                     )}
-                </TableContainer>
+                </AppTable>
 
                 {students.links && students.links.length > 3 ? (
                     <nav

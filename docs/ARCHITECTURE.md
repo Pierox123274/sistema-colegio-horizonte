@@ -98,6 +98,15 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Frontend intranet**: `Pages/Intranet/Cms/*`; editor HTML `CmsRichTextEditor` (base para Tiptap).
 - **Seeder**: `CmsContentSeeder` (contenido demo alineado al sitio premium existente).
 
+## UX/UI global premium institucional (Fase 25)
+
+- **Objetivo**: coherencia visual transversal en intranet, portales docente/estudiante y CMS, sin introducir nueva lógica de negocio pesada.
+- **Design system global**: componentes base `resources/js/Components/App/*` (`AppCard`, `AppTable`, `AppPageHeader`, `AppStatCard`, `AppEmptyState`, `AppSkeleton`, `AppToolbar`, `AppFilterBar`, `AppBadge`, `AppTabs`, `AppModal`, `AppDrawer`, `AppSection`) para estandarizar superficies, tablas, estados y jerarquía.
+- **Tokens UI**: refuerzo en `tailwind.config.js` y utilidades de `resources/css/app.css` (`app-surface`, `app-focus-ring`, `app-transition`).
+- **Compatibilidad**: se mantienen componentes existentes en `Components/Intranet/*` y se usan como base para no romper módulos anteriores.
+- **Layouts**: `IntranetLayout`, `TeacherLayout`, `StudentLayout` migran a fondos y contrastes uniformes dark/light.
+- **Tablas y formularios**: mismas convenciones de densidad, bordes, focus y estados vacíos en páginas operativas (ej. estudiantes y pagos).
+
 ## Seguridad, auditoría e ISO (Fase 19)
 
 - **Persistencia**: `audit_logs` (acción, módulo, entidad, IP, user agent, old/new values, severidad), `login_attempts`, `user_sessions` (dispositivo, expiración, bandera sospechosa).

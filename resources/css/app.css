@@ -18,4 +18,16 @@
     .section-separator {
         @apply relative before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-slate-200/80 before:to-transparent dark:before:via-white/10;
     }
+
+    .app-surface {
+        @apply rounded-2xl border border-slate-200/80 bg-white shadow-institutional dark:border-white/10 dark:bg-slate-900/85;
+    }
+
+    .app-focus-ring {
+        @apply focus:outline-none focus:ring-2 focus:ring-navy-700 dark:focus:ring-brand-yellow;
+    }
+
+    .app-transition {
+        @apply transition-all duration-200 ease-out;
+    }
 }

@@ -42,7 +42,7 @@ export default function StudentLayout({
         collapsed && !mobileOpen ? 'lg:ml-[4.5rem]' : 'lg:ml-64';
 
     return (
-        <div className="min-h-screen bg-slate-100">
+        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100/70 dark:from-slate-950 dark:to-slate-950">
             {mobileOpen && (
                 <button
                     type="button"

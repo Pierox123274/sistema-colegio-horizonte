@@ -1,13 +1,13 @@
+import { AppCard } from '@/Components/App/AppCard';
+import { AppPageHeader } from '@/Components/App/AppPageHeader';
+import { AppStatCard } from '@/Components/App/AppStatCard';
 import RecentAnnouncementsPanel from '@/Components/Announcements/RecentAnnouncementsPanel';
 import AssignmentsOverview, {
     type AssignmentTableRow,
     type SectionOverview,
     TeacherAssignmentsEmpty,
 } from '@/Components/Teacher/AssignmentsOverview';
-import { Card } from '@/Components/Intranet/Card';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
-import { SectionTitle } from '@/Components/Intranet/SectionTitle';
-import { StatsCard } from '@/Components/Intranet/StatsCard';
 import TeacherLayout from '@/Layouts/TeacherLayout';
 import type { PageProps } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
@@ -95,7 +95,11 @@ export default function TeacherDashboard() {
             <Head title="Portal docente — Inicio" />
 
             <PageContainer>
-                <SectionTitle title="Registro académico" description={scopeNote} />
+                <AppPageHeader
+                    title="Registro académico"
+                    description={scopeNote}
+                    eyebrow="Portal docente"
+                />
 
                 <RecentAnnouncementsPanel />
 
@@ -114,28 +118,28 @@ export default function TeacherDashboard() {
                 )}
 
                 <div className="mb-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    <StatsCard
+                    <AppStatCard
                         title="Estudiantes matriculados"
                         value={String(stats.enrolled_students)}
                         subtitle={teacher_portal_scoped ? 'En sus secciones' : 'Matrículas activas'}
                         icon={Users}
                         accent="navy"
                     />
-                    <StatsCard
+                    <AppStatCard
                         title="Asistencia (7 días)"
                         value={String(stats.attendance_records_week)}
                         subtitle={teacher_portal_scoped ? 'En sus secciones' : 'Registros recientes'}
                         icon={CalendarCheck}
                         accent="yellow"
                     />
-                    <StatsCard
+                    <AppStatCard
                         title="Cursos asignados"
                         value={String(stats.subjects_count)}
                         subtitle={teacher_portal_scoped ? 'Según sus asignaciones' : 'En el sistema'}
                         icon={BookMarked}
                         accent="red"
                     />
-                    <StatsCard
+                    <AppStatCard
                         title="Evaluaciones / notas"
                         value={`${stats.evaluations_count} / ${stats.grade_records_count}`}
                         subtitle={teacher_portal_scoped ? 'En sus secciones' : 'Totales'}
@@ -146,28 +150,28 @@ export default function TeacherDashboard() {
 
                 {lms && lms.classrooms_count > 0 ? (
                     <div className="mb-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                        <StatsCard
+                        <AppStatCard
                             title="Aulas virtuales"
                             value={String(lms.classrooms_count)}
                             subtitle="Activas a su cargo"
                             icon={BookMarked}
                             accent="navy"
                         />
-                        <StatsCard
+                        <AppStatCard
                             title="Entregas por revisar"
                             value={String(lms.pending_review)}
                             subtitle="Tareas enviadas"
                             icon={ClipboardCheck}
                             accent="yellow"
                         />
-                        <StatsCard
+                        <AppStatCard
                             title="Evaluaciones activas"
                             value={String(lms.active_exams)}
                             subtitle="Publicadas"
                             icon={GraduationCap}
                             accent="red"
                         />
-                        <StatsCard
+                        <AppStatCard
                             title="Sin entregar (est.)"
                             value={String(lms.missing_submissions_estimate)}
                             subtitle="En sus secciones"
@@ -177,7 +181,7 @@ export default function TeacherDashboard() {
                     </div>
                 ) : null}
 
-                <Card className="mb-8">
+                <AppCard className="mb-8">
                     <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                         <div className="flex items-center gap-2">
                             <GraduationCap className="h-5 w-5 text-navy-900" strokeWidth={1.75} />
@@ -207,9 +211,9 @@ export default function TeacherDashboard() {
                             showActions
                         />
                     )}
-                </Card>
+                </AppCard>
 
-                <Card>
+                <AppCard>
                     <div className="mb-4 flex items-center gap-2">
                         <GraduationCap className="h-5 w-5 text-navy-900" strokeWidth={1.75} />
                         <h2 className="text-sm font-bold uppercase tracking-wider text-navy-900">
@@ -234,7 +238,7 @@ export default function TeacherDashboard() {
                             </li>
                         ))}
                     </ul>
-                </Card>
+                </AppCard>
             </PageContainer>
         </TeacherLayout>
     );

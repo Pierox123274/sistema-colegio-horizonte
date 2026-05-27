@@ -47,3 +47,4 @@ FASE 22: Diagnóstico adaptativo y nivelación inteligente (banco de preguntas, 
 FASE 23: Aula virtual, tareas y evaluaciones online (LMS institucional: aulas por sección/docente, entregas y calificación, exámenes online, calendario, recursos, integración adaptativa Fase 22, dashboards y `intranet/lms`)
 FASE UX/UI: Rediseño premium página pública institucional (colegio, admisión, vida escolar; innovación educativa como complemento; portal separado; dark mode + Framer Motion)
 FASE 24: CMS institucional premium (sitio público administrable: páginas, noticias, galerías, testimonios, hero, homepage, menús, configuración; panel `intranet/cms`)
+FASE 25: UX/UI global premium institucional (design system transversal, dashboards/tables/forms enterprise, mobile/dark-light coherentes, microinteracciones y estados UX)
