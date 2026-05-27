@@ -7,6 +7,8 @@ use App\Enums\AuditAction;
 use App\Enums\AuditModule;
 use App\Enums\ChallengeType;
 use App\Enums\ExperienceSource;
+use App\Enums\NotificationCategory;
+use App\Enums\NotificationPriority;
 use App\Enums\StreakType;
 use App\Models\Achievement;
 use App\Models\Challenge;
@@ -25,6 +27,7 @@ final class GamificationService
 {
     public function __construct(
         private readonly AuditService $audit,
+        private readonly UserNotificationService $notifications,
     ) {}
 
     /**
@@ -57,6 +60,7 @@ final class GamificationService
                 'meta' => $meta,
             ]);
 
+            $previousLevel = $profile->current_level;
             $profile->total_xp += $points;
             [$level, $xpToNext] = $this->resolveLevelState($profile->total_xp);
             $profile->current_level = $level;
@@ -67,6 +71,20 @@ final class GamificationService
             $this->updateChallengesProgress($student, $source, 1);
             $this->updateStreakBySource($student, $source);
             $this->checkAchievements($student);
+
+            if ($student->user !== null && $level > $previousLevel) {
+                $this->notifications->notifyUser(
+                    user: $student->user,
+                    title: 'Subiste de nivel',
+                    message: "Ahora estás en el nivel {$level}.",
+                    category: NotificationCategory::Gamification,
+                    priority: NotificationPriority::High,
+                    actionUrl: route('student.gamification.index', absolute: false),
+                    actionLabel: 'Ver progreso',
+                    mailTemplate: 'achievement-unlocked',
+                    meta: ['level' => $level]
+                );
+            }
 
             return $transaction;
         });
@@ -422,6 +440,20 @@ final class GamificationService
                 null,
                 'Logro desbloqueado: '.$achievement->title
             );
+
+            if ($student->user !== null) {
+                $this->notifications->notifyUser(
+                    user: $student->user,
+                    title: 'Logro desbloqueado',
+                    message: $achievement->title,
+                    category: NotificationCategory::Gamification,
+                    priority: NotificationPriority::High,
+                    actionUrl: route('student.gamification.index', absolute: false),
+                    actionLabel: 'Ver logro',
+                    mailTemplate: 'achievement-unlocked',
+                    meta: ['achievement_id' => $achievement->id]
+                );
+            }
         }
     }
 

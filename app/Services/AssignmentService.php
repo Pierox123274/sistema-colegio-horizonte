@@ -6,7 +6,10 @@ use App\Enums\AssignmentSubmissionStatus;
 use App\Enums\AuditAction;
 use App\Enums\AuditModule;
 use App\Enums\AuditResult;
+use App\Enums\EnrollmentStatus;
 use App\Enums\ExperienceSource;
+use App\Enums\NotificationCategory;
+use App\Enums\NotificationPriority;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use App\Models\Student;
@@ -21,6 +24,7 @@ final class AssignmentService
         private readonly LMSService $lms,
         private readonly LMSAdaptiveIntegrationService $adaptive,
         private readonly GamificationService $gamification,
+        private readonly UserNotificationService $notifications,
     ) {}
 
     public function createAssignment(User $user, VirtualClassroom $classroom, array $data): Assignment
@@ -48,6 +52,26 @@ final class AssignmentService
             null,
             ['title' => $assignment->title],
             AuditResult::Success,
+        );
+
+        $recipients = User::query()
+            ->whereHas('student.enrollments', function ($query) use ($classroom): void {
+                $query->where('academic_year_id', $classroom->academic_year_id)
+                    ->where('section_id', $classroom->section_id)
+                    ->where('status', EnrollmentStatus::Matriculado->value);
+            })
+            ->get();
+
+        $this->notifications->notifyMany(
+            users: $recipients,
+            title: 'Nueva tarea en aula virtual',
+            message: $assignment->title,
+            category: NotificationCategory::Lms,
+            priority: NotificationPriority::High,
+            actionUrl: route('student.classrooms.show', $classroom, absolute: false),
+            actionLabel: 'Ir al aula',
+            mailTemplate: 'task-new',
+            meta: ['assignment_id' => $assignment->id]
         );
 
         return $assignment;

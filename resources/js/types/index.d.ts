@@ -48,6 +48,11 @@ export type PageProps<
         recent: AnnouncementCardPayload[];
         index_href: string;
     } | null;
+    notificationCenter?: {
+        unread_count: number;
+        recent: NotificationPayload[];
+        center_href: string;
+    } | null;
     current_route: string | null;
     flash?: FlashMessages;
     /** Web pública (PublicSiteController) */
@@ -244,4 +249,18 @@ export type AnnouncementCardPayload = {
     is_active: boolean;
     created_by: { id: number; name: string } | null;
     show_href: string;
+};
+
+export type NotificationPayload = {
+    id: string;
+    title: string;
+    message: string;
+    category: string;
+    priority: string;
+    action_url: string | null;
+    action_label: string | null;
+    read_at: string | null;
+    is_read: boolean;
+    created_at: string | null;
+    created_at_label: string | null;
 };

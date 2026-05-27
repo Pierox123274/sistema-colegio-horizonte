@@ -302,6 +302,7 @@ final class AuditService
             str_contains($routeName, 'attendance') => AuditModule::Attendance,
             str_contains($routeName, 'grade') || str_contains($routeName, 'evaluation') => AuditModule::Grades,
             str_contains($routeName, 'announcement') => AuditModule::Announcements,
+            str_contains($routeName, 'notification') => AuditModule::Notifications,
             str_contains($routeName, 'analytics') || str_contains($routeName, 'report') => AuditModule::Analytics,
             str_contains($routeName, 'admin.user') => AuditModule::Users,
             str_contains($routeName, 'academic') => AuditModule::Academic,

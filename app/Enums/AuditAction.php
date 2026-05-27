@@ -24,6 +24,7 @@ enum AuditAction: string
     case View = 'view';
     case AiQuery = 'ai_query';
     case Assessment = 'assessment';
+    case Notification = 'notification';
 
     /**
      * @return list<array{value: string, label: string}>
@@ -51,6 +52,7 @@ enum AuditAction: string
             ['value' => self::View->value, 'label' => 'Consulta'],
             ['value' => self::AiQuery->value, 'label' => 'Consulta IA'],
             ['value' => self::Assessment->value, 'label' => 'Evaluación / diagnóstico'],
+            ['value' => self::Notification->value, 'label' => 'Notificación'],
         ];
     }
 }

@@ -39,6 +39,7 @@ use App\Http\Controllers\IntranetLMSOverviewController;
 use App\Http\Controllers\IntranetSecurityController;
 use App\Http\Controllers\IntranetSystemOperationsController;
 use App\Http\Controllers\InventoryMovementController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentConceptController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentReceiptController;
@@ -583,6 +584,17 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [NotificationController::class, 'index'])->name('index');
+        Route::patch('/{notification}/read', [NotificationController::class, 'markRead'])->name('read');
+        Route::post('/read-all', [NotificationController::class, 'markAllRead'])->name('read-all');
+    });
+
+    Route::prefix('settings/notifications')->name('settings.notifications.')->group(function () {
+        Route::get('/', [NotificationController::class, 'settings'])->name('edit');
+        Route::put('/', [NotificationController::class, 'updateSettings'])->name('update');
+    });
 });
 
 require __DIR__.'/auth.php';

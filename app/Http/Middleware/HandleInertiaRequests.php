@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Services\AnnouncementService;
+use App\Services\UserNotificationService;
 use App\Support\IntranetNavigation;
 use App\Support\StudentNavigation;
 use App\Support\TeacherNavigation;
@@ -58,6 +59,9 @@ class HandleInertiaRequests extends Middleware
             ],
             'announcementBell' => fn () => $user !== null
                 ? app(AnnouncementService::class)->headerPayloadFor($user)
+                : null,
+            'notificationCenter' => fn () => $user !== null
+                ? app(UserNotificationService::class)->headerPayloadFor($user)
                 : null,
         ];
     }

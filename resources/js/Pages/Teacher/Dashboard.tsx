@@ -2,6 +2,7 @@ import { AppCard } from '@/Components/App/AppCard';
 import { AppPageHeader } from '@/Components/App/AppPageHeader';
 import { AppStatCard } from '@/Components/App/AppStatCard';
 import RecentAnnouncementsPanel from '@/Components/Announcements/RecentAnnouncementsPanel';
+import RecentNotificationsPanel from '@/Components/Notifications/RecentNotificationsPanel';
 import AssignmentsOverview, {
     type AssignmentTableRow,
     type SectionOverview,
@@ -109,6 +110,7 @@ export default function TeacherDashboard() {
                 />
 
                 <RecentAnnouncementsPanel />
+                <RecentNotificationsPanel title="Recordatorios docentes" />
 
                 {academic_year ? (
                     <div className="mb-6 rounded-xl border border-plomo/15 bg-white px-4 py-3 text-sm shadow-sm">

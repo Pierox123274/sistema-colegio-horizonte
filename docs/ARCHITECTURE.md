@@ -128,6 +128,20 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Contenedores prod**: `docker-compose.prod.yml` + `docker/nginx.prod.conf` sin romper stack de desarrollo.
 - **SEO de producción**: `public/robots.txt` con sitemap, `public/sitemap.xml` y `public/manifest.webmanifest`; layout público con `canonical` + OpenGraph base.
 
+## Notificaciones y comunicación operativa (Fase 28)
+
+- **Núcleo unificado**: `UserNotificationService` + `notifications` (Laravel database notifications) + `user_notification_preferences`.
+- **Canales**: in-app y email (estructura lista para push/WhatsApp futuro mediante `channels`).
+- **Categorías**: `NotificationCategory` (academic, financial, security, lms, ai, gamification, system) y prioridad `NotificationPriority`.
+- **UI**: dropdown premium `NotificationDropdown`, centro `Pages/Notifications/Center`, preferencias en `/settings/notifications`.
+- **Automatizaciones**:
+  - LMS/Académico: creación y recordatorios de tareas/evaluaciones.
+  - Financiero: pagos próximos y vencidos.
+  - Seguridad/Sistema: alertas críticas para administradores.
+  - Gamificación: subida de nivel y logros desbloqueados.
+- **Scheduler**: `SendAcademicRemindersJob`, `SendFinancialRemindersJob`, `SendSystemNotificationsJob`.
+- **Dashboards**: panel contextual de notificaciones recientes en admin/docente/estudiante.
+
 ## Seguridad, auditoría e ISO (Fase 19)
 
 - **Persistencia**: `audit_logs` (acción, módulo, entidad, IP, user agent, old/new values, severidad), `login_attempts`, `user_sessions` (dispositivo, expiración, bandera sospechosa).

@@ -3,6 +3,7 @@ import { AppPageHeader } from '@/Components/App/AppPageHeader';
 import { AppStatCard } from '@/Components/App/AppStatCard';
 import StudentPortalEmpty from '@/Components/Student/StudentPortalEmpty';
 import RecentAnnouncementsPanel from '@/Components/Announcements/RecentAnnouncementsPanel';
+import RecentNotificationsPanel from '@/Components/Notifications/RecentNotificationsPanel';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
 import StudentLayout from '@/Layouts/StudentLayout';
 import type { PageProps } from '@/types';
@@ -116,6 +117,7 @@ export default function StudentDashboard() {
                 ) : (
                     <>
                         <RecentAnnouncementsPanel />
+                        <RecentNotificationsPanel title="Mis recordatorios" />
 
                         {enrollment && (
                             <AppCard className="mb-6 border-l-4 border-l-brand-yellow">

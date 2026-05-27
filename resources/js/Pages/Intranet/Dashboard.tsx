@@ -3,6 +3,7 @@ import { AppPageHeader } from '@/Components/App/AppPageHeader';
 import { AppStatCard } from '@/Components/App/AppStatCard';
 import { AppTable } from '@/Components/App/AppTable';
 import RecentAnnouncementsPanel from '@/Components/Announcements/RecentAnnouncementsPanel';
+import RecentNotificationsPanel from '@/Components/Notifications/RecentNotificationsPanel';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
 import { statsIcon } from '@/Components/Intranet/navIcons';
 import {
@@ -47,6 +48,7 @@ export default function Dashboard() {
                 />
 
                 <RecentAnnouncementsPanel />
+                <RecentNotificationsPanel title="Alertas operativas" />
 
                 <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                     {demoStats.map((s) => (

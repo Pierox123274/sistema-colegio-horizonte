@@ -5,7 +5,10 @@ namespace App\Services;
 use App\Enums\AuditAction;
 use App\Enums\AuditModule;
 use App\Enums\AuditResult;
+use App\Enums\EnrollmentStatus;
 use App\Enums\ExperienceSource;
+use App\Enums\NotificationCategory;
+use App\Enums\NotificationPriority;
 use App\Enums\OnlineExamAttemptStatus;
 use App\Enums\OnlineExamGradingMode;
 use App\Enums\OnlineExamQuestionType;
@@ -24,6 +27,7 @@ final class OnlineExamService
         private readonly LMSService $lms,
         private readonly LMSAdaptiveIntegrationService $adaptive,
         private readonly GamificationService $gamification,
+        private readonly UserNotificationService $notifications,
     ) {}
 
     public function createExam(User $user, VirtualClassroom $classroom, array $data, array $questions = []): OnlineExam
@@ -68,6 +72,26 @@ final class OnlineExamService
             null,
             ['title' => $exam->title],
             AuditResult::Success,
+        );
+
+        $recipients = User::query()
+            ->whereHas('student.enrollments', function ($query) use ($classroom): void {
+                $query->where('academic_year_id', $classroom->academic_year_id)
+                    ->where('section_id', $classroom->section_id)
+                    ->where('status', EnrollmentStatus::Matriculado->value);
+            })
+            ->get();
+
+        $this->notifications->notifyMany(
+            users: $recipients,
+            title: 'Nueva evaluación programada',
+            message: $exam->title,
+            category: NotificationCategory::Lms,
+            priority: NotificationPriority::High,
+            actionUrl: route('student.classrooms.show', $classroom, absolute: false),
+            actionLabel: 'Ver evaluación',
+            mailTemplate: 'exam-reminder',
+            meta: ['online_exam_id' => $exam->id]
         );
 
         return $exam->fresh('questions');

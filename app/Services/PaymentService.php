@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Enums\NotificationCategory;
+use App\Enums\NotificationPriority;
 use App\Enums\PaymentEntryStatus;
 use App\Enums\PensionStatus;
 use App\Models\Payment;
@@ -16,7 +18,8 @@ use Illuminate\Validation\ValidationException;
 class PaymentService
 {
     public function __construct(
-        private readonly PensionService $pensionService
+        private readonly PensionService $pensionService,
+        private readonly UserNotificationService $notifications,
     ) {}
 
     public function paginateForIndex(Request $request, int $perPage = 15): LengthAwarePaginator
@@ -104,7 +107,22 @@ class PaymentService
                 $this->pensionService->refreshStatus($pension);
             }
 
-            return $payment->fresh(['student', 'guardian', 'enrollment', 'pension', 'paymentConcept', 'createdByUser']);
+            $payment = $payment->fresh(['student.user', 'guardian', 'enrollment', 'pension', 'paymentConcept', 'createdByUser']);
+
+            if ($payment?->student?->user !== null) {
+                $this->notifications->notifyUser(
+                    user: $payment->student->user,
+                    title: 'Comprobante de pago generado',
+                    message: 'Se registró el pago '.$payment->payment_code,
+                    category: NotificationCategory::Financial,
+                    priority: NotificationPriority::Medium,
+                    actionUrl: route('student.payments.index', absolute: false),
+                    actionLabel: 'Ver mis pagos',
+                    meta: ['payment_id' => $payment->id]
+                );
+            }
+
+            return $payment;
         });
     }
 

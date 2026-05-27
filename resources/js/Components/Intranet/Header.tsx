@@ -1,4 +1,4 @@
-import NotificationBell from '@/Components/Announcements/NotificationBell';
+import NotificationDropdown from '@/Components/Notifications/NotificationDropdown';
 import Dropdown from '@/Components/Dropdown';
 import type { User } from '@/types';
 import { ChevronDown, Menu } from 'lucide-react';
@@ -56,7 +56,7 @@ export function Header({
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-                    <NotificationBell />
+                    <NotificationDropdown />
 
                     <div className="hidden flex-col items-end text-right sm:flex">
                         <span className="max-w-[10rem] truncate text-sm font-semibold text-navy-900">
@@ -107,6 +107,9 @@ export function Header({
                             </div>
                             <Dropdown.Link href={route('profile.edit')}>
                                 Mi perfil
+                            </Dropdown.Link>
+                            <Dropdown.Link href={route('settings.notifications.edit')}>
+                                Preferencias de notificaciones
                             </Dropdown.Link>
                             <Dropdown.Link
                                 href={route('logout')}

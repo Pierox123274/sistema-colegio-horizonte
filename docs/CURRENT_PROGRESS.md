@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 27** (Preparación producción, deploy real y hardening final).
+Última actualización: **Fase 28** (Notificaciones y comunicación operativa institucional).
 
 ## Completado — Fase 1
 
@@ -334,6 +334,17 @@
 - [x] SEO/metadata de producción: `robots.txt` con sitemap, `sitemap.xml`, `manifest.webmanifest`, canonical + OpenGraph base en layout público.
 - [x] Documentación ampliada: `DEPLOYMENT.md`, `DEVOPS.md`, `PRODUCTION_CHECKLIST.md`.
 - [x] Pruebas de readiness: `tests/Feature/System/ProductionReadinessTest.php`.
+
+## Completado — Fase 28 (Notificaciones y comunicación operativa institucional)
+
+- [x] Centro de notificaciones unificado con `notifications` (Laravel) + `UserNotificationService`.
+- [x] Preferencias por usuario (`user_notification_preferences`) con canales, categorías y frecuencia.
+- [x] Dropdown premium y centro completo: `NotificationDropdown`, `Notifications/Center`, `Notifications/Settings`.
+- [x] Integración en dashboards admin/docente/estudiante con panel de recordatorios recientes.
+- [x] Automatizaciones por scheduler/jobs: recordatorios académicos, financieros y alertas de sistema.
+- [x] Integración automática en creación LMS, pagos y eventos de gamificación (nivel/logro).
+- [x] Plantillas email operativas institucionales en `resources/views/mail/*`.
+- [x] Cobertura inicial de pruebas: `tests/Feature/Notifications/NotificationSystemTest.php`, BDD `notifications.feature`, Cypress `notifications.cy.ts`.
 
 ## Pendiente / siguientes fases (ROADMAP)
 

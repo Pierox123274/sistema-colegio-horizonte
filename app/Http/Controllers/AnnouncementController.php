@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Enums\AnnouncementAudienceType;
 use App\Enums\AnnouncementPriority;
+use App\Enums\NotificationCategory;
+use App\Enums\NotificationPriority;
 use App\Http\Requests\Intranet\StoreAnnouncementRequest;
 use App\Http\Requests\Intranet\UpdateAnnouncementRequest;
 use App\Jobs\NotifyAnnouncementPublishedJob;
 use App\Models\Announcement;
 use App\Models\User;
 use App\Services\AnnouncementService;
+use App\Services\UserNotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -88,6 +91,18 @@ class AnnouncementController extends Controller
         );
 
         dispatch(new NotifyAnnouncementPublishedJob($announcement->id))->afterCommit();
+
+        app(UserNotificationService::class)->notifyMany(
+            users: $this->announcements->audienceUsersForAnnouncement($announcement),
+            title: 'Nuevo comunicado institucional',
+            message: $announcement->title,
+            category: NotificationCategory::System,
+            priority: NotificationPriority::High,
+            actionUrl: route('intranet.announcements.inbox.show', $announcement, absolute: false),
+            actionLabel: 'Ver comunicado',
+            mailTemplate: 'institutional-notification',
+            meta: ['announcement_id' => $announcement->id]
+        );
 
         return redirect()
             ->route('intranet.announcements.index')

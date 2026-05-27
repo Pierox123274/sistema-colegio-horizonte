@@ -94,6 +94,14 @@ Fase 2 añade pruebas de intranet y roles (`tests/Feature/Intranet`, ampliacione
 | BDD (Gherkin) | `tests/Bdd/features/devops_infrastructure.feature` |
 | E2E (Cypress) | `cypress/e2e/devops-infrastructure.cy.ts` |
 
+**Fase 28 (notificaciones y comunicación operativa)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Notifications/NotificationSystemTest.php` (creación, lectura, preferencias, canales email/in-app, job financiero y protección de rutas) |
+| BDD (Gherkin) | `tests/Bdd/features/notifications.feature` |
+| E2E (Cypress) | `cypress/e2e/notifications.cy.ts` |
+
 **Fase 19 (seguridad y auditoría)** incluye:
 
 | Capa | Artefacto |

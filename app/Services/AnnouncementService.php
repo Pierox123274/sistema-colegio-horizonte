@@ -473,4 +473,28 @@ final class AnnouncementService
             ]);
         }
     }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function audienceUsersForAnnouncement(Announcement $announcement): Collection
+    {
+        if ($announcement->audience_type === AnnouncementAudienceType::CustomUsers) {
+            return $announcement->recipients()->where('is_active', true)->get();
+        }
+
+        if ($announcement->audience_type === AnnouncementAudienceType::All) {
+            return User::query()->where('is_active', true)->get();
+        }
+
+        $role = $announcement->audience_type->roleName();
+        if ($role === null) {
+            return collect();
+        }
+
+        return User::query()
+            ->where('is_active', true)
+            ->whereHas('roles', fn (Builder $q) => $q->where('name', $role))
+            ->get();
+    }
 }
