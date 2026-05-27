@@ -60,6 +60,31 @@ Ajuste variables de entorno del compose a su institución.
 - Workflow: `.github/workflows/ci.yml` — `composer install`, migraciones SQLite, **Pint**, **PHPUnit**, `npm ci`, `npm run build`.
 - PHPStan no está incluido por defecto (evita baseline amplio); puede añadirse más adelante.
 
+## Fase 27 — Hardening y producción real
+
+- **Scripts de despliegue**:
+  - `scripts/deploy.sh`
+  - `scripts/production-check.sh`
+- **Seguridad HTTP**: middleware global `SecurityHeadersMiddleware` con:
+  - `X-Frame-Options`
+  - `X-Content-Type-Options`
+  - `Referrer-Policy`
+  - `Permissions-Policy`
+  - `Strict-Transport-Security` (solo producción + HTTPS)
+  - CSP básica en producción.
+- **Salud de producción** (`/intranet/system/health`):
+  - checks de DB, cola, caché, storage, storage link, scheduler heartbeat, disco, HTTPS, SMTP, backups.
+  - estados `ok`, `warning`, `critical`.
+  - lectura de errores recientes del log principal.
+- **Logging por canal**:
+  - `health`, `security`, `audit`, `failed_jobs` (además de `daily` / `stack`).
+- **Docker producción**:
+  - `docker-compose.prod.yml`
+  - `docker/nginx.prod.conf`
+  - servicios separados para app, nginx, mysql, redis, queue, scheduler.
+- **Operación scheduler**:
+  - heartbeat cada minuto (`system.scheduler.last_run_at`) para diagnóstico de ejecución real.
+
 ## Configuración `.env`
 
 Ver comentarios al final de `.env.example` (`DEVOPS_*` y seguridad).

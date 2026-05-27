@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 26** (Gamificación y logros institucional).
+Última actualización: **Fase 27** (Preparación producción, deploy real y hardening final).
 
 ## Completado — Fase 1
 
@@ -323,6 +323,17 @@
 - [x] Analítica institucional de gamificación `/intranet/gamification` (admin) con KPIs y top estudiantes.
 - [x] Rutas, navegación y políticas agregadas (`StudentNavigation`, `IntranetNavigation`, `GamificationPolicy`, `GamificationDashboard`).
 - [x] Cobertura inicial de pruebas: `tests/Feature/Gamification/GamificationTest.php`, `tests/Bdd/features/gamification.feature`, `cypress/e2e/gamification.cy.ts`.
+
+## Completado — Fase 27 (Preparación producción, deploy real y hardening final)
+
+- [x] Hardening de seguridad HTTP con `SecurityHeadersMiddleware` (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, CSP y HSTS condicional en producción HTTPS).
+- [x] Health check de producción ampliado (`SystemHealthService` + UI `Intranet/System/Health`) con checks `ok/warning/critical` para DB, queue, cache, storage writable, storage link, scheduler heartbeat, disco, APP_DEBUG, HTTPS, mail y backups.
+- [x] Scripts de despliegue y verificación: `scripts/deploy.sh`, `scripts/production-check.sh`.
+- [x] Artefactos operativos para scheduler/colas: `deploy/supervisor/laravel-worker.conf`, `deploy/cron/scheduler.txt`.
+- [x] Docker producción separado: `docker-compose.prod.yml` + `docker/nginx.prod.conf`.
+- [x] SEO/metadata de producción: `robots.txt` con sitemap, `sitemap.xml`, `manifest.webmanifest`, canonical + OpenGraph base en layout público.
+- [x] Documentación ampliada: `DEPLOYMENT.md`, `DEVOPS.md`, `PRODUCTION_CHECKLIST.md`.
+- [x] Pruebas de readiness: `tests/Feature/System/ProductionReadinessTest.php`.
 
 ## Pendiente / siguientes fases (ROADMAP)
 

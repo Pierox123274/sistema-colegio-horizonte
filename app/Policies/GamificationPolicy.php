@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Enums\IntranetRole;
 use App\Models\User;
-use App\Support\GamificationDashboard;
 
 class GamificationPolicy
 {
@@ -24,7 +23,7 @@ class GamificationPolicy
         ]);
     }
 
-    public function viewInstitution(User $user, GamificationDashboard $dashboard): bool
+    public function viewInstitution(User $user): bool
     {
         return $user->hasRole(IntranetRole::Administrador->value);
     }

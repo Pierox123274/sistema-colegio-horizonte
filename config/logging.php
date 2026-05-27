@@ -36,6 +36,8 @@ return [
         'trace' => env('LOG_DEPRECATIONS_TRACE', false),
     ],
 
+    'health_channel' => env('LOG_HEALTH_CHANNEL', 'health'),
+
     /*
     |--------------------------------------------------------------------------
     | Log Channels
@@ -54,7 +56,7 @@ return [
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => explode(',', (string) env('LOG_STACK', 'single')),
+            'channels' => explode(',', (string) env('LOG_STACK', 'daily')),
             'ignore_exceptions' => false,
         ],
 
@@ -68,8 +70,40 @@ return [
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
-            'level' => env('LOG_LEVEL', 'debug'),
-            'days' => env('LOG_DAILY_DAYS', 14),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => env('LOG_DAILY_DAYS', 30),
+            'replace_placeholders' => true,
+        ],
+
+        'audit' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/audit.log'),
+            'level' => env('LOG_AUDIT_LEVEL', 'info'),
+            'days' => env('LOG_AUDIT_DAYS', 90),
+            'replace_placeholders' => true,
+        ],
+
+        'security' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/security.log'),
+            'level' => env('LOG_SECURITY_LEVEL', 'warning'),
+            'days' => env('LOG_SECURITY_DAYS', 30),
+            'replace_placeholders' => true,
+        ],
+
+        'health' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/health.log'),
+            'level' => env('LOG_HEALTH_LEVEL', 'info'),
+            'days' => env('LOG_HEALTH_DAYS', 30),
+            'replace_placeholders' => true,
+        ],
+
+        'failed_jobs' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/failed-jobs.log'),
+            'level' => env('LOG_FAILED_JOBS_LEVEL', 'error'),
+            'days' => env('LOG_FAILED_JOBS_DAYS', 30),
             'replace_placeholders' => true,
         ],
 

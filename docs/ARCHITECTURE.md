@@ -119,6 +119,15 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Autorización**: `GamificationPolicy` + `GamificationDashboard`; estudiante ve su progreso, docente consume agregados en dashboard, admin ve analítica completa.
 - **UI**: componentes dedicados `Components/Gamification/*` (`XPProgressCard`, `AchievementBadge`, `StreakCard`, `ChallengeCard`, `LevelProgress`, `LeaderboardCard`, `GamificationTimeline`) y refinamiento premium en dashboards estudiante/docente.
 
+## Producción y hardening final (Fase 27)
+
+- **Seguridad HTTP**: middleware global `SecurityHeadersMiddleware` (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, CSP básica en producción, HSTS solo HTTPS productivo).
+- **Readiness operacional**: `SystemHealthService` ampliado con checks `ok/warning/critical` para PHP, env/debug, DB, queue, cache, storage permisos, storage link, scheduler heartbeat, disco, HTTPS, correo y backups.
+- **Observabilidad**: canales de log especializados (`health`, `security`, `audit`, `failed_jobs`) además de stack diario.
+- **Deploy real**: scripts `scripts/deploy.sh` y `scripts/production-check.sh`; artefactos operativos `deploy/supervisor/laravel-worker.conf` y `deploy/cron/scheduler.txt`.
+- **Contenedores prod**: `docker-compose.prod.yml` + `docker/nginx.prod.conf` sin romper stack de desarrollo.
+- **SEO de producción**: `public/robots.txt` con sitemap, `public/sitemap.xml` y `public/manifest.webmanifest`; layout público con `canonical` + OpenGraph base.
+
 ## Seguridad, auditoría e ISO (Fase 19)
 
 - **Persistencia**: `audit_logs` (acción, módulo, entidad, IP, user agent, old/new values, severidad), `login_attempts`, `user_sessions` (dispositivo, expiración, bandera sospechosa).

@@ -9,6 +9,7 @@ use App\Jobs\SecurityHealthScanJob;
 use App\Jobs\SendInstitutionDailySummaryJob;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
@@ -32,3 +33,4 @@ Schedule::job(new FinancialAlertScanJob)->weekdays()->at('06:55');
 Schedule::job(new SecurityHealthScanJob)->dailyAt('05:40');
 Schedule::job(new InstitutionMetricsSnapshotJob)->hourly();
 Schedule::job(new GenerateInstitutionInsightsJob)->dailyAt('07:50');
+Schedule::call(fn () => Cache::put('system.scheduler.last_run_at', now()->toIso8601String(), now()->addMinutes(30)))->everyMinute();

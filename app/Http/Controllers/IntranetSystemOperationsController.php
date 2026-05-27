@@ -9,6 +9,7 @@ use App\Support\EnvSecurityValidator;
 use App\Support\SystemOperationsDashboard;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -29,6 +30,7 @@ class IntranetSystemOperationsController extends Controller
             'metrics_snapshot' => $this->health->cachedMetricsSnapshot(),
             'env_issues' => $this->envValidator->validate(false),
             'backups_count' => count($this->backups->listBackups()),
+            'recent_errors' => $this->recentErrorLines(),
         ]);
     }
 
@@ -94,5 +96,22 @@ class IntranetSystemOperationsController extends Controller
         $i = (int) floor(log($bytes, 1024));
 
         return round($bytes / (1024 ** $i), 2).' '.$units[$i];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function recentErrorLines(): array
+    {
+        $logPath = storage_path('logs/laravel.log');
+        if (! File::exists($logPath)) {
+            return [];
+        }
+
+        $contents = (string) File::get($logPath);
+        $lines = preg_split('/\r\n|\r|\n/', $contents) ?: [];
+        $errors = array_values(array_filter($lines, fn (string $line): bool => str_contains($line, '.ERROR:')));
+
+        return array_slice($errors, -10);
     }
 }

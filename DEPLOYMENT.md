@@ -1,56 +1,80 @@
 # Despliegue — Sistema Colegio Horizonte
 
-Guía breve para poner la aplicación Laravel + Inertia en producción institucional.
+Guía operativa de despliegue para producción real (Fase 27).
 
-## Requisitos
+## Requisitos servidor
 
-- PHP 8.2+ con extensiones: `pdo_mysql` o `pdo_sqlite`, `mbstring`, `xml`, `zip`, `intl`, `gd`, `opcache`
-- Node 20+ (solo en la máquina de build de assets)
-- MySQL 8+ o MariaDB (recomendado para producción)
-- Redis (recomendado para colas y sesiones a escala)
+- PHP 8.2+ con extensiones: `pdo_mysql`, `mbstring`, `xml`, `zip`, `intl`, `gd`, `opcache`
+- MySQL 8+ (o MariaDB equivalente)
+- Redis 7+ para colas/sesiones/caché
+- Composer 2+
+- Node 20+ (solo etapa de build)
+- Permisos de escritura en `storage/` y `bootstrap/cache/`
 
-## Build de frontend
+## Variables críticas de producción
+
+Configurar en `.env`:
+
+- `APP_ENV=production`
+- `APP_DEBUG=false`
+- `APP_URL=https://tu-dominio.com`
+- `SESSION_SECURE_COOKIE=true`
+- SMTP real (`MAIL_MAILER=smtp`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`)
+- `QUEUE_CONNECTION=redis`
+- `CACHE_STORE=redis`
+- `SESSION_DRIVER=redis`
+
+## Deploy paso a paso
+
+Puede ejecutar el script:
 
 ```bash
-npm ci
-npm run build
+bash scripts/deploy.sh
 ```
 
-Los assets se sirven desde `public/build` vía Vite.
-
-## Optimización Laravel
-
-Tras desplegar código y `.env` en el servidor:
+O manualmente:
 
 ```bash
+composer install --no-dev --optimize-autoloader --no-interaction
+npm ci
+npm run build
+php artisan migrate --force
+php artisan storage:link
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
-composer install --no-dev --optimize-autoloader
+php artisan queue:restart
 ```
 
-Para volver a desarrollo local:
+## Verificación post deploy
 
 ```bash
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
+bash scripts/production-check.sh
 ```
 
-## Colas y programador
+Además:
 
-- **Colas:** `php artisan queue:work redis` (o `database` según `QUEUE_CONNECTION`).
-- **Programador:** en cron del servidor: `* * * * * cd /ruta/al/proyecto && php artisan schedule:run >> /dev/null 2>&1`  
-  o en Docker: servicio `schedule:work` (ver `docker-compose.yml`).
+- Revisar `/intranet/system/health` (checks `ok/warning/critical`)
+- Revisar `/intranet/system/jobs` (fallidos)
+- Revisar `/intranet/system/backups` (últimos respaldos)
 
-## Salud y operaciones
+## Colas y scheduler
 
-Los administradores pueden revisar `/intranet/system/health`, `/intranet/system/jobs` y `/intranet/system/backups` (solo rol **Administrador**).
+- Worker recomendado: `php artisan queue:work --tries=3`
+- Cron recomendado: ver `deploy/cron/scheduler.txt`
+- Supervisor base: `deploy/supervisor/laravel-worker.conf`
 
-## HTTPS y cookies
+## Rollback básico
 
-Con HTTPS activo, configure `SESSION_SECURE_COOKIE=true` y revise `SESSION_SAME_SITE` según `docs/SECURITY_POLICY.md`.
+1. Restaurar versión previa del código
+2. Restaurar backup DB/archivos si hubo cambios críticos
+3. Ejecutar:
+   - `php artisan optimize:clear`
+   - `php artisan config:cache`
+   - `php artisan queue:restart`
 
-## Docker
+## Docker producción
 
-Ver `DEVOPS.md` y `docker-compose.yml` para un stack de referencia (app PHP-FPM, nginx, MySQL, Redis, worker de cola y scheduler).
+- Referencia: `docker-compose.prod.yml`
+- Nginx producción: `docker/nginx.prod.conf`
+- Mantiene stack separado de desarrollo (`docker-compose.yml`).

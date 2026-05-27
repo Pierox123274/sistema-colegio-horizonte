@@ -27,6 +27,12 @@ final class EnvSecurityValidator
             if (! filter_var(env('SESSION_SECURE_COOKIE'), FILTER_VALIDATE_BOOL)) {
                 $issues[] = 'SESSION_SECURE_COOKIE debería ser true en producción con HTTPS.';
             }
+            if (! str_starts_with((string) Config::get('app.url'), 'https://')) {
+                $issues[] = 'APP_URL debe usar https:// en producción.';
+            }
+            if ((string) Config::get('mail.default') === 'log') {
+                $issues[] = 'MAIL_MAILER=log no es recomendado para producción.';
+            }
         }
 
         return $issues;

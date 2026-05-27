@@ -16,6 +16,7 @@ function formatBytes(n: number | null | undefined): string {
 }
 
 type HealthPayload = {
+    status: 'ok' | 'warning' | 'critical';
     app: { name: string; env: string; debug: boolean; url: string };
     database: {
         ok: boolean;
@@ -24,9 +25,33 @@ type HealthPayload = {
         connection: string;
     };
     queue: { driver: string; pending_jobs: number; failed_jobs: number };
-    storage: { disk_free_bytes: number | null; disk_total_bytes: number | null };
+    storage: {
+        disk_free_bytes: number | null;
+        disk_total_bytes: number | null;
+        disk_usage_percent: number | null;
+        is_storage_writable: boolean;
+        is_bootstrap_cache_writable: boolean;
+        public_storage_linked: boolean;
+    };
     cache: { driver: string; writable: boolean };
-    scheduler: { timezone: string; note: string };
+    scheduler: { timezone: string; note: string; last_heartbeat: string | null };
+    mail: { mailer: string; host: string | null; port: number | null; configured: boolean };
+    backups: {
+        folder_exists: boolean;
+        count: number;
+        latest_name: string | null;
+        latest_size_bytes: number | null;
+        latest_modified_at: string | null;
+    };
+    checks: Record<
+        string,
+        {
+            label: string;
+            status: 'ok' | 'warning' | 'critical';
+            value: string | null;
+            message: string;
+        }
+    >;
     generated_at: string;
 };
 
@@ -35,10 +60,18 @@ type P = PageProps<{
     metrics_snapshot: Record<string, unknown> | null;
     env_issues: string[];
     backups_count: number;
+    recent_errors: string[];
 }>;
 
 export default function SystemHealth() {
-    const { health, metrics_snapshot, env_issues, backups_count } = usePage<P>().props;
+    const { health, metrics_snapshot, env_issues, backups_count, recent_errors } = usePage<P>().props;
+
+    const statusTone =
+        health.status === 'critical'
+            ? 'border-red-200 bg-red-50 text-red-800'
+            : health.status === 'warning'
+              ? 'border-amber-200 bg-amber-50 text-amber-900'
+              : 'border-emerald-200 bg-emerald-50 text-emerald-900';
 
     const diskPct =
         health.storage.disk_free_bytes != null &&
@@ -58,8 +91,12 @@ export default function SystemHealth() {
                 />
                 <SectionTitle
                     title="Salud del sistema"
-                    description="Estado de base de datos, colas, almacenamiento y caché. Panel operativo para despliegue ISO."
+                    description="Estado operativo y hardening de producción: app, DB, colas, scheduler, storage, backups y correo."
                 />
+
+                <div className={`mb-6 rounded-xl border px-4 py-3 text-sm ${statusTone}`}>
+                    Estado general de producción: <span className="font-semibold uppercase">{health.status}</span>
+                </div>
 
                 {env_issues.length > 0 ? (
                     <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
@@ -136,6 +173,12 @@ export default function SystemHealth() {
                                     {health.cache.writable ? 'escribible' : 'no escribible'}
                                 </dd>
                             </div>
+                            <div className="flex justify-between gap-4 py-2">
+                                <dt className="text-plomo">Storage link</dt>
+                                <dd className="font-medium text-navy-900">
+                                    {health.storage.public_storage_linked ? 'activo' : 'faltante'}
+                                </dd>
+                            </div>
                         </dl>
                     </Card>
                     <Card>
@@ -147,11 +190,61 @@ export default function SystemHealth() {
                         <p className="mt-2 text-xs text-plomo">
                             Zona horaria: {health.scheduler.timezone}
                         </p>
+                        <p className="mt-2 text-xs text-plomo">
+                            Último heartbeat:{' '}
+                            {health.scheduler.last_heartbeat
+                                ? new Date(health.scheduler.last_heartbeat).toLocaleString()
+                                : 'no detectado'}
+                        </p>
                         <p className="mt-4 text-xs text-plomo">
                             Generado: {new Date(health.generated_at).toLocaleString()}
                         </p>
                     </Card>
                 </div>
+
+                <Card className="mt-6">
+                    <h3 className="mb-3 text-sm font-bold text-navy-900">
+                        Checks de readiness (ok / warning / critical)
+                    </h3>
+                    <div className="grid gap-3 md:grid-cols-2">
+                        {Object.entries(health.checks).map(([key, check]) => (
+                            <div
+                                key={key}
+                                className="rounded-lg border border-plomo/15 bg-white/80 px-3 py-2 text-sm"
+                            >
+                                <div className="flex items-center justify-between gap-3">
+                                    <p className="font-semibold text-navy-900">{check.label}</p>
+                                    <span
+                                        className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
+                                            check.status === 'critical'
+                                                ? 'bg-red-100 text-red-700'
+                                                : check.status === 'warning'
+                                                  ? 'bg-amber-100 text-amber-700'
+                                                  : 'bg-emerald-100 text-emerald-700'
+                                        }`}
+                                    >
+                                        {check.status}
+                                    </span>
+                                </div>
+                                <p className="mt-1 text-xs text-plomo">{check.message}</p>
+                                {check.value ? (
+                                    <p className="mt-1 text-xs text-navy-800">{check.value}</p>
+                                ) : null}
+                            </div>
+                        ))}
+                    </div>
+                </Card>
+
+                <Card className="mt-6">
+                    <h3 className="mb-3 text-sm font-bold text-navy-900">Errores recientes</h3>
+                    {recent_errors.length > 0 ? (
+                        <pre className="max-h-56 overflow-auto rounded-lg bg-red-50 p-3 text-xs text-red-900">
+                            {recent_errors.join('\n')}
+                        </pre>
+                    ) : (
+                        <p className="text-sm text-plomo">No se detectaron errores recientes en el log principal.</p>
+                    )}
+                </Card>
 
                 <Card className="mt-6">
                     <h3 className="mb-3 text-sm font-bold text-navy-900">

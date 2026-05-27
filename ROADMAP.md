@@ -50,3 +50,4 @@ FASE 24: CMS institucional premium (sitio público administrable: páginas, noti
 FASE 25: UX/UI global premium institucional (design system transversal, dashboards/tables/forms enterprise, mobile/dark-light coherentes, microinteracciones y estados UX)
 FASE 25-B: Refinamiento UX/UI premium masivo (adopción masiva de `App*` en CMS, seguridad, analítica, LMS, adaptive, comunicados, reportes, usuarios y configuración)
 FASE 26: Gamificación y logros institucional (XP, niveles, insignias, streaks, retos y ranking saludable integrado con LMS, adaptive e IA)
+FASE 27: Preparación producción, deploy real y hardening final (readiness checks, headers de seguridad, scripts deploy/check, Docker prod, checklist operacional y validación final)
