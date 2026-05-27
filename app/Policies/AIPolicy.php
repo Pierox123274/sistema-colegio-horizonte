@@ -27,4 +27,9 @@ class AIPolicy
     {
         return $user->hasRole(IntranetRole::Administrador->value);
     }
+
+    public function useTeacherCopilot(User $user): bool
+    {
+        return $this->useTeacherInsights($user);
+    }
 }

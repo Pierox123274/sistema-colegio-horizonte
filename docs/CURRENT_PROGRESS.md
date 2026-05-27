@@ -367,6 +367,19 @@
 - [x] Auditoría `AuditModule::Meetings`.
 - [x] Pruebas: `VirtualMeetingsTest`, BDD `virtual_meetings.feature`, Cypress `virtual-meetings.cy.ts`.
 
+## Completado — Fase 31 (IA generativa avanzada institucional)
+
+- [x] Copiloto docente: rutas `/teacher/ai-copilot`, `/exams`, `/assignments`, `/rubrics`; `TeacherAICopilotController` + `TeacherAICopilotService`.
+- [x] Generadores IA: exámenes (banco `QuestionBank`), tareas (`Assignment` + aula virtual), rúbricas, planificación de sesiones, feedback académico.
+- [x] Coach estudiante ampliado: resumen, mini quiz, práctica y explicación adaptativa (`StudentLearningCoachService`); rutas `student/ai-tutor/*` bajo `throttle:ai`.
+- [x] Memoria académica controlada: `AcademicMemoryService` (contexto minimizado: matrícula, riesgo heurístico, recomendaciones regla).
+- [x] Recomendaciones predictivas docente: endpoint `teacher/ai-copilot/predictive` (heurísticas + sugerencias de intervención).
+- [x] Analítica IA ampliada: `AdvancedAIAnalyticsService` + panel `intranet/ai-analytics` con uso, caché y acciones.
+- [x] Prompts en `config/ai.php`: `teacher_copilot`, `exam_generator`, `rubric_generator`, `assignment_generator`, `planner_assistant`, `student_learning_coach`; flags `ai.modules.*`.
+- [x] Orquestación: `AIGenerationService` (JSON, caché generación, auditoría hash, fallback local sin romper `AIProviderInterface`).
+- [x] UI premium: `Components/AI/*` (AIPromptBox, AIGenerationWizard, AIStreamingCard, AIInsightCard, AIRecommendationPanel, AIAssistantPanel).
+- [x] Pruebas: `tests/Feature/AI/AdvancedAIFeaturesTest.php`, BDD `advanced_ai.feature`, Cypress `advanced-ai.cy.ts`.
+
 ## Pendiente / siguientes fases (ROADMAP)
 
 - Boleta térmica y PDF de comprobante ampliados; permisos granulares por módulo si aplica.

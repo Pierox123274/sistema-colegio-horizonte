@@ -14,6 +14,7 @@ import {
     Sparkles,
     User,
 } from 'lucide-react';
+import { postJson } from '@/utils/aiFetch';
 import type { FormEvent, KeyboardEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -246,6 +247,43 @@ export default function AITutor() {
     const inputDisabled = processing || !ai_enabled;
     const canSend = ai_enabled && !processing && data.message.trim().length > 0;
 
+    const [coachTopic, setCoachTopic] = useState('');
+    const [coachLoading, setCoachLoading] = useState(false);
+    const [coachResult, setCoachResult] = useState<string | null>(null);
+
+    const runCoach = async (kind: 'summary' | 'mini-quiz' | 'practice' | 'explain') => {
+        if (!coachTopic.trim()) return;
+        setCoachLoading(true);
+        setCoachResult(null);
+        try {
+            const routes = {
+                summary: 'student.ai-tutor.summary',
+                'mini-quiz': 'student.ai-tutor.mini-quiz',
+                practice: 'student.ai-tutor.practice',
+                explain: 'student.ai-tutor.explain',
+            } as const;
+            const res = await postJson<{ data: Record<string, unknown> }>(route(routes[kind]), {
+                topic: coachTopic,
+            });
+            const d = res.data ?? {};
+            if (kind === 'summary' && Array.isArray(d.summary_points)) {
+                setCoachResult((d.summary_points as string[]).map((p) => `• ${p}`).join('\n'));
+            } else if (kind === 'explain' && d.explanation) {
+                setCoachResult(String(d.explanation));
+            } else if (kind === 'practice' && Array.isArray(d.exercises)) {
+                setCoachResult((d.exercises as string[]).map((e, i) => `${i + 1}. ${e}`).join('\n'));
+            } else if (kind === 'mini-quiz' && Array.isArray(d.items)) {
+                setCoachResult(`${(d.items as unknown[]).length} preguntas generadas. Revísalas con tu docente.`);
+            } else {
+                setCoachResult(JSON.stringify(d, null, 2));
+            }
+        } catch {
+            setCoachResult('No se pudo completar la solicitud. Intenta de nuevo.');
+        } finally {
+            setCoachLoading(false);
+        }
+    };
+
     return (
         <StudentLayout title="Tutor IA">
             <Head title="Tutor IA" />
@@ -300,6 +338,40 @@ export default function AITutor() {
                                 </Card>
                             </div>
                         )}
+
+                        <Card className="mb-3 border border-slate-200 bg-slate-50/50 p-4">
+                            <p className="mb-2 text-xs font-semibold uppercase text-plomo">Coach de aprendizaje</p>
+                            <div className="flex flex-col gap-2 sm:flex-row">
+                                <input
+                                    value={coachTopic}
+                                    onChange={(e) => setCoachTopic(e.target.value)}
+                                    placeholder="Tema a practicar o repasar"
+                                    className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                                />
+                                <div className="flex flex-wrap gap-2">
+                                    {(['summary', 'mini-quiz', 'practice', 'explain'] as const).map((k) => (
+                                        <button
+                                            key={k}
+                                            type="button"
+                                            disabled={coachLoading || !coachTopic.trim()}
+                                            onClick={() => runCoach(k)}
+                                            className="rounded-lg border border-navy/20 bg-white px-2 py-1 text-xs font-semibold text-navy disabled:opacity-50"
+                                        >
+                                            {k === 'summary'
+                                                ? 'Resumen'
+                                                : k === 'mini-quiz'
+                                                  ? 'Mini quiz'
+                                                  : k === 'practice'
+                                                    ? 'Práctica'
+                                                    : 'Explicar'}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            {coachResult && (
+                                <p className="mt-2 whitespace-pre-wrap text-sm text-slate-700">{coachResult}</p>
+                            )}
+                        </Card>
 
                         {(sendError || flash?.error) && (
                             <div

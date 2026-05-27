@@ -6,6 +6,7 @@ use App\Http\Requests\AI\StoreStudentAiMessageRequest;
 use App\Services\AITutorService;
 use App\Services\GamificationService;
 use App\Services\StudentContextService;
+use App\Services\StudentLearningCoachService;
 use App\Support\AIDashboard;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -103,5 +104,79 @@ class StudentAIController extends Controller
                 'model' => $payload['model'],
             ],
         ]);
+    }
+
+    public function coachSummary(
+        Request $request,
+        StudentContextService $context,
+        StudentLearningCoachService $coach,
+    ): JsonResponse {
+        $this->authorize('useStudentTutor', AIDashboard::class);
+        $user = $request->user();
+        abort_if($user === null, 403);
+
+        $student = $context->portalStudentFor($user);
+        abort_if($student === null, 422, 'Sin ficha estudiante.');
+
+        $data = $request->validate(['topic' => ['required', 'string', 'max:255']]);
+
+        return response()->json($coach->summary($user, $student, $data['topic']));
+    }
+
+    public function coachMiniQuiz(
+        Request $request,
+        StudentContextService $context,
+        StudentLearningCoachService $coach,
+    ): JsonResponse {
+        $this->authorize('useStudentTutor', AIDashboard::class);
+        $user = $request->user();
+        abort_if($user === null, 403);
+
+        $student = $context->portalStudentFor($user);
+        abort_if($student === null, 422, 'Sin ficha estudiante.');
+
+        $data = $request->validate([
+            'topic' => ['required', 'string', 'max:255'],
+            'count' => ['nullable', 'integer', 'min:1', 'max:10'],
+        ]);
+
+        return response()->json($coach->miniQuiz($user, $student, $data['topic'], (int) ($data['count'] ?? 3)));
+    }
+
+    public function coachPractice(
+        Request $request,
+        StudentContextService $context,
+        StudentLearningCoachService $coach,
+    ): JsonResponse {
+        $this->authorize('useStudentTutor', AIDashboard::class);
+        $user = $request->user();
+        abort_if($user === null, 403);
+
+        $student = $context->portalStudentFor($user);
+        abort_if($student === null, 422, 'Sin ficha estudiante.');
+
+        $data = $request->validate(['topic' => ['required', 'string', 'max:255']]);
+
+        return response()->json($coach->practicePrompt($user, $student, $data['topic']));
+    }
+
+    public function coachExplain(
+        Request $request,
+        StudentContextService $context,
+        StudentLearningCoachService $coach,
+    ): JsonResponse {
+        $this->authorize('useStudentTutor', AIDashboard::class);
+        $user = $request->user();
+        abort_if($user === null, 403);
+
+        $student = $context->portalStudentFor($user);
+        abort_if($student === null, 422, 'Sin ficha estudiante.');
+
+        $data = $request->validate([
+            'topic' => ['required', 'string', 'max:255'],
+            'detail' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        return response()->json($coach->adaptiveExplanation($user, $student, $data['topic'], (string) ($data['detail'] ?? '')));
     }
 }

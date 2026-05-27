@@ -54,3 +54,4 @@ FASE 27: Preparación producción, deploy real y hardening final (readiness chec
 FASE 28: Notificaciones y comunicación operativa institucional (centro unificado in-app/email, automatizaciones por scheduler, preferencias por usuario, dashboards contextuales, arquitectura lista para push/WhatsApp)
 FASE 29: QA integral, estabilización y refinamiento final (revisión permisos/navegación/UX responsive/dark mode/performance, limpieza técnica, demo polish, `PlatformQualityAssuranceTest`, `KNOWN_LIMITATIONS.md`, `DEMO_GUIDE.md`)
 FASE 30: Videoclases y reuniones institucionales (Google Meet/Zoom/Teams desacoplados, LMS/calendario/dashboards, asistencia virtual, notificaciones, panel `/intranet/meetings`)
+FASE 31: IA generativa avanzada institucional (copiloto docente, generadores exámenes/tareas/rúbricas/sesiones, coach estudiante, recomendaciones predictivas, analítica uso IA, memoria académica controlada, exports LMS/adaptive, `AdvancedAIFeaturesTest`)

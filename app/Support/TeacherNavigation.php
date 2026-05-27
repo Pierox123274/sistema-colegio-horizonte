@@ -158,6 +158,18 @@ final class TeacherNavigation
                         'disabled' => false,
                         'activeRoutes' => ['teacher.ai-insights.index'],
                     ],
+                    [
+                        'label' => 'Copiloto IA',
+                        'href' => route('teacher.ai-copilot.index', absolute: false),
+                        'icon' => 'bot',
+                        'disabled' => false,
+                        'activeRoutes' => [
+                            'teacher.ai-copilot.index',
+                            'teacher.ai-copilot.exams',
+                            'teacher.ai-copilot.assignments',
+                            'teacher.ai-copilot.rubrics',
+                        ],
+                    ],
                 ],
             ],
             [

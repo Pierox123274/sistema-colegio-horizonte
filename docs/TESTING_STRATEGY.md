@@ -54,6 +54,14 @@ Fase 2 añade pruebas de intranet y roles (`tests/Feature/Intranet`, ampliacione
 | BDD (Gherkin) | `tests/Bdd/features/ai_tutor.feature` |
 | E2E (Cypress) | `cypress/e2e/ai-tutor.cy.ts` |
 
+**Fase 31 (IA generativa avanzada)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/AI/AdvancedAIFeaturesTest.php` (copiloto, generadores, exports LMS/banco, caché, fallback, permisos, coach estudiante) |
+| BDD (Gherkin) | `tests/Bdd/features/advanced_ai.feature` |
+| E2E (Cypress) | `cypress/e2e/advanced-ai.cy.ts` |
+
 **Fase 22 (aprendizaje adaptativo)** incluye:
 
 | Capa | Artefacto |

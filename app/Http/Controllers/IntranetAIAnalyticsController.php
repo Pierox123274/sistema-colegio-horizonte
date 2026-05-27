@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\GenerateInstitutionInsightsJob;
 use App\Services\AcademicRiskAnalysisService;
+use App\Services\AdvancedAIAnalyticsService;
 use App\Services\AITutorService;
 use App\Support\AIDashboard;
 use Illuminate\Http\RedirectResponse;
@@ -18,6 +19,7 @@ class IntranetAIAnalyticsController extends Controller
         Request $request,
         AcademicRiskAnalysisService $risk,
         AITutorService $ai,
+        AdvancedAIAnalyticsService $analytics,
     ): Response {
         $this->authorize('viewInstitutionAi', AIDashboard::class);
 
@@ -33,8 +35,10 @@ class IntranetAIAnalyticsController extends Controller
 
         return Inertia::render('Intranet/AIAnalytics/Index', [
             'payload' => $payload,
+            'usage' => $analytics->usageSummary(),
             'ai_enabled' => (bool) config('ai.tutor_enabled'),
             'provider' => config('ai.provider'),
+            'modules' => config('ai.modules', []),
         ]);
     }
 

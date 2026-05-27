@@ -68,6 +68,7 @@ use App\Http\Controllers\StudentVirtualMeetingController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherAcademicRiskController;
 use App\Http\Controllers\TeacherAIController;
+use App\Http\Controllers\TeacherAICopilotController;
 use App\Http\Controllers\TeacherAnalyticsController;
 use App\Http\Controllers\TeacherAnnouncementController;
 use App\Http\Controllers\TeacherAssignmentController;
@@ -135,6 +136,10 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::middleware('throttle:ai')->group(function () {
             Route::get('/ai-tutor', [StudentAIController::class, 'tutor'])->name('ai-tutor.index');
             Route::post('/ai-tutor/message', [StudentAIController::class, 'message'])->name('ai-tutor.message');
+            Route::post('/ai-tutor/summary', [StudentAIController::class, 'coachSummary'])->name('ai-tutor.summary');
+            Route::post('/ai-tutor/mini-quiz', [StudentAIController::class, 'coachMiniQuiz'])->name('ai-tutor.mini-quiz');
+            Route::post('/ai-tutor/practice', [StudentAIController::class, 'coachPractice'])->name('ai-tutor.practice');
+            Route::post('/ai-tutor/explain', [StudentAIController::class, 'coachExplain'])->name('ai-tutor.explain');
             Route::get('/recommendations', [StudentAIController::class, 'recommendations'])->name('recommendations.index');
         });
         Route::get('/grades', [StudentGradesController::class, 'index'])->name('grades.index');
@@ -194,6 +199,17 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::middleware('throttle:ai')->group(function () {
             Route::get('/ai-insights', [TeacherAIController::class, 'insights'])->name('ai-insights.index');
             Route::get('/students-risk', [TeacherAIController::class, 'studentsRisk'])->name('students-risk.index');
+            Route::get('/ai-copilot', [TeacherAICopilotController::class, 'index'])->name('ai-copilot.index');
+            Route::get('/ai-copilot/exams', [TeacherAICopilotController::class, 'exams'])->name('ai-copilot.exams');
+            Route::get('/ai-copilot/assignments', [TeacherAICopilotController::class, 'assignments'])->name('ai-copilot.assignments');
+            Route::get('/ai-copilot/rubrics', [TeacherAICopilotController::class, 'rubrics'])->name('ai-copilot.rubrics');
+            Route::post('/ai-copilot/exams/generate', [TeacherAICopilotController::class, 'generateExam'])->name('ai-copilot.exams.generate');
+            Route::post('/ai-copilot/exams/export', [TeacherAICopilotController::class, 'exportExam'])->name('ai-copilot.exams.export');
+            Route::post('/ai-copilot/assignments/generate', [TeacherAICopilotController::class, 'generateAssignment'])->name('ai-copilot.assignments.generate');
+            Route::post('/ai-copilot/assignments/export', [TeacherAICopilotController::class, 'exportAssignment'])->name('ai-copilot.assignments.export');
+            Route::post('/ai-copilot/rubrics/generate', [TeacherAICopilotController::class, 'generateRubric'])->name('ai-copilot.rubrics.generate');
+            Route::post('/ai-copilot/sessions/generate', [TeacherAICopilotController::class, 'generateSession'])->name('ai-copilot.sessions.generate');
+            Route::get('/ai-copilot/predictive', [TeacherAICopilotController::class, 'predictive'])->name('ai-copilot.predictive');
         });
         Route::get('/adaptive-learning', fn () => redirect()->route('teacher.pedagogical-panel.index'))->name('adaptive-learning.index');
         Route::get('/diagnostic-results', fn () => redirect()->route('teacher.diagnostics.index'))->name('diagnostic-results.index');

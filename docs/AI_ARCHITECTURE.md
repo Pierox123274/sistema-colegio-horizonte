@@ -1,4 +1,4 @@
-# Arquitectura del Tutor IA institucional (Fase 21)
+# Arquitectura del Tutor IA institucional (Fases 21 y 31)
 
 ## Objetivo
 
@@ -12,7 +12,12 @@ Proveer un **tutor académico** y **analítica asistida por IA** sin acoplar el 
 | Proveedor OpenAI | `app/AI/Providers/OpenAIProvider.php` | HTTP (`Http::withToken`), timeouts, reintentos, logs sin PII |
 | Proveedores reserva | `OllamaProvider`, `GeminiProvider`, `ClaudeProvider` | Stubs documentados para expansión futura |
 | Falso / apagado | `NullAIProvider` | Cuando `AI_TUTOR_ENABLED=false` o sin flujo activo |
-| Orquestación | `App\Services\AITutorService` | Chat estudiante, resúmenes, caché, auditoría |
+| Orquestación chat | `App\Services\AITutorService` | Chat estudiante, resúmenes, caché, auditoría |
+| Generación estructurada | `AIGenerationService` | JSON pedagógico, caché `generation_cache_ttl`, fallback local |
+| Copiloto docente | `TeacherAICopilotService` | Exámenes, tareas, rúbricas, sesiones, exports LMS/adaptive |
+| Coach estudiante | `StudentLearningCoachService` | Resumen, mini quiz, práctica, explicación adaptativa |
+| Memoria académica | `AcademicMemoryService` | Contexto minimizado para prompts (sin PII sensible) |
+| Analítica uso IA | `AdvancedAIAnalyticsService` | Métricas desde `audit_logs` (módulo `ai`) |
 | Riesgo / reglas | `AcademicRiskAnalysisService` | Heurísticas locales (notas + asistencia) |
 | Recomendaciones regla | `StudentRecommendationService` | Sugerencias pedagógicas sin IA externa |
 | Jobs | `Generate*InsightsJob` | Colas: calientan caché estudiante/docente/institución |
@@ -21,7 +26,9 @@ Proveer un **tutor académico** y **analítica asistida por IA** sin acoplar el 
 
 - `AI_PROVIDER` (ej. `openai`).
 - `OPENAI_API_KEY`, `OPENAI_MODEL` (por defecto `gpt-4o-mini`).
-- `AI_TUTOR_ENABLED`, `AI_CACHE_TTL`, `AI_RATE_LIMIT_PER_MINUTE`.
+- `AI_TUTOR_ENABLED`, `AI_CACHE_TTL`, `AI_GENERATION_CACHE_TTL`, `AI_RATE_LIMIT_PER_MINUTE`.
+- `ai.modules.*` (`teacher_copilot`, `exam_generator`, `assignment_generator`, `rubric_generator`, `planner_assistant`, `student_learning_coach`, `predictive_insights`).
+- Prompts adicionales: `teacher_copilot`, `exam_generator`, `rubric_generator`, `assignment_generator`, `planner_assistant`, `student_learning_coach`.
 
 **Nunca** versionar claves; solo variables de entorno en el servidor.
 
@@ -35,8 +42,10 @@ Proveer un **tutor académico** y **analítica asistida por IA** sin acoplar el 
 ## Frontend
 
 - Estudiante: `Student/AITutor`, `Student/Recommendations`.
-- Docente: `Teacher/AIInsights`, `Teacher/StudentsRisk`.
-- Administrador: `Intranet/AIAnalytics/Index`.
+- Docente: `Teacher/AIInsights`, `Teacher/StudentsRisk`, `Teacher/AICopilot/*` (hub, exámenes, tareas, rúbricas).
+- Estudiante: coach en `Student/AITutor` (resumen, mini quiz, práctica, explicar).
+- Administrador: `Intranet/AIAnalytics/Index` (narrativa + uso IA).
+- Componentes: `resources/js/Components/AI/*`.
 
 ## Programación
 
@@ -45,8 +54,9 @@ Proveer un **tutor académico** y **analítica asistida por IA** sin acoplar el 
 ## Pruebas
 
 - `tests/Feature/AI/AITutorTest.php` (HTTP fake OpenAI, permisos, auditoría).
-- BDD: `tests/Bdd/features/ai_tutor.feature`.
-- Cypress: `cypress/e2e/ai-tutor.cy.ts` (smoke invitado).
+- `tests/Feature/AI/AdvancedAIFeaturesTest.php` (copiloto, generadores, exports, caché, fallback).
+- BDD: `tests/Bdd/features/ai_tutor.feature`, `advanced_ai.feature`.
+- Cypress: `cypress/e2e/ai-tutor.cy.ts`, `advanced-ai.cy.ts`.
 
 ## Relación con aprendizaje adaptativo (Fase 22)
 
@@ -56,7 +66,7 @@ La **Fase 22** implementa diagnósticos, banco de preguntas, recomendaciones por
 
 **Separación**: el tutor conversacional (este documento) y el motor adaptativo comparten datos académicos agregados (notas, asistencia, perfiles) pero viven en servicios distintos; la analítica adaptativa institucional incluye `intranet/adaptive-analytics` y el catálogo `intranet/adaptive/*`, independiente del panel `intranet/ai-analytics`.
 
-**Evolución futura (opcional)**: generación automática de ítems o explicaciones vía `AIProviderInterface` puede enriquecer el banco o el feedback al estudiante sin reemplazar el algoritmo base de puntuación y clasificación; cualquier llamada seguiría auditoría `ai_query` y límites `throttle:ai`, no el flujo crítico del examen.
+**Fase 31 (implementado)**: generación de ítems vía `TeacherAICopilotService::exportQuestionsToBank` hacia `QuestionBank` / `QuestionOption`; export de tareas a `Assignment` en aula virtual. El motor adaptativo y los exámenes online siguen usando sus servicios locales para calificación; la IA solo propone contenido revisable por el docente.
 
 ## Relación con aula virtual / LMS (Fase 23)
 

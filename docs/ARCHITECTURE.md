@@ -62,6 +62,14 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Frontend**: `Pages/Student/AITutor`, `Student/Recommendations`, `Teacher/AIInsights`, `Teacher/StudentsRisk`, `Intranet/AIAnalytics/Index`.
 - **Documentación**: `docs/AI_ARCHITECTURE.md`.
 
+## IA generativa avanzada (Fase 31)
+
+- **Servicios**: `AIGenerationService`, `TeacherAICopilotService`, `StudentLearningCoachService`, `AcademicMemoryService`, `AdvancedAIAnalyticsService`.
+- **HTTP**: `teacher/ai-copilot*` (generar/exportar exámenes, tareas, rúbricas, sesiones, predictivo); coach estudiante en `student/ai-tutor/{summary,mini-quiz,practice,explain}`; todo con `throttle:ai`.
+- **Módulos**: `config/ai.php` → `modules.*` y prompts `exam_generator`, `assignment_generator`, etc.; fallback local si `AI_TUTOR_ENABLED=false`.
+- **Exports**: preguntas → `QuestionBank`; tareas → `Assignment` en `VirtualClassroom`.
+- **UI**: `Components/AI/*`, `Teacher/AICopilot/*`.
+
 ## Aprendizaje adaptativo (Fase 22)
 
 - **Dominio**: `QuestionBank` + `QuestionOption` (ítems por curso/tema con competencias JSON); `DiagnosticExam` (modo fijo o adaptativo, alcance por año/sección/grado/nivel, umbrales de clasificación, `created_by_user_id`, pivote ordenado con puntos); `DiagnosticAttempt` (respuestas, puntaje, nivel clasificado, estado adaptativo); `LearningRecommendation`; `StudentAdaptiveProfile` (último nivel, debilidades, ruta de aprendizaje serializada).
