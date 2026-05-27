@@ -1,3 +1,4 @@
+import { AppPageHeader } from '@/Components/App/AppPageHeader';
 import AuditActionBadge from '@/Components/Security/AuditActionBadge';
 import AuditLogMobileCard from '@/Components/Security/AuditLogMobileCard';
 import AuditResultBadge from '@/Components/Security/AuditResultBadge';
@@ -14,7 +15,6 @@ import { securityFieldClass, securityTdClass, securityThClass } from '@/Componen
 import { EmptyState } from '@/Components/Intranet/EmptyState';
 import { IntranetBreadcrumbs } from '@/Components/Intranet/IntranetBreadcrumbs';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
-import { SectionTitle } from '@/Components/Intranet/SectionTitle';
 import IntranetLayout from '@/Layouts/IntranetLayout';
 import type { PageProps, SelectOption } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
@@ -115,7 +115,7 @@ export default function SecurityAuditLogs() {
 
                 {flash?.success ? <SecurityFlash message={flash.success} /> : null}
 
-                <SectionTitle
+                <AppPageHeader
                     title="Auditoría institucional"
                     description="Trazabilidad ISO 27001: quién hizo qué, cuándo, desde dónde y con qué resultado."
                 />

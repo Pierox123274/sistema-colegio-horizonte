@@ -1,9 +1,10 @@
 import AnnouncementPriorityBadge from '@/Components/Announcements/AnnouncementPriorityBadge';
-import { Card } from '@/Components/Intranet/Card';
+import { AppBadge } from '@/Components/App/AppBadge';
+import { AppFilterBar } from '@/Components/App/AppFilterBar';
+import { AppPageHeader } from '@/Components/App/AppPageHeader';
+import { AppTable } from '@/Components/App/AppTable';
 import { IntranetBreadcrumbs } from '@/Components/Intranet/IntranetBreadcrumbs';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
-import { SectionTitle } from '@/Components/Intranet/SectionTitle';
-import { TableContainer } from '@/Components/Intranet/TableContainer';
 import IntranetLayout from '@/Layouts/IntranetLayout';
 import type { PageProps, SelectOption } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -48,20 +49,20 @@ export default function AnnouncementsAdminIndex() {
             <Head title="Comunicados — Administración" />
             <PageContainer>
                 <IntranetBreadcrumbs items={[{ label: 'Comunicados' }]} />
-                <SectionTitle
+                <AppPageHeader
                     title="Comunicados institucionales"
                     description="Crear, publicar y supervisar avisos por rol o destinatarios."
                     actions={
                         <Link
                             href={route('intranet.announcements.create')}
-                            className="inline-flex items-center gap-2 rounded-lg bg-navy-900 px-4 py-2 text-sm font-semibold text-white"
+                            className="inline-flex items-center gap-2 rounded-lg bg-navy-900 px-4 py-2 text-sm font-semibold text-white app-transition hover:bg-navy-800"
                         >
                             <Plus className="h-4 w-4" />
                             Nuevo comunicado
                         </Link>
                     }
                 />
-                <Card className="mb-6">
+                <AppFilterBar className="mb-6">
                     <form onSubmit={apply} className="grid gap-3 md:grid-cols-4">
                         <input
                             value={search}
@@ -85,8 +86,8 @@ export default function AnnouncementsAdminIndex() {
                             Filtrar
                         </button>
                     </form>
-                </Card>
-                <TableContainer title="Listado" description={`${announcements.data.length} en esta página`}>
+                </AppFilterBar>
+                <AppTable stickyHeader title="Listado" description={`${announcements.data.length} en esta página`}>
                     <table className="min-w-full text-sm">
                         <thead>
                             <tr className="border-b border-plomo/15 text-left text-xs uppercase text-plomo">
@@ -108,7 +109,9 @@ export default function AnnouncementsAdminIndex() {
                                     <td className="px-3 py-2 capitalize">{row.audience_type.replace('_', ' ')}</td>
                                     <td className="px-3 py-2">{row.reads_count ?? 0}</td>
                                     <td className="px-3 py-2">
-                                        {row.is_active ? 'Activo' : 'Inactivo'}
+                                        <AppBadge tone={row.is_active ? 'success' : 'neutral'}>
+                                            {row.is_active ? 'Activo' : 'Inactivo'}
+                                        </AppBadge>
                                     </td>
                                     <td className="px-3 py-2 text-right">
                                         <Link
@@ -122,7 +125,7 @@ export default function AnnouncementsAdminIndex() {
                             ))}
                         </tbody>
                     </table>
-                </TableContainer>
+                </AppTable>
             </PageContainer>
         </IntranetLayout>
     );

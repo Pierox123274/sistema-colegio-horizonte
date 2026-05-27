@@ -4,10 +4,11 @@ import AnalyticsFiltersBar from '@/Components/Analytics/AnalyticsFiltersBar';
 import AnalyticsKpiCard from '@/Components/Analytics/AnalyticsKpiCard';
 import AnalyticsLineChart from '@/Components/Analytics/AnalyticsLineChart';
 import RecentAnnouncementsPanel from '@/Components/Announcements/RecentAnnouncementsPanel';
-import { Card } from '@/Components/Intranet/Card';
+import { AppCard } from '@/Components/App/AppCard';
+import { AppPageHeader } from '@/Components/App/AppPageHeader';
+import { AppTable } from '@/Components/App/AppTable';
 import { IntranetBreadcrumbs } from '@/Components/Intranet/IntranetBreadcrumbs';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
-import { SectionTitle } from '@/Components/Intranet/SectionTitle';
 import IntranetLayout from '@/Layouts/IntranetLayout';
 import type { PageProps, SelectOption } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
@@ -60,7 +61,7 @@ function RankingTable({
     valueLabel: string;
 }) {
     return (
-        <Card>
+        <AppCard>
             <h3 className="mb-3 text-sm font-bold text-navy-900">{title}</h3>
             {rows.length === 0 ? (
                 <p className="text-sm text-plomo">Sin registros.</p>
@@ -84,7 +85,7 @@ function RankingTable({
                     </tbody>
                 </table>
             )}
-        </Card>
+        </AppCard>
     );
 }
 
@@ -105,7 +106,7 @@ export default function IntranetAnalyticsIndex() {
                         { label: 'Dashboard ejecutivo' },
                     ]}
                 />
-                <SectionTitle
+                <AppPageHeader
                     title="Dashboard ejecutivo"
                     description="Indicadores académicos, financieros y operativos consolidados."
                     actions={
@@ -208,8 +209,8 @@ export default function IntranetAnalyticsIndex() {
                                 data={financial.pension_distribution}
                             />
                         </div>
-                        <Card className="mt-6">
-                            <h3 className="mb-3 text-sm font-bold text-navy-900">Pagos recientes</h3>
+                        <div className="mt-6">
+                        <AppTable title="Pagos recientes">
                             <table className="min-w-full text-sm">
                                 <thead>
                                     <tr className="border-b border-plomo/15 text-left text-xs uppercase text-plomo">
@@ -230,7 +231,8 @@ export default function IntranetAnalyticsIndex() {
                                     ))}
                                 </tbody>
                             </table>
-                        </Card>
+                        </AppTable>
+                        </div>
                     </section>
                 )}
 

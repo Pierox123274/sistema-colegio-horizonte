@@ -1,3 +1,4 @@
+import { AppPageHeader } from '@/Components/App/AppPageHeader';
 import SessionRiskBadge from '@/Components/Security/SessionRiskBadge';
 import SecurityFlash from '@/Components/Security/SecurityFlash';
 import SecurityNetworkCell from '@/Components/Security/SecurityNetworkCell';
@@ -9,7 +10,6 @@ import { securityTdClass, securityThClass } from '@/Components/Security/security
 import { EmptyState } from '@/Components/Intranet/EmptyState';
 import { IntranetBreadcrumbs } from '@/Components/Intranet/IntranetBreadcrumbs';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
-import { SectionTitle } from '@/Components/Intranet/SectionTitle';
 import IntranetLayout from '@/Layouts/IntranetLayout';
 import type { PageProps } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
@@ -56,7 +56,7 @@ export default function SecuritySessions() {
                     ]}
                 />
                 {flash?.success ? <SecurityFlash message={flash.success} /> : null}
-                <SectionTitle
+                <AppPageHeader
                     title="Sesiones activas"
                     description="Monitoreo de dispositivos con sesión vigente. Revoque accesos sospechosos o innecesarios."
                 />

@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase UX/UI** (Landing pública premium) sobre las fases 1–23.
+Última actualización: **Fase 25-B** (Refinamiento UX/UI premium masivo en módulos críticos).
 
 ## Completado — Fase 1
 
@@ -302,6 +302,15 @@
 - [x] Dashboards refinados: `Pages/Intranet/Dashboard`, `Pages/Teacher/Dashboard`, `Pages/Student/Dashboard` con nueva jerarquía visual y bloques reutilizables.
 - [x] Tablas/formularios refinados en módulos críticos (`Intranet/Students/Index`, `Intranet/Payments/Index`) usando `AppFilterBar`, `AppTable`, `AppBadge`, `AppEmptyState`.
 - [x] Tokens utilitarios agregados en `resources/css/app.css` (`app-surface`, `app-focus-ring`, `app-transition`).
+
+## Completado — Fase 25-B (Refinamiento UX/UI premium masivo)
+
+- [x] Adopción masiva de `Components/App/*` en módulos críticos: CMS, Seguridad/Auditoría, Analítica, LMS, Adaptive, Comunicados, Reportes, Gestión de usuarios.
+- [x] CMS premium refinado: `Intranet/Cms/Dashboard`, `Intranet/Cms/News/Index`, `Intranet/Cms/Media/Index` con `AppPageHeader`, `AppStatCard`, `AppFilterBar`, `AppTable`, `AppBadge`, `AppEmptyState`.
+- [x] Seguridad y auditoría alineadas a header global (`Intranet/Security/AuditLogs`, `Sessions`, `LoginAttempts`) manteniendo timeline, filtros y tablas especializadas.
+- [x] Analítica institucional y docente refinada (`Intranet/Analytics/Index`, `Teacher/Analytics/Index`) con superficies y tablas App\* consistentes.
+- [x] LMS/adaptive/comunicación/reportes/administración refinados (`Intranet/LMS/Overview`, `Intranet/Adaptive/DiagnosticExams/Index`, `Intranet/Announcements/Index`, `Intranet/Reports/Analytics/Index`, `Intranet/Admin/Users/Index`, `Teacher/Classrooms/Index`, `Student/Classrooms/Index`).
+- [x] Validación completada: `php artisan test`, `npm run build`, `vendor/bin/pint --dirty`.
 
 ## Pendiente / siguientes fases (ROADMAP)
 

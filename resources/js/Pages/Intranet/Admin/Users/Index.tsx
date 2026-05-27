@@ -1,7 +1,9 @@
-import { Card } from '@/Components/Intranet/Card';
+import { AppBadge } from '@/Components/App/AppBadge';
+import { AppFilterBar } from '@/Components/App/AppFilterBar';
+import { AppPageHeader } from '@/Components/App/AppPageHeader';
+import { AppTable } from '@/Components/App/AppTable';
 import { IntranetBreadcrumbs } from '@/Components/Intranet/IntranetBreadcrumbs';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
-import { SectionTitle } from '@/Components/Intranet/SectionTitle';
 import IntranetLayout from '@/Layouts/IntranetLayout';
 import type { PageProps, SelectOption } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -35,20 +37,20 @@ export default function AdminUsersIndex() {
                 <IntranetBreadcrumbs
                     items={[{ label: 'Administración' }, { label: 'Usuarios' }]}
                 />
-                <SectionTitle
+                <AppPageHeader
                     title="Usuarios del sistema"
                     description="Alta, roles y estado activo/inactivo (solo administrador)."
                     actions={
                         <Link
                             href={route('intranet.admin.users.create')}
-                            className="rounded-lg bg-navy-900 px-4 py-2 text-sm font-semibold text-white shadow-sm"
+                            className="rounded-lg bg-navy-900 px-4 py-2 text-sm font-semibold text-white shadow-sm app-transition hover:bg-navy-800"
                         >
                             Nuevo usuario
                         </Link>
                     }
                 />
 
-                <Card className="mb-4">
+                <AppFilterBar className="mb-4">
                     <form
                         className="flex flex-wrap gap-3"
                         onSubmit={(e) => {
@@ -84,9 +86,9 @@ export default function AdminUsersIndex() {
                             Filtrar
                         </button>
                     </form>
-                </Card>
+                </AppFilterBar>
 
-                <Card>
+                <AppTable stickyHeader title="Usuarios registrados">
                     <div className="overflow-x-auto">
                         <table className="min-w-full text-sm">
                             <thead>
@@ -111,14 +113,10 @@ export default function AdminUsersIndex() {
                                                 : '—'}
                                         </td>
                                         <td className="px-3 py-2">
-                                            <span
-                                                className={`rounded-full px-2 py-1 text-xs font-semibold ${
-                                                    u.is_active
-                                                        ? 'bg-emerald-100 text-emerald-700'
-                                                        : 'bg-red-100 text-red-700'
-                                                }`}
-                                            >
+                                            <span>
+                                            <AppBadge tone={u.is_active ? 'success' : 'danger'}>
                                                 {u.is_active ? 'Activo' : 'Inactivo'}
+                                            </AppBadge>
                                             </span>
                                         </td>
                                         <td className="px-3 py-2">
@@ -159,7 +157,7 @@ export default function AdminUsersIndex() {
                             )}
                         </nav>
                     ) : null}
-                </Card>
+                </AppTable>
             </PageContainer>
         </IntranetLayout>
     );

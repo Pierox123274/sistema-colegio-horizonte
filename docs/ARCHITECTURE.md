@@ -106,6 +106,8 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Compatibilidad**: se mantienen componentes existentes en `Components/Intranet/*` y se usan como base para no romper módulos anteriores.
 - **Layouts**: `IntranetLayout`, `TeacherLayout`, `StudentLayout` migran a fondos y contrastes uniformes dark/light.
 - **Tablas y formularios**: mismas convenciones de densidad, bordes, focus y estados vacíos en páginas operativas (ej. estudiantes y pagos).
+- **Fase 25-B (adopción masiva App\*)**: aplicación del design system en módulos críticos (`Intranet/Cms/*`, `Intranet/Security/*`, `Intranet/Analytics`, `Intranet/LMS/Overview`, `Intranet/Adaptive/DiagnosticExams/Index`, `Intranet/Announcements/Index`, `Intranet/Reports/Analytics/Index`, `Intranet/Admin/Users/Index`, `Teacher/Analytics/Index`, `Teacher/Classrooms/Index`, `Student/Classrooms/Index`).
+- **Consistencia enterprise**: unificación de headers (`AppPageHeader`), filtros (`AppFilterBar`), tablas (`AppTable`), badges (`AppBadge`), cards (`AppCard`) y estados vacíos (`AppEmptyState`) con prioridad en dark/light, responsive y microinteracciones suaves.
 
 ## Seguridad, auditoría e ISO (Fase 19)
 

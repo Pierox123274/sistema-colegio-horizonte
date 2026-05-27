@@ -1,9 +1,12 @@
-import { Card } from '@/Components/Intranet/Card';
+import { AppBadge } from '@/Components/App/AppBadge';
+import { AppEmptyState } from '@/Components/App/AppEmptyState';
+import { AppPageHeader } from '@/Components/App/AppPageHeader';
+import { AppTable } from '@/Components/App/AppTable';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
-import { SectionTitle } from '@/Components/Intranet/SectionTitle';
 import IntranetLayout from '@/Layouts/IntranetLayout';
 import type { PageProps } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
+import { BrainCircuit } from 'lucide-react';
 
 type Row = {
     id: number;
@@ -30,21 +33,30 @@ export default function IntranetDiagnosticExamsIndex() {
         <IntranetLayout title="Diagnósticos">
             <Head title="Exámenes diagnóstico" />
             <PageContainer>
-                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:justify-between">
-                    <SectionTitle
-                        title="Exámenes diagnóstico"
-                        description="Administración institucional: alcance por año, nivel, grado, sección y curso."
-                    />
-                    {can_create ? (
-                        <Link
-                            href={route('intranet.adaptive.diagnostic-exams.create')}
-                            className="inline-flex items-center justify-center rounded-lg bg-brand-navy px-4 py-2.5 text-sm font-semibold text-white hover:bg-navy-800"
-                        >
-                            Nuevo examen
-                        </Link>
-                    ) : null}
-                </div>
-                <Card>
+                <AppPageHeader
+                    title="Exámenes diagnóstico"
+                    description="Administración institucional: alcance por año, nivel, grado, sección y curso."
+                    actions={
+                        can_create ? (
+                            <Link
+                                href={route('intranet.adaptive.diagnostic-exams.create')}
+                                className="inline-flex items-center justify-center rounded-lg bg-brand-navy px-4 py-2.5 text-sm font-semibold text-white app-transition hover:bg-navy-800"
+                            >
+                                Nuevo examen
+                            </Link>
+                        ) : null
+                    }
+                />
+                <AppTable stickyHeader title="Diagnósticos configurados">
+                    {exams.data.length === 0 ? (
+                        <div className="p-4">
+                            <AppEmptyState
+                                icon={BrainCircuit}
+                                title="Sin diagnósticos registrados"
+                                description="Crea un examen para iniciar el seguimiento adaptativo institucional."
+                            />
+                        </div>
+                    ) : (
                     <div className="overflow-x-auto">
                         <table className="min-w-full text-left text-sm">
                             <thead>
@@ -66,7 +78,11 @@ export default function IntranetDiagnosticExamsIndex() {
                                         <td className="py-3 pr-3 text-plomo">{e.academic_year ?? '—'}</td>
                                         <td className="py-3 pr-3 text-plomo">{e.subject?.name ?? '—'}</td>
                                         <td className="py-3 pr-3 text-plomo">{e.section ?? '—'}</td>
-                                        <td className="py-3 pr-3 capitalize">{e.mode}</td>
+                                        <td className="py-3 pr-3 capitalize">
+                                            <AppBadge tone={e.mode === 'adaptive' ? 'info' : 'neutral'}>
+                                                {e.mode}
+                                            </AppBadge>
+                                        </td>
                                         <td className="py-3 pr-3">{e.questions_count}</td>
                                         <td className="py-3 pr-3">{e.attempts_count}</td>
                                         <td className="py-3">
@@ -90,7 +106,8 @@ export default function IntranetDiagnosticExamsIndex() {
                             </tbody>
                         </table>
                     </div>
-                </Card>
+                    )}
+                </AppTable>
             </PageContainer>
         </IntranetLayout>
     );

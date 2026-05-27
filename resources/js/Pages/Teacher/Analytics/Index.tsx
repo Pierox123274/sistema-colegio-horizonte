@@ -3,9 +3,10 @@ import AnalyticsDonutChart from '@/Components/Analytics/AnalyticsDonutChart';
 import AnalyticsFiltersBar from '@/Components/Analytics/AnalyticsFiltersBar';
 import AnalyticsKpiCard from '@/Components/Analytics/AnalyticsKpiCard';
 import AnalyticsLineChart from '@/Components/Analytics/AnalyticsLineChart';
-import { Card } from '@/Components/Intranet/Card';
+import { AppCard } from '@/Components/App/AppCard';
+import { AppPageHeader } from '@/Components/App/AppPageHeader';
+import { AppTable } from '@/Components/App/AppTable';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
-import { SectionTitle } from '@/Components/Intranet/SectionTitle';
 import TeacherLayout from '@/Layouts/TeacherLayout';
 import type { PageProps, SelectOption } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
@@ -41,18 +42,18 @@ export default function TeacherAnalyticsIndex() {
         <TeacherLayout title="Analítica docente">
             <Head title="Analítica docente" />
             <PageContainer>
-                <SectionTitle
+                <AppPageHeader
                     title="Analítica de mis secciones"
                     description="Indicadores de asistencia, notas y evaluaciones según sus asignaciones."
                 />
 
                 {!has_assignments ? (
-                    <Card>
+                    <AppCard>
                         <p className="text-sm text-plomo">
                             No tiene asignaciones activas en el año académico vigente. Los indicadores
                             aparecerán cuando administración registre su carga.
                         </p>
-                    </Card>
+                    </AppCard>
                 ) : (
                     <>
                         <AnalyticsFiltersBar
@@ -95,7 +96,7 @@ export default function TeacherAnalyticsIndex() {
                                 title="Estados de asistencia"
                                 data={academic.attendance_distribution}
                             />
-                            <Card>
+                            <AppCard>
                                 <h3 className="mb-3 text-sm font-bold text-navy-900">Evaluaciones recientes</h3>
                                 <ul className="space-y-2 text-sm">
                                     {academic.recent_evaluations.map((ev) => (
@@ -107,11 +108,11 @@ export default function TeacherAnalyticsIndex() {
                                         </li>
                                     ))}
                                 </ul>
-                            </Card>
+                            </AppCard>
                         </div>
 
                         <div className="mt-6 grid gap-6 lg:grid-cols-2">
-                            <Card>
+                            <AppTable title="Mayor número de faltas">
                                 <h3 className="mb-3 text-sm font-bold text-navy-900">Mayor número de faltas</h3>
                                 <table className="min-w-full text-sm">
                                     <tbody>
@@ -123,8 +124,8 @@ export default function TeacherAnalyticsIndex() {
                                         ))}
                                     </tbody>
                                 </table>
-                            </Card>
-                            <Card>
+                            </AppTable>
+                            <AppTable title="Bajo rendimiento">
                                 <h3 className="mb-3 text-sm font-bold text-navy-900">Bajo rendimiento</h3>
                                 <table className="min-w-full text-sm">
                                     <tbody>
@@ -136,7 +137,7 @@ export default function TeacherAnalyticsIndex() {
                                         ))}
                                     </tbody>
                                 </table>
-                            </Card>
+                            </AppTable>
                         </div>
                     </>
                 )}

@@ -1,10 +1,12 @@
-import { Card } from '@/Components/Intranet/Card';
+import { AppBadge } from '@/Components/App/AppBadge';
+import { AppEmptyState } from '@/Components/App/AppEmptyState';
+import { AppFilterBar } from '@/Components/App/AppFilterBar';
+import { AppPageHeader } from '@/Components/App/AppPageHeader';
+import { AppTable } from '@/Components/App/AppTable';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
-import { SectionTitle } from '@/Components/Intranet/SectionTitle';
-import { TableContainer } from '@/Components/Intranet/TableContainer';
 import IntranetLayout from '@/Layouts/IntranetLayout';
 import { Head, Link, router } from '@inertiajs/react';
-import { Plus } from 'lucide-react';
+import { Newspaper, Plus } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 
 type NewsRow = {
@@ -45,18 +47,21 @@ export default function CmsNewsIndex({ news, filters, catalog }: Props) {
         <IntranetLayout>
             <Head title="CMS — Noticias" />
             <PageContainer>
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                    <SectionTitle title="Noticias" description="Comunicados y novedades del sitio público." />
-                    <Link
-                        href={route('intranet.cms.news.create')}
-                        className="inline-flex items-center gap-2 rounded-lg bg-navy-900 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-800"
-                    >
-                        <Plus className="h-4 w-4" />
-                        Nueva noticia
-                    </Link>
-                </div>
+                <AppPageHeader
+                    title="Noticias"
+                    description="Comunicados y novedades del sitio público."
+                    actions={
+                        <Link
+                            href={route('intranet.cms.news.create')}
+                            className="inline-flex items-center gap-2 rounded-lg bg-navy-900 px-4 py-2 text-sm font-semibold text-white app-transition hover:bg-navy-800"
+                        >
+                            <Plus className="h-4 w-4" />
+                            Nueva noticia
+                        </Link>
+                    }
+                />
 
-                <Card className="mt-6 p-4">
+                <AppFilterBar className="mt-6">
                     <form onSubmit={apply} className="flex flex-wrap gap-3">
                         <input
                             type="search"
@@ -84,10 +89,19 @@ export default function CmsNewsIndex({ news, filters, catalog }: Props) {
                             Filtrar
                         </button>
                     </form>
-                </Card>
+                </AppFilterBar>
 
                 <div className="mt-6">
-                <TableContainer>
+                <AppTable stickyHeader title="Listado de noticias">
+                    {news.data.length === 0 ? (
+                        <div className="p-4">
+                            <AppEmptyState
+                                icon={Newspaper}
+                                title="Sin noticias registradas"
+                                description="Crea la primera noticia para empezar a publicar contenido en la web."
+                            />
+                        </div>
+                    ) : (
                     <table className="min-w-full text-sm">
                         <thead>
                             <tr className="border-b text-left text-plomo">
@@ -104,15 +118,27 @@ export default function CmsNewsIndex({ news, filters, catalog }: Props) {
                                     <td className="px-4 py-3 font-medium text-navy-900">
                                         {n.title}
                                         {n.is_featured ? (
-                                            <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-amber-800">
-                                                Destacada
+                                            <span className="ml-2 align-middle">
+                                                <AppBadge tone="warning">Destacada</AppBadge>
                                             </span>
                                         ) : null}
                                     </td>
                                     <td className="px-4 py-3 text-plomo">
                                         {n.category?.name ?? '—'}
                                     </td>
-                                    <td className="px-4 py-3 capitalize">{n.status}</td>
+                                    <td className="px-4 py-3 capitalize">
+                                        <AppBadge
+                                            tone={
+                                                n.status === 'published'
+                                                    ? 'success'
+                                                    : n.status === 'archived'
+                                                      ? 'danger'
+                                                      : 'neutral'
+                                            }
+                                        >
+                                            {n.status}
+                                        </AppBadge>
+                                    </td>
                                     <td className="px-4 py-3 text-plomo">
                                         {n.published_at
                                             ? new Date(n.published_at).toLocaleDateString('es-PE')
@@ -130,7 +156,8 @@ export default function CmsNewsIndex({ news, filters, catalog }: Props) {
                             ))}
                         </tbody>
                     </table>
-                </TableContainer>
+                    )}
+                </AppTable>
                 </div>
             </PageContainer>
         </IntranetLayout>

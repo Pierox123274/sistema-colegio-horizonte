@@ -1,3 +1,4 @@
+import { AppPageHeader } from '@/Components/App/AppPageHeader';
 import LoginAttemptStatusBadge from '@/Components/Security/LoginAttemptStatusBadge';
 import SecurityFilterBar from '@/Components/Security/SecurityFilterBar';
 import SecurityNetworkCell from '@/Components/Security/SecurityNetworkCell';
@@ -9,7 +10,6 @@ import { securityFieldClass, securityTdClass, securityThClass } from '@/Componen
 import { EmptyState } from '@/Components/Intranet/EmptyState';
 import { IntranetBreadcrumbs } from '@/Components/Intranet/IntranetBreadcrumbs';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
-import { SectionTitle } from '@/Components/Intranet/SectionTitle';
 import IntranetLayout from '@/Layouts/IntranetLayout';
 import type { PageProps } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
@@ -90,7 +90,7 @@ export default function SecurityLoginAttempts() {
                         { label: 'Intentos de acceso' },
                     ]}
                 />
-                <SectionTitle
+                <AppPageHeader
                     title="Intentos de inicio de sesión"
                     description="Historial de accesos exitosos y fallidos para análisis de seguridad."
                 />

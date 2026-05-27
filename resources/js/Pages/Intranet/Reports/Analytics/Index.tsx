@@ -1,8 +1,9 @@
 import AnalyticsFiltersBar from '@/Components/Analytics/AnalyticsFiltersBar';
-import { Card } from '@/Components/Intranet/Card';
+import { AppBadge } from '@/Components/App/AppBadge';
+import { AppCard } from '@/Components/App/AppCard';
+import { AppPageHeader } from '@/Components/App/AppPageHeader';
 import { IntranetBreadcrumbs } from '@/Components/Intranet/IntranetBreadcrumbs';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
-import { SectionTitle } from '@/Components/Intranet/SectionTitle';
 import IntranetLayout from '@/Layouts/IntranetLayout';
 import type { PageProps, SelectOption } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
@@ -27,7 +28,7 @@ export default function AnalyticsReportsIndex() {
                         { label: 'Reportes' },
                     ]}
                 />
-                <SectionTitle
+                <AppPageHeader
                     title="Reportes analíticos"
                     description="Exporte indicadores por área en PDF o CSV."
                 />
@@ -40,10 +41,13 @@ export default function AnalyticsReportsIndex() {
 
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                     {report_types.map((report) => (
-                        <Card key={report.key} className="flex flex-col">
+                        <AppCard key={report.key} className="flex flex-col" contentClassName="flex flex-1 flex-col">
                             <div className="mb-3 flex items-center gap-2">
                                 <FileBarChart className="h-5 w-5 text-navy-900" />
                                 <h3 className="font-semibold text-navy-900">{report.label}</h3>
+                            </div>
+                            <div className="mb-3">
+                                <AppBadge tone="info">Exportable</AppBadge>
                             </div>
                             <p className="mb-4 flex-1 text-sm text-plomo">{report.description}</p>
                             <div className="flex flex-wrap gap-2">
@@ -76,7 +80,7 @@ export default function AnalyticsReportsIndex() {
                                     CSV
                                 </a>
                             </div>
-                        </Card>
+                        </AppCard>
                     ))}
                 </div>
             </PageContainer>

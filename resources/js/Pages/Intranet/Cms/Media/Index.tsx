@@ -1,12 +1,15 @@
+import { AppBadge } from '@/Components/App/AppBadge';
+import { AppCard } from '@/Components/App/AppCard';
+import { AppEmptyState } from '@/Components/App/AppEmptyState';
+import { AppFilterBar } from '@/Components/App/AppFilterBar';
+import { AppPageHeader } from '@/Components/App/AppPageHeader';
 import { CmsMediaLibrary } from '@/Components/Intranet/Cms/CmsMediaLibrary';
 import { CmsUploadDropzone } from '@/Components/Intranet/Cms/CmsUploadDropzone';
-import { Card } from '@/Components/Intranet/Card';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
-import { SectionTitle } from '@/Components/Intranet/SectionTitle';
 import { copyToClipboard, type CmsMediaItem } from '@/lib/cmsMedia';
 import IntranetLayout from '@/Layouts/IntranetLayout';
 import { Head, router } from '@inertiajs/react';
-import { Check, Copy, ExternalLink, Search, Trash2 } from 'lucide-react';
+import { Check, Copy, ExternalLink, ImageIcon, Search, Trash2 } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 
 type Props = {
@@ -47,12 +50,12 @@ export default function CmsMediaIndex({ media, filters }: Props) {
         <IntranetLayout>
             <Head title="CMS — Medios" />
             <PageContainer>
-                <SectionTitle
+                <AppPageHeader
                     title="Biblioteca de medios"
                     description={`${media.meta.total} archivos · Imágenes del sitio público`}
                 />
 
-                <Card className="mt-6 p-4">
+                <AppFilterBar className="mt-6">
                     <form onSubmit={applySearch} className="flex flex-wrap gap-3">
                         <div className="relative min-w-[200px] flex-1">
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-plomo" />
@@ -74,11 +77,20 @@ export default function CmsMediaIndex({ media, filters }: Props) {
                     <div className="mt-4">
                         <CmsUploadDropzone onFiles={upload} />
                     </div>
-                </Card>
+                </AppFilterBar>
 
                 <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_300px]">
                     <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-                        {media.data.map((item) => (
+                        {media.data.length === 0 ? (
+                            <div className="sm:col-span-2 md:col-span-3 xl:col-span-4">
+                                <AppEmptyState
+                                    icon={ImageIcon}
+                                    title="Sin archivos en la biblioteca"
+                                    description="Sube imágenes para reutilizarlas en homepage, noticias y galerías."
+                                />
+                            </div>
+                        ) : (
+                            media.data.map((item) => (
                             <button
                                 key={item.id}
                                 type="button"
@@ -98,15 +110,19 @@ export default function CmsMediaIndex({ media, filters }: Props) {
                                     <p className="truncate text-sm font-medium text-navy-900">
                                         {item.filename}
                                     </p>
-                                    <p className="text-xs text-plomo">
+                                    <p className="mt-1 text-xs text-plomo">
                                         {item.mime} · {item.size_label}
                                     </p>
+                                    <div className="mt-2">
+                                        <AppBadge tone="info">Media CMS</AppBadge>
+                                    </div>
                                 </div>
                             </button>
-                        ))}
+                            ))
+                        )}
                     </div>
 
-                    <Card className="sticky top-4 h-fit p-5">
+                    <AppCard className="sticky top-4 h-fit" contentClassName="p-5">
                         {preview ? (
                             <>
                                 <img
@@ -160,7 +176,7 @@ export default function CmsMediaIndex({ media, filters }: Props) {
                         ) : (
                             <p className="text-sm text-plomo">Selecciona un archivo de la cuadrícula.</p>
                         )}
-                    </Card>
+                    </AppCard>
                 </div>
             </PageContainer>
             <CmsMediaLibrary open={pickerOpen} onClose={() => setPickerOpen(false)} onSelect={() => {}} />
