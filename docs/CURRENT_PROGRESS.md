@@ -380,6 +380,20 @@
 - [x] UI premium: `Components/AI/*` (AIPromptBox, AIGenerationWizard, AIStreamingCard, AIInsightCard, AIRecommendationPanel, AIAssistantPanel).
 - [x] Pruebas: `tests/Feature/AI/AdvancedAIFeaturesTest.php`, BDD `advanced_ai.feature`, Cypress `advanced-ai.cy.ts`.
 
+## Completado — Fase 32 (Integraciones externas reales)
+
+- [x] Arquitectura `app/Integrations/` (contracts, providers, DTO, services, exceptions).
+- [x] Google Calendar: `CalendarProviderInterface`, export/enlace ICS, sync en videoclases y eventos académicos.
+- [x] Meetings: metadata `api_ready` y credenciales preparadas en `config/meetings.php` (enlace manual intacto).
+- [x] SMTP: `InstitutionMailService`, logs `integration_email_logs`, `RetryInstitutionEmailJob`, layout email institucional.
+- [x] WhatsApp / Push / Pagos: stubs `WhatsAppProvider`, `FirebasePushProvider`, `MercadoPagoProvider`, `CulqiProvider` + Null fallbacks.
+- [x] Webhooks: `routes/webhooks.php`, firma HMAC, logs, replay admin.
+- [x] Health ampliado: `IntegrationHealthService` + merge en salud del sistema.
+- [x] Panel `/intranet/integrations` (UI enterprise).
+- [x] Config: `integrations.php`, `messaging.php`, `payments_gateway.php`, `calendar.php`, `push.php`.
+- [x] Documentación `docs/INTEGRATIONS.md`; actualización DEVOPS/DEPLOYMENT/ARCHITECTURE/ROADMAP.
+- [x] Pruebas: `ExternalIntegrationsTest.php`, BDD, Cypress.
+
 ## Pendiente / siguientes fases (ROADMAP)
 
 - Boleta térmica y PDF de comprobante ampliados; permisos granulares por módulo si aplica.

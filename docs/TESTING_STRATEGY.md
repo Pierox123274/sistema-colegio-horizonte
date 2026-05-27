@@ -62,6 +62,14 @@ Fase 2 añade pruebas de intranet y roles (`tests/Feature/Intranet`, ampliacione
 | BDD (Gherkin) | `tests/Bdd/features/advanced_ai.feature` |
 | E2E (Cypress) | `cypress/e2e/advanced-ai.cy.ts` |
 
+**Fase 32 (integraciones externas)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Integrations/ExternalIntegrationsTest.php` (panel admin, providers, webhooks, health, permisos) |
+| BDD (Gherkin) | `tests/Bdd/features/external_integrations.feature` |
+| E2E (Cypress) | `cypress/e2e/external-integrations.cy.ts` |
+
 **Fase 22 (aprendizaje adaptativo)** incluye:
 
 | Capa | Artefacto |

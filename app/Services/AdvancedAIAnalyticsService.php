@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\AuditAction;
 use App\Enums\AuditModule;
+use App\Enums\AuditResult;
 use App\Models\AuditLog;
 use Illuminate\Support\Carbon;
 
@@ -24,13 +25,13 @@ final class AdvancedAIAnalyticsService
             ->where('action', AuditAction::AiQuery->value)
             ->where('created_at', '>=', $since);
 
-        $rows = (clone $base)->get(['result', 'context']);
+        $rows = (clone $base)->get(['result', 'metadata']);
         $total = $rows->count();
-        $cacheHits = $rows->filter(fn ($r) => ($r->context['cache_hit'] ?? false) === true)->count();
-        $success = $rows->where('result', 'success')->count();
+        $cacheHits = $rows->filter(fn (AuditLog $r): bool => ($r->metadata['cache_hit'] ?? false) === true)->count();
+        $success = $rows->filter(fn (AuditLog $r): bool => $r->result === AuditResult::Success)->count();
         $actions = [];
         foreach ($rows as $row) {
-            $action = (string) ($row->context['action'] ?? 'unknown');
+            $action = (string) ($row->metadata['action'] ?? 'unknown');
             $actions[$action] = ($actions[$action] ?? 0) + 1;
         }
 

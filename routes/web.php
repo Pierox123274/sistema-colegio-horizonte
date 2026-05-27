@@ -36,6 +36,7 @@ use App\Http\Controllers\IntranetAnalyticsController;
 use App\Http\Controllers\IntranetAnalyticsReportsController;
 use App\Http\Controllers\IntranetAnnouncementInboxController;
 use App\Http\Controllers\IntranetGamificationController;
+use App\Http\Controllers\IntranetIntegrationsController;
 use App\Http\Controllers\IntranetLMSOverviewController;
 use App\Http\Controllers\IntranetSecurityController;
 use App\Http\Controllers\IntranetSystemOperationsController;
@@ -274,6 +275,11 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/jobs', [IntranetSystemOperationsController::class, 'jobs'])->name('jobs.index');
         Route::get('/backups', [IntranetSystemOperationsController::class, 'backups'])->name('backups.index');
         Route::post('/backups', [IntranetSystemOperationsController::class, 'dispatchBackup'])->name('backups.store');
+    });
+
+    Route::middleware(['role:Administrador'])->prefix('intranet/integrations')->name('intranet.integrations.')->group(function () {
+        Route::get('/', [IntranetIntegrationsController::class, 'index'])->name('index');
+        Route::post('/webhooks/{webhookLog}/replay', [IntranetIntegrationsController::class, 'replayWebhook'])->name('webhooks.replay');
     });
 
     Route::middleware(['role:Administrador', 'throttle:ai'])->prefix('intranet/ai-analytics')->name('intranet.ai-analytics.')->group(function () {

@@ -23,6 +23,7 @@ Configurar en `.env`:
 - `QUEUE_CONNECTION=redis`
 - `CACHE_STORE=redis`
 - `SESSION_DRIVER=redis`
+- Integraciones (Fase 32): ver `docs/INTEGRATIONS.md` — SMTP, webhooks (`INTEGRATION_WEBHOOK_PAYMENT_SECRET`), opcional `FILESYSTEM_DISK=s3`
 
 ## Deploy paso a paso
 

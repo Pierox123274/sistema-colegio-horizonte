@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Integrations\Services\IntegrationHealthService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -205,8 +206,11 @@ final class SystemHealthService
             'generated_at' => now()->toIso8601String(),
         ]);
 
+        $integrations = app(IntegrationHealthService::class)->snapshot();
+
         return [
             'status' => $overallStatus,
+            'integrations' => $integrations,
             'app' => [
                 'name' => config('app.name'),
                 'env' => config('app.env'),

@@ -25,6 +25,7 @@ enum AuditModule: string
     case Gamification = 'gamification';
     case Notifications = 'notifications';
     case Meetings = 'meetings';
+    case Integrations = 'integrations';
 
     /**
      * @return list<array{value: string, label: string}>
@@ -53,6 +54,7 @@ enum AuditModule: string
             ['value' => self::Gamification->value, 'label' => 'Gamificación educativa'],
             ['value' => self::Notifications->value, 'label' => 'Notificaciones'],
             ['value' => self::Meetings->value, 'label' => 'Videoclases y reuniones'],
+            ['value' => self::Integrations->value, 'label' => 'Integraciones externas'],
         ];
     }
 }

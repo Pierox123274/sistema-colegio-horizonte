@@ -11,6 +11,7 @@ use App\Enums\MeetingStatus;
 use App\Enums\MeetingType;
 use App\Enums\NotificationCategory;
 use App\Enums\NotificationPriority;
+use App\Integrations\Services\CalendarIntegrationService;
 use App\Meetings\Contracts\MeetingProviderInterface;
 use App\Meetings\DTO\MeetingLinkResult;
 use App\Meetings\Providers\GoogleMeetProvider;
@@ -32,6 +33,7 @@ final class VirtualMeetingService
         private readonly AuditService $audit,
         private readonly MeetingAccessService $access,
         private readonly UserNotificationService $notifications,
+        private readonly CalendarIntegrationService $calendarIntegration,
     ) {}
 
     /**
@@ -117,11 +119,15 @@ final class VirtualMeetingService
         ]);
 
         $link = $this->resolveJoinLink($provider, $data, $meeting);
+        $metadata = array_merge($link->metadata ?? [], [
+            'api_ready' => $this->meetingApiReady($provider),
+            'link_mode' => ($link->metadata['mode'] ?? 'provider'),
+        ]);
         $meeting->update([
             'join_url' => $link->joinUrl,
             'external_meeting_id' => $link->externalMeetingId,
             'join_password' => $link->password,
-            'provider_metadata' => $link->metadata,
+            'provider_metadata' => $metadata,
         ]);
 
         $participantIds = $this->access->resolveParticipantUserIds(
@@ -259,7 +265,7 @@ final class VirtualMeetingService
 
     public function syncCalendar(VirtualMeeting $meeting): void
     {
-        AcademicCalendarEvent::query()->updateOrCreate(
+        $calendarEvent = AcademicCalendarEvent::query()->updateOrCreate(
             [
                 'related_type' => VirtualMeeting::class,
                 'related_id' => $meeting->id,
@@ -275,6 +281,19 @@ final class VirtualMeetingService
                 'ends_at' => $meeting->ends_at,
             ],
         );
+
+        $this->calendarIntegration->syncMeeting($meeting->fresh() ?? $meeting);
+        $this->calendarIntegration->syncAcademicEvent($calendarEvent);
+    }
+
+    private function meetingApiReady(MeetingProvider $provider): bool
+    {
+        return match ($provider) {
+            MeetingProvider::Zoom => (bool) config('meetings.zoom.api_ready'),
+            MeetingProvider::Teams => (bool) config('meetings.teams.api_ready'),
+            MeetingProvider::GoogleMeet => (bool) config('meetings.google_meet.api_ready'),
+            default => false,
+        };
     }
 
     /**

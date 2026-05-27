@@ -74,8 +74,11 @@ Ajuste variables de entorno del compose a su institución.
   - CSP básica en producción.
 - **Salud de producción** (`/intranet/system/health`):
   - checks de DB, cola, caché, storage, storage link, scheduler heartbeat, disco, HTTPS, SMTP, backups.
+  - bloque **integraciones** (calendar, pagos, messaging, push, webhooks, email delivery) vía `IntegrationHealthService`.
   - estados `ok`, `warning`, `critical`.
   - lectura de errores recientes del log principal.
+- **Panel integraciones** (`/intranet/integrations`): estado de proveedores, logs webhook/correo, replay webhook.
+- **Logs canal** `integrations` → `storage/logs/integrations.log`.
 - **Logging por canal**:
   - `health`, `security`, `audit`, `failed_jobs` (además de `daily` / `stack`).
 - **Docker producción**:

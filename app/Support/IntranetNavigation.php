@@ -288,6 +288,13 @@ final class IntranetNavigation
                         'activeRoutes' => ['intranet.system.health.index'],
                     ],
                     [
+                        'label' => 'Integraciones',
+                        'href' => route('intranet.integrations.index', absolute: false),
+                        'icon' => 'link',
+                        'disabled' => false,
+                        'activeRoutes' => ['intranet.integrations.index'],
+                    ],
+                    [
                         'label' => 'Colas y jobs',
                         'href' => route('intranet.system.jobs.index', absolute: false),
                         'icon' => 'list-todo',

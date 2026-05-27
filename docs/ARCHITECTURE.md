@@ -70,6 +70,16 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Exports**: preguntas → `QuestionBank`; tareas → `Assignment` en `VirtualClassroom`.
 - **UI**: `Components/AI/*`, `Teacher/AICopilot/*`.
 
+## Integraciones externas (Fase 32)
+
+- **Capa**: `app/Integrations/` — contracts, providers concretos, `Null*` fallbacks, `IntegrationRegistry`.
+- **Calendario**: `CalendarIntegrationService` enriquece videoclases (`VirtualMeetingService`) con enlaces Google Calendar / ICS.
+- **Webhooks**: `routes/webhooks.php`, `WebhookService` (firma HMAC, `integration_webhook_logs`, replay admin).
+- **Correo**: `InstitutionMailService`, `integration_email_logs`, `RetryInstitutionEmailJob`.
+- **Pagos / WhatsApp / Push**: preparación (`PaymentIntegrationService`, stubs sin cobro/API paga obligatorio).
+- **Admin**: `/intranet/integrations`; salud ampliada en `/intranet/system/health`.
+- **Documentación**: `docs/INTEGRATIONS.md`.
+
 ## Aprendizaje adaptativo (Fase 22)
 
 - **Dominio**: `QuestionBank` + `QuestionOption` (ítems por curso/tema con competencias JSON); `DiagnosticExam` (modo fijo o adaptativo, alcance por año/sección/grado/nivel, umbrales de clasificación, `created_by_user_id`, pivote ordenado con puntos); `DiagnosticAttempt` (respuestas, puntaje, nivel clasificado, estado adaptativo); `LearningRecommendation`; `StudentAdaptiveProfile` (último nivel, debilidades, ruta de aprendizaje serializada).

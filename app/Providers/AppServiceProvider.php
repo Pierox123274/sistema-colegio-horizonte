@@ -50,6 +50,7 @@ use App\Support\AdaptiveLearningDashboard;
 use App\Support\AIDashboard;
 use App\Support\AnalyticsDashboard;
 use App\Support\GamificationDashboard;
+use App\Support\IntegrationsDashboard;
 use App\Support\SecurityDashboard;
 use App\Support\SystemOperationsDashboard;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -89,6 +90,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(AnalyticsDashboard::class, AnalyticsPolicy::class);
         Gate::policy(SecurityDashboard::class, SecurityPolicy::class);
         Gate::policy(SystemOperationsDashboard::class, SystemOperationsPolicy::class);
+        Gate::policy(IntegrationsDashboard::class, SystemOperationsPolicy::class);
         Gate::policy(CmsPage::class, CmsPagePolicy::class);
         Gate::policy(CmsNews::class, CmsNewsPolicy::class);
         Gate::policy(CmsNewsCategory::class, CmsNewsCategoryPolicy::class);

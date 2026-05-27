@@ -26,4 +26,9 @@ class SystemOperationsPolicy
     {
         return $user->hasRole(IntranetRole::Administrador->value);
     }
+
+    public function viewIntegrations(User $user): bool
+    {
+        return $user->hasRole(IntranetRole::Administrador->value);
+    }
 }
