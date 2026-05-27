@@ -60,6 +60,12 @@ type DashboardProps = PageProps<{
         missing_submissions_estimate: number;
         active_exams: number;
     };
+    gamification_top_students: Array<{
+        student: string;
+        code: string;
+        level: number;
+        xp: number;
+    }>;
 }>;
 
 export default function TeacherDashboard() {
@@ -73,6 +79,7 @@ export default function TeacherDashboard() {
         empty_message,
         links,
         lms,
+        gamification_top_students,
     } = usePage<DashboardProps>().props;
 
     const scopeNote = teacher_portal_scoped
@@ -239,6 +246,36 @@ export default function TeacherDashboard() {
                         ))}
                     </ul>
                 </AppCard>
+
+                {gamification_top_students.length > 0 ? (
+                    <AppCard className="mt-8">
+                        <h2 className="text-sm font-bold uppercase tracking-wider text-navy-900 dark:text-slate-100">
+                            Estudiantes destacados (gamificación)
+                        </h2>
+                        <div className="mt-3 overflow-x-auto">
+                            <table className="min-w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-plomo/15 text-left text-xs uppercase text-plomo">
+                                        <th className="px-3 py-2">Estudiante</th>
+                                        <th className="px-3 py-2">Código</th>
+                                        <th className="px-3 py-2">Nivel</th>
+                                        <th className="px-3 py-2">XP</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {gamification_top_students.map((row) => (
+                                        <tr key={`${row.code}-${row.level}`} className="border-b border-plomo/10">
+                                            <td className="px-3 py-2 font-medium text-navy-900 dark:text-slate-100">{row.student}</td>
+                                            <td className="px-3 py-2 text-plomo">{row.code}</td>
+                                            <td className="px-3 py-2">{row.level}</td>
+                                            <td className="px-3 py-2 font-semibold">{row.xp}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </AppCard>
+                ) : null}
             </PageContainer>
         </TeacherLayout>
     );

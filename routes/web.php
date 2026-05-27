@@ -34,6 +34,7 @@ use App\Http\Controllers\IntranetAIAnalyticsController;
 use App\Http\Controllers\IntranetAnalyticsController;
 use App\Http\Controllers\IntranetAnalyticsReportsController;
 use App\Http\Controllers\IntranetAnnouncementInboxController;
+use App\Http\Controllers\IntranetGamificationController;
 use App\Http\Controllers\IntranetLMSOverviewController;
 use App\Http\Controllers\IntranetSecurityController;
 use App\Http\Controllers\IntranetSystemOperationsController;
@@ -55,6 +56,7 @@ use App\Http\Controllers\StudentCalendarController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\StudentDiagnosticController;
+use App\Http\Controllers\StudentGamificationController;
 use App\Http\Controllers\StudentGradesController;
 use App\Http\Controllers\StudentLearningPathController;
 use App\Http\Controllers\StudentPaymentsController;
@@ -144,6 +146,7 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/diagnostic/{exam}', [StudentDiagnosticController::class, 'show'])->name('diagnostic.show');
         Route::get('/diagnostic', [StudentDiagnosticController::class, 'index'])->name('diagnostic.index');
         Route::get('/learning-path', [StudentLearningPathController::class, 'index'])->name('learning-path.index');
+        Route::get('/gamification', [StudentGamificationController::class, 'index'])->name('gamification.index');
         Route::get('/classrooms', [StudentVirtualClassroomController::class, 'index'])->name('classrooms.index');
         Route::get('/classrooms/{classroom}', [StudentVirtualClassroomController::class, 'show'])->name('classrooms.show');
         Route::post('/classrooms/{classroom}/assignments/{assignment}/submit', [StudentVirtualClassroomController::class, 'submitAssignment'])->name('classrooms.assignments.submit');
@@ -254,6 +257,10 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
 
     Route::middleware(['role:Administrador'])->prefix('intranet/lms')->name('intranet.lms.')->group(function () {
         Route::get('/', [IntranetLMSOverviewController::class, 'index'])->name('overview');
+    });
+
+    Route::middleware(['role:Administrador'])->prefix('intranet/gamification')->name('intranet.gamification.')->group(function () {
+        Route::get('/', [IntranetGamificationController::class, 'index'])->name('index');
     });
 
     Route::middleware(['role:Administrador|Secretaria'])->prefix('intranet/adaptive')->name('intranet.adaptive.')->group(function () {

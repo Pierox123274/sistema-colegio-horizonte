@@ -147,4 +147,44 @@ class Student extends Model
     {
         return $this->hasMany(LearningRecommendation::class);
     }
+
+    /**
+     * @return HasOne<GamificationProfile, $this>
+     */
+    public function gamificationProfile(): HasOne
+    {
+        return $this->hasOne(GamificationProfile::class);
+    }
+
+    /**
+     * @return HasMany<ExperienceTransaction, $this>
+     */
+    public function experienceTransactions(): HasMany
+    {
+        return $this->hasMany(ExperienceTransaction::class);
+    }
+
+    /**
+     * @return HasMany<StudentAchievement, $this>
+     */
+    public function achievementsUnlocked(): HasMany
+    {
+        return $this->hasMany(StudentAchievement::class);
+    }
+
+    /**
+     * @return HasMany<StudentStreak, $this>
+     */
+    public function streaks(): HasMany
+    {
+        return $this->hasMany(StudentStreak::class);
+    }
+
+    /**
+     * @return HasMany<StudentChallenge, $this>
+     */
+    public function challengesProgress(): HasMany
+    {
+        return $this->hasMany(StudentChallenge::class);
+    }
 }

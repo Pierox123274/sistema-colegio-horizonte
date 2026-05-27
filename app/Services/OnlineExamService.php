@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\AuditAction;
 use App\Enums\AuditModule;
 use App\Enums\AuditResult;
+use App\Enums\ExperienceSource;
 use App\Enums\OnlineExamAttemptStatus;
 use App\Enums\OnlineExamGradingMode;
 use App\Enums\OnlineExamQuestionType;
@@ -22,6 +23,7 @@ final class OnlineExamService
         private readonly AuditService $audit,
         private readonly LMSService $lms,
         private readonly LMSAdaptiveIntegrationService $adaptive,
+        private readonly GamificationService $gamification,
     ) {}
 
     public function createExam(User $user, VirtualClassroom $classroom, array $data, array $questions = []): OnlineExam
@@ -139,6 +141,26 @@ final class OnlineExamService
         $attempt->save();
 
         $this->adaptive->onOnlineExamCompleted($attempt);
+
+        $student = $attempt->student;
+        if ($student !== null && $score >= 70) {
+            $this->gamification->awardXp(
+                $student,
+                ExperienceSource::ExamApproved,
+                70,
+                'Examen aprobado',
+                $exam
+            );
+            if ($score >= 90) {
+                $this->gamification->awardXp(
+                    $student,
+                    ExperienceSource::ExamOutstanding,
+                    100,
+                    'Examen destacado',
+                    $exam
+                );
+            }
+        }
 
         $this->audit->log(
             AuditAction::Assessment,

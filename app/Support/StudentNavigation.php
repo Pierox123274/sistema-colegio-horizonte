@@ -69,6 +69,13 @@ final class StudentNavigation
                 'activeRoutes' => ['student.learning-path.index'],
             ],
             [
+                'label' => 'Mi progreso',
+                'href' => route('student.gamification.index', absolute: false),
+                'icon' => 'trophy',
+                'disabled' => false,
+                'activeRoutes' => ['student.gamification.index'],
+            ],
+            [
                 'label' => 'Recomendaciones IA',
                 'href' => route('student.recommendations.index', absolute: false),
                 'icon' => 'sparkles',

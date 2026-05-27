@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\EnrollmentStatus;
+use App\Enums\ExperienceSource;
 use App\Models\AcademicYear;
 use App\Models\Attendance;
 use App\Models\Enrollment;
@@ -16,6 +17,10 @@ use Illuminate\Support\Facades\DB;
 
 class AttendanceService
 {
+    public function __construct(
+        private readonly GamificationService $gamification,
+    ) {}
+
     public function paginateForIndex(Request $request, int $perPage = 20): LengthAwarePaginator
     {
         $query = Attendance::query()
@@ -100,6 +105,22 @@ class AttendanceService
                     'observation' => $entry['observation'] ?: null,
                     'recorded_by_user_id' => $userId,
                 ]);
+            }
+
+            foreach ($data['entries'] as $entry) {
+                if (($entry['status'] ?? '') !== 'presente') {
+                    continue;
+                }
+                $student = Student::query()->find((int) $entry['student_id']);
+                if ($student === null) {
+                    continue;
+                }
+                $this->gamification->awardXp(
+                    $student,
+                    ExperienceSource::AttendanceDaily,
+                    20,
+                    'Asistencia efectiva registrada'
+                );
             }
         });
     }

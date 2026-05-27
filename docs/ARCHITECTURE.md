@@ -109,6 +109,16 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Fase 25-B (adopción masiva App\*)**: aplicación del design system en módulos críticos (`Intranet/Cms/*`, `Intranet/Security/*`, `Intranet/Analytics`, `Intranet/LMS/Overview`, `Intranet/Adaptive/DiagnosticExams/Index`, `Intranet/Announcements/Index`, `Intranet/Reports/Analytics/Index`, `Intranet/Admin/Users/Index`, `Teacher/Analytics/Index`, `Teacher/Classrooms/Index`, `Student/Classrooms/Index`).
 - **Consistencia enterprise**: unificación de headers (`AppPageHeader`), filtros (`AppFilterBar`), tablas (`AppTable`), badges (`AppBadge`), cards (`AppCard`) y estados vacíos (`AppEmptyState`) con prioridad en dark/light, responsive y microinteracciones suaves.
 
+## Gamificación y logros institucional (Fase 26)
+
+- **Dominio**: `GamificationProfile`, `Achievement`, `StudentAchievement`, `ExperienceTransaction`, `StudentStreak`, `Challenge`, `StudentChallenge`, `LeaderboardSnapshot`.
+- **Enums**: `AchievementType`, `ChallengeType`, `ExperienceSource`, `StreakType`.
+- **Servicio central**: `GamificationService` gestiona otorgamiento de XP, cálculo de nivel, progresión de retos, rachas y desbloqueo de logros.
+- **Integraciones**: LMS (`AssignmentService`, `OnlineExamService`), adaptive (`AdaptiveDiagnosticService`) e IA (`StudentAIController`) otorgan XP automáticamente según eventos educativos.
+- **HTTP**: estudiante `/student/gamification`; analítica institucional `/intranet/gamification` (solo Administrador).
+- **Autorización**: `GamificationPolicy` + `GamificationDashboard`; estudiante ve su progreso, docente consume agregados en dashboard, admin ve analítica completa.
+- **UI**: componentes dedicados `Components/Gamification/*` (`XPProgressCard`, `AchievementBadge`, `StreakCard`, `ChallengeCard`, `LevelProgress`, `LeaderboardCard`, `GamificationTimeline`) y refinamiento premium en dashboards estudiante/docente.
+
 ## Seguridad, auditoría e ISO (Fase 19)
 
 - **Persistencia**: `audit_logs` (acción, módulo, entidad, IP, user agent, old/new values, severidad), `login_attempts`, `user_sessions` (dispositivo, expiración, bandera sospechosa).

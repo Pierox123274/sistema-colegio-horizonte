@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 25-B** (Refinamiento UX/UI premium masivo en módulos críticos).
+Última actualización: **Fase 26** (Gamificación y logros institucional).
 
 ## Completado — Fase 1
 
@@ -311,6 +311,18 @@
 - [x] Analítica institucional y docente refinada (`Intranet/Analytics/Index`, `Teacher/Analytics/Index`) con superficies y tablas App\* consistentes.
 - [x] LMS/adaptive/comunicación/reportes/administración refinados (`Intranet/LMS/Overview`, `Intranet/Adaptive/DiagnosticExams/Index`, `Intranet/Announcements/Index`, `Intranet/Reports/Analytics/Index`, `Intranet/Admin/Users/Index`, `Teacher/Classrooms/Index`, `Student/Classrooms/Index`).
 - [x] Validación completada: `php artisan test`, `npm run build`, `vendor/bin/pint --dirty`.
+
+## Completado — Fase 26 (Gamificación y logros institucional)
+
+- [x] Nuevas entidades de gamificación: `GamificationProfile`, `Achievement`, `StudentAchievement`, `ExperienceTransaction`, `StudentStreak`, `Challenge`, `StudentChallenge`, `LeaderboardSnapshot`.
+- [x] Nuevos enums de negocio: `AchievementType`, `ChallengeType`, `ExperienceSource`, `StreakType`.
+- [x] Motor de gamificación `GamificationService` con XP, niveles, retos, streaks, logros y ranking saludable.
+- [x] Integración automática con módulos clave: LMS (`AssignmentService`, `OnlineExamService`), adaptive (`AdaptiveDiagnosticService`) e IA (`StudentAIController`).
+- [x] Nueva vista de estudiante `/student/gamification` + componentes UI premium `Components/Gamification/*`.
+- [x] Dashboard estudiante con mini bloque XP/nivel/racha; dashboard docente con alumnos destacados por gamificación.
+- [x] Analítica institucional de gamificación `/intranet/gamification` (admin) con KPIs y top estudiantes.
+- [x] Rutas, navegación y políticas agregadas (`StudentNavigation`, `IntranetNavigation`, `GamificationPolicy`, `GamificationDashboard`).
+- [x] Cobertura inicial de pruebas: `tests/Feature/Gamification/GamificationTest.php`, `tests/Bdd/features/gamification.feature`, `cypress/e2e/gamification.cy.ts`.
 
 ## Pendiente / siguientes fases (ROADMAP)
 

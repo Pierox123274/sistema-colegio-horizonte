@@ -70,6 +70,14 @@ Fase 2 añade pruebas de intranet y roles (`tests/Feature/Intranet`, ampliacione
 | BDD (Gherkin) | `tests/Bdd/features/virtual_classroom.feature` |
 | E2E (Cypress) | `cypress/e2e/virtual-classroom.cy.ts` |
 
+**Fase 26 (gamificación y logros)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Gamification/GamificationTest.php` (perfil gamificado estudiante, XP/niveles, retos completados y permisos) |
+| BDD (Gherkin) | `tests/Bdd/features/gamification.feature` |
+| E2E (Cypress) | `cypress/e2e/gamification.cy.ts` |
+
 **Fase 24 (CMS institucional)** incluye:
 
 | Capa | Artefacto |

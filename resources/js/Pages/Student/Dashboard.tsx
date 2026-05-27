@@ -11,7 +11,10 @@ import {
     ArrowRight,
     CalendarCheck,
     ClipboardCheck,
+    Flame,
     GraduationCap,
+    Sparkles,
+    Trophy,
     Wallet,
 } from 'lucide-react';
 
@@ -58,6 +61,16 @@ type DashboardProps = PageProps<{
         pending_assignments: number;
         upcoming_exams: number;
     };
+    gamification?: {
+        profile: {
+            total_xp: number;
+            current_level: number;
+            progress_percent: number;
+        };
+        streaks: {
+            study: { current: number };
+        };
+    } | null;
 }>;
 
 export default function StudentDashboard() {
@@ -72,6 +85,7 @@ export default function StudentDashboard() {
         empty_message,
         links,
         lms,
+        gamification,
     } = usePage<DashboardProps>().props;
 
     const tools = [
@@ -161,6 +175,29 @@ export default function StudentDashboard() {
                             </div>
                         ) : null}
 
+                        {gamification ? (
+                            <div className="mb-8 grid gap-4 sm:grid-cols-3">
+                                <AppStatCard
+                                    title="XP acumulado"
+                                    value={String(gamification.profile.total_xp)}
+                                    icon={Sparkles}
+                                    accent="navy"
+                                />
+                                <AppStatCard
+                                    title="Nivel actual"
+                                    value={String(gamification.profile.current_level)}
+                                    icon={Trophy}
+                                    accent="yellow"
+                                />
+                                <AppStatCard
+                                    title="Racha de estudio"
+                                    value={String(gamification.streaks.study.current)}
+                                    icon={Flame}
+                                    accent="red"
+                                />
+                            </div>
+                        ) : null}
+
                         <div className="mb-8 grid gap-4 md:grid-cols-2">
                             <AppCard>
                                 <h3 className="text-sm font-semibold text-navy-900">Accesos rápidos</h3>
@@ -181,6 +218,20 @@ export default function StudentDashboard() {
                                             </Link>
                                         </li>
                                     ))}
+                                    <li>
+                                        <Link
+                                            href={route('student.gamification.index')}
+                                            className="flex items-center justify-between rounded-lg border border-plomo/15 px-4 py-3 transition hover:border-navy-200 hover:bg-navy-50/50"
+                                        >
+                                            <span>
+                                                <span className="block font-semibold text-navy-900">
+                                                    Mi progreso gamificado
+                                                </span>
+                                                <span className="text-xs text-plomo">Logros, retos y ranking saludable</span>
+                                            </span>
+                                            <ArrowRight className="h-4 w-4 text-plomo" />
+                                        </Link>
+                                    </li>
                                 </ul>
                             </AppCard>
 

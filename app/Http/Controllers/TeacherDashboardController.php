@@ -9,6 +9,7 @@ use App\Models\Enrollment;
 use App\Models\Evaluation;
 use App\Models\GradeRecord;
 use App\Models\Subject;
+use App\Services\GamificationService;
 use App\Services\LMSDashboardService;
 use App\Services\TeacherContextService;
 use Illuminate\Http\Request;
@@ -21,8 +22,11 @@ class TeacherDashboardController extends Controller
         private readonly TeacherContextService $teacherContext
     ) {}
 
-    public function index(Request $request, LMSDashboardService $lmsDashboard): Response
-    {
+    public function index(
+        Request $request,
+        LMSDashboardService $lmsDashboard,
+        GamificationService $gamification
+    ): Response {
         $user = $request->user();
         $activeYear = AcademicYear::query()->where('is_active', true)->first();
 
@@ -66,10 +70,12 @@ class TeacherDashboardController extends Controller
         }
 
         $lms = $user !== null ? $lmsDashboard->teacherSummary($user) : [];
+        $gamificationTopStudents = $gamification->topStudentsForTeacher($sectionIds);
 
         return Inertia::render('Teacher/Dashboard', [
             'academic_year' => $activeYear?->only(['id', 'name', 'year', 'is_active']),
             'lms' => $lms,
+            'gamification_top_students' => $gamificationTopStudents,
             'stats' => $stats,
             'assignments' => $assignmentsPayload,
             'assignments_overview' => $assignmentsOverview,

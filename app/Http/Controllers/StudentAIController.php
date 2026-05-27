@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AI\StoreStudentAiMessageRequest;
 use App\Services\AITutorService;
+use App\Services\GamificationService;
 use App\Services\StudentContextService;
 use App\Support\AIDashboard;
 use Illuminate\Http\JsonResponse;
@@ -59,8 +60,12 @@ class StudentAIController extends Controller
         ]);
     }
 
-    public function message(StoreStudentAiMessageRequest $request, StudentContextService $context, AITutorService $ai): JsonResponse|RedirectResponse
-    {
+    public function message(
+        StoreStudentAiMessageRequest $request,
+        StudentContextService $context,
+        AITutorService $ai,
+        GamificationService $gamification
+    ): JsonResponse|RedirectResponse {
         $user = $request->user();
         abort_if($user === null, 403);
 
@@ -78,6 +83,7 @@ class StudentAIController extends Controller
         }
 
         $payload = $ai->studentChat($user, $student, (string) $request->validated('message'));
+        $gamification->onAiTutorUsage($student);
 
         if ($request->wantsJson()) {
             return response()->json([

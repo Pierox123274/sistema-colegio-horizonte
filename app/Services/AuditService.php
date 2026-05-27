@@ -292,6 +292,7 @@ final class AuditService
                 || str_contains($routeName, 'adaptive-learning')
                 || str_contains($routeName, 'diagnostic')
                 || str_contains($routeName, 'learning-path') => AuditModule::AdaptiveLearning,
+            str_contains($routeName, 'gamification') => AuditModule::Gamification,
             str_contains($routeName, 'student') => AuditModule::Students,
             str_contains($routeName, 'guardian') => AuditModule::Guardians,
             str_contains($routeName, 'enrollment') => AuditModule::Enrollment,

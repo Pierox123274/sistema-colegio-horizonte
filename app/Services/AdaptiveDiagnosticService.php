@@ -34,6 +34,7 @@ final class AdaptiveDiagnosticService
         private readonly AcademicRiskAnalysisService $risk,
         private readonly StudentRecommendationService $recommendations,
         private readonly DiagnosticExamAccessService $examAccess,
+        private readonly GamificationService $gamification,
     ) {}
 
     public function canStartExam(Student $student, DiagnosticExam $exam): bool
@@ -256,6 +257,7 @@ final class AdaptiveDiagnosticService
         $student = $attempt->student;
 
         $this->syncRecommendationsAndProfile($student, $attempt, $score, $level, $weakness);
+        $this->gamification->onDiagnosticCompleted($student, $attempt);
 
         $this->audit->log(
             AuditAction::Assessment,

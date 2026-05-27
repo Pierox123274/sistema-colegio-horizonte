@@ -6,6 +6,7 @@ use App\Enums\AssignmentSubmissionStatus;
 use App\Enums\AuditAction;
 use App\Enums\AuditModule;
 use App\Enums\AuditResult;
+use App\Enums\ExperienceSource;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use App\Models\Student;
@@ -19,6 +20,7 @@ final class AssignmentService
         private readonly AuditService $audit,
         private readonly LMSService $lms,
         private readonly LMSAdaptiveIntegrationService $adaptive,
+        private readonly GamificationService $gamification,
     ) {}
 
     public function createAssignment(User $user, VirtualClassroom $classroom, array $data): Assignment
@@ -104,6 +106,24 @@ final class AssignmentService
             ['assignment_id' => $assignment->id],
             AuditResult::Success,
         );
+
+        $this->gamification->awardXp(
+            $student,
+            ExperienceSource::AssignmentCompleted,
+            50,
+            'Tarea completada en aula virtual',
+            $assignment
+        );
+
+        if ($assignment->due_at !== null && now()->lt($assignment->due_at)) {
+            $this->gamification->awardXp(
+                $student,
+                ExperienceSource::AssignmentEarly,
+                20,
+                'Entrega temprana',
+                $assignment
+            );
+        }
 
         return $submission;
     }

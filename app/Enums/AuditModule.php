@@ -22,6 +22,7 @@ enum AuditModule: string
     case AdaptiveLearning = 'adaptive_learning';
     case Lms = 'lms';
     case Cms = 'cms';
+    case Gamification = 'gamification';
 
     /**
      * @return list<array{value: string, label: string}>
@@ -47,6 +48,7 @@ enum AuditModule: string
             ['value' => self::AdaptiveLearning->value, 'label' => 'Aprendizaje adaptativo'],
             ['value' => self::Lms->value, 'label' => 'Aula virtual / LMS'],
             ['value' => self::Cms->value, 'label' => 'Sitio web / CMS'],
+            ['value' => self::Gamification->value, 'label' => 'Gamificación educativa'],
         ];
     }
 }

@@ -361,6 +361,13 @@ final class IntranetNavigation
                         'disabled' => false,
                         'activeRoutes' => ['intranet.lms.overview'],
                     ],
+                    [
+                        'label' => 'Gamificación',
+                        'href' => route('intranet.gamification.index', absolute: false),
+                        'icon' => 'trophy',
+                        'disabled' => false,
+                        'activeRoutes' => ['intranet.gamification.index'],
+                    ],
                 ],
             ];
         }

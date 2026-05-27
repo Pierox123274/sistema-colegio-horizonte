@@ -27,6 +27,7 @@ import {
     Shield,
     ShoppingCart,
     Sparkles,
+    Trophy,
     TriangleAlert,
     User,
     UserCheck,
@@ -74,6 +75,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
     settings: Settings,
     shield: Shield,
     'user-cog': UserCog,
+    trophy: Trophy,
 };
 
 export function intranetNavIcon(key?: string | null): LucideIcon {
