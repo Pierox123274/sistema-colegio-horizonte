@@ -100,4 +100,12 @@ class VirtualClassroom extends Model
     {
         return $this->hasMany(OnlineExam::class);
     }
+
+    /**
+     * @return HasMany<VirtualMeeting, $this>
+     */
+    public function meetings(): HasMany
+    {
+        return $this->hasMany(VirtualMeeting::class);
+    }
 }

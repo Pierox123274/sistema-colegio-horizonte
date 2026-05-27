@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\AssignmentSubmissionStatus;
 use App\Enums\EnrollmentStatus;
+use App\Enums\MeetingStatus;
 use App\Enums\OnlineExamAttemptStatus;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
@@ -13,6 +14,7 @@ use App\Models\OnlineExamAttempt;
 use App\Models\Student;
 use App\Models\User;
 use App\Models\VirtualClassroom;
+use App\Models\VirtualMeeting;
 
 final class LMSDashboardService
 {
@@ -73,11 +75,22 @@ final class LMSDashboardService
             ->where(fn ($q) => $q->whereNull('available_until')->orWhere('available_until', '>=', now()))
             ->count();
 
+        $upcomingMeetings = VirtualMeeting::query()
+            ->whereIn('status', [MeetingStatus::Scheduled->value, MeetingStatus::Live->value])
+            ->where('ends_at', '>=', now())
+            ->where(function ($q) use ($teacher, $classroomIds): void {
+                $q->where('host_user_id', $teacher->id)
+                    ->orWhereHas('participants', fn ($p) => $p->where('user_id', $teacher->id))
+                    ->orWhereIn('virtual_classroom_id', $classroomIds);
+            })
+            ->count();
+
         return [
             'classrooms_count' => $classroomIds->count(),
             'pending_review' => $pendingReview,
             'missing_submissions_estimate' => $missingSubmissions,
             'active_exams' => $activeExams,
+            'upcoming_meetings' => $upcomingMeetings,
         ];
     }
 
@@ -105,10 +118,20 @@ final class LMSDashboardService
             ->where(fn ($q) => $q->whereNull('available_until')->orWhere('available_until', '>=', now()))
             ->count();
 
+        $studentUserId = $student->user_id;
+        $upcomingMeetings = $studentUserId
+            ? VirtualMeeting::query()
+                ->whereIn('status', [MeetingStatus::Scheduled->value, MeetingStatus::Live->value])
+                ->where('ends_at', '>=', now())
+                ->whereHas('participants', fn ($q) => $q->where('user_id', $studentUserId))
+                ->count()
+            : 0;
+
         return [
             'classrooms_count' => $classroomIds->count(),
             'pending_assignments' => $pendingAssignments,
             'upcoming_exams' => $upcomingExams,
+            'upcoming_meetings' => $upcomingMeetings,
         ];
     }
 

@@ -142,6 +142,17 @@ Los **Jobs** y **Commands** pueden llamar a las mismas Actions/Services que los 
 - **Scheduler**: `SendAcademicRemindersJob`, `SendFinancialRemindersJob`, `SendSystemNotificationsJob`.
 - **Dashboards**: panel contextual de notificaciones recientes en admin/docente/estudiante.
 
+## Videoclases y reuniones (Fase 30)
+
+- **Dominio**: `VirtualMeeting` (tipos: clase virtual, tutoría, webinar, etc.); `MeetingParticipant`; `MeetingAttendance`; `MeetingRecording` (opcional).
+- **Proveedores**: contrato `MeetingProviderInterface` en `app/Meetings/`; implementación inicial **Google Meet** (enlace generado/configurado sin API OAuth); stubs **Zoom** y **Teams** listos para API futura; enlace **manual**.
+- **Servicios**: `VirtualMeetingService` (CRUD operativo, notificaciones, calendario), `MeetingAccessService` (participantes por aula/matricula).
+- **Integración LMS**: vínculo con `VirtualClassroom`; eventos en `AcademicCalendarEvent` (`event_type: meeting`); KPI `upcoming_meetings` en dashboards LMS.
+- **HTTP**: `teacher/meetings*`, `student/meetings*`, `intranet/meetings` (métricas admin).
+- **Seguridad**: `VirtualMeetingPolicy`; enlace de unión solo para participantes en ventana horaria; reuniones privadas por defecto.
+- **Notificaciones**: programación, recordatorio (`SendMeetingRemindersJob`), inicio y cancelación vía `UserNotificationService`.
+- **Frontend**: `Components/Meetings/*` (`MeetingCard`, `JoinMeetingButton`, `MeetingStatusBadge`, etc.).
+
 ## QA integral y demo (Fase 29)
 
 - **Alcance**: revisión transversal de permisos, navegación, UX (dark/light, responsive), performance segura (polling notificaciones) y coherencia demo sin nuevos módulos.

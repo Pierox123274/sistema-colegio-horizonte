@@ -34,6 +34,7 @@ import {
     UserCircle,
     UserCog,
     Users,
+    Video,
     Wallet,
     type LucideIcon,
 } from 'lucide-react';
@@ -76,6 +77,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
     shield: Shield,
     'user-cog': UserCog,
     trophy: Trophy,
+    video: Video,
 };
 
 export function intranetNavIcon(key?: string | null): LucideIcon {

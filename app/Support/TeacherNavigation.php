@@ -89,6 +89,19 @@ final class TeacherNavigation
                         'disabled' => false,
                         'activeRoutes' => ['teacher.calendar.index'],
                     ],
+                    [
+                        'label' => 'Videoclases',
+                        'href' => route('teacher.meetings.index', absolute: false),
+                        'icon' => 'video',
+                        'disabled' => false,
+                        'activeRoutes' => [
+                            'teacher.meetings.index',
+                            'teacher.meetings.create',
+                            'teacher.meetings.store',
+                            'teacher.meetings.show',
+                            'teacher.meetings.join',
+                        ],
+                    ],
                 ],
             ],
             [

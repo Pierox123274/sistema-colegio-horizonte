@@ -12,6 +12,7 @@ use App\Models\Subject;
 use App\Services\GamificationService;
 use App\Services\LMSDashboardService;
 use App\Services\TeacherContextService;
+use App\Services\VirtualMeetingService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -25,7 +26,8 @@ class TeacherDashboardController extends Controller
     public function index(
         Request $request,
         LMSDashboardService $lmsDashboard,
-        GamificationService $gamification
+        GamificationService $gamification,
+        VirtualMeetingService $meetings,
     ): Response {
         $user = $request->user();
         $activeYear = AcademicYear::query()->where('is_active', true)->first();
@@ -70,11 +72,13 @@ class TeacherDashboardController extends Controller
         }
 
         $lms = $user !== null ? $lmsDashboard->teacherSummary($user) : [];
+        $upcomingMeetings = $user !== null ? $meetings->upcomingPayloadFor($user, 5) : [];
         $gamificationTopStudents = $gamification->topStudentsForTeacher($sectionIds);
 
         return Inertia::render('Teacher/Dashboard', [
             'academic_year' => $activeYear?->only(['id', 'name', 'year', 'is_active']),
             'lms' => $lms,
+            'upcoming_meetings' => $upcomingMeetings,
             'gamification_top_students' => $gamificationTopStudents,
             'stats' => $stats,
             'assignments' => $assignmentsPayload,
@@ -92,6 +96,7 @@ class TeacherDashboardController extends Controller
                 'reports' => route('teacher.reports.index', absolute: false),
                 'classrooms' => route('teacher.classrooms.index', absolute: false),
                 'calendar' => route('teacher.calendar.index', absolute: false),
+                'meetings' => route('teacher.meetings.index', absolute: false),
             ],
         ]);
     }

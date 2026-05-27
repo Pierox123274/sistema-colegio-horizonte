@@ -4,6 +4,8 @@ import { AppStatCard } from '@/Components/App/AppStatCard';
 import StudentPortalEmpty from '@/Components/Student/StudentPortalEmpty';
 import RecentAnnouncementsPanel from '@/Components/Announcements/RecentAnnouncementsPanel';
 import RecentNotificationsPanel from '@/Components/Notifications/RecentNotificationsPanel';
+import UpcomingMeetingsPanel from '@/Components/Meetings/UpcomingMeetingsPanel';
+import type { MeetingCardData } from '@/Components/Meetings/MeetingCard';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
 import StudentLayout from '@/Layouts/StudentLayout';
 import type { PageProps } from '@/types';
@@ -62,6 +64,7 @@ type DashboardProps = PageProps<{
         pending_assignments: number;
         upcoming_exams: number;
     };
+    upcoming_meetings: MeetingCardData[];
     gamification?: {
         profile: {
             total_xp: number;
@@ -87,10 +90,12 @@ export default function StudentDashboard() {
         links,
         lms,
         gamification,
+        upcoming_meetings,
     } = usePage<DashboardProps>().props;
 
     const tools = [
         { href: route('student.classrooms.index'), label: 'Aula virtual', desc: 'Tareas y evaluaciones', icon: GraduationCap },
+        { href: route('student.meetings.index'), label: 'Videoclases', desc: 'Clases virtuales en vivo', icon: GraduationCap },
         { href: route('student.calendar.index'), label: 'Calendario', desc: 'Próximas fechas', icon: CalendarCheck },
         { href: links.grades, label: 'Mis notas', desc: 'Calificaciones y promedios', icon: ClipboardCheck },
         { href: links.attendance, label: 'Mi asistencia', desc: 'Historial y porcentaje', icon: CalendarCheck },
@@ -118,6 +123,10 @@ export default function StudentDashboard() {
                     <>
                         <RecentAnnouncementsPanel />
                         <RecentNotificationsPanel title="Mis recordatorios" />
+                        <UpcomingMeetingsPanel
+                            meetings={upcoming_meetings}
+                            indexHref={route('student.meetings.index')}
+                        />
 
                         {enrollment && (
                             <AppCard className="mb-6 border-l-4 border-l-brand-yellow">

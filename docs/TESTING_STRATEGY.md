@@ -102,6 +102,14 @@ Fase 2 añade pruebas de intranet y roles (`tests/Feature/Intranet`, ampliacione
 | BDD (Gherkin) | `tests/Bdd/features/notifications.feature` |
 | E2E (Cypress) | `cypress/e2e/notifications.cy.ts` |
 
+**Fase 30 (videoclases y reuniones)** incluye:
+
+| Capa | Artefacto |
+|------|-----------|
+| Feature | `tests/Feature/Meetings/VirtualMeetingsTest.php` (creación, permisos, aula virtual, asistencia, notificaciones, panel admin) |
+| BDD (Gherkin) | `tests/Bdd/features/virtual_meetings.feature` |
+| E2E (Cypress) | `cypress/e2e/virtual-meetings.cy.ts` |
+
 **Fase 29 (QA integral y estabilización)** incluye:
 
 | Capa | Artefacto |

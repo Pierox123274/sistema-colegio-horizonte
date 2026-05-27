@@ -1,6 +1,6 @@
 # Progreso actual del proyecto
 
-Última actualización: **Fase 29** (QA integral, estabilización y refinamiento final).
+Última actualización: **Fase 30** (Videoclases y reuniones institucionales).
 
 ## Completado — Fase 1
 
@@ -355,6 +355,17 @@
 - [x] Performance: polling de notificaciones solo con panel abierto, pestaña visible e intervalo 90 s.
 - [x] Documentación: `KNOWN_LIMITATIONS.md`, `DEMO_GUIDE.md`; actualización de `ARCHITECTURE.md`, `TESTING_STRATEGY.md`, `ROADMAP.md`.
 - [x] Pruebas: `tests/Feature/System/PlatformQualityAssuranceTest.php`, BDD `platform_quality_assurance.feature`, Cypress `platform-quality-assurance.cy.ts`.
+
+## Completado — Fase 30 (Videoclases y reuniones institucionales)
+
+- [x] Dominio: `VirtualMeeting`, `MeetingParticipant`, `MeetingAttendance`, `MeetingRecording`; enums `MeetingProvider`, `MeetingStatus`, `MeetingType`.
+- [x] Proveedores desacoplados: `MeetingProviderInterface`, `GoogleMeetProvider`, `ZoomProvider`, `TeamsProvider`, `NullMeetingProvider`; `config/meetings.php`.
+- [x] `VirtualMeetingService` + `MeetingAccessService`: creación, cancelación, inicio, asistencia virtual, calendario académico, notificaciones.
+- [x] Rutas: `/teacher/meetings*`, `/student/meetings*`, `/intranet/meetings`; política `VirtualMeetingPolicy`.
+- [x] UI premium: `Components/Meetings/*`, dashboards docente/estudiante con panel de próximas sesiones.
+- [x] Job `SendMeetingRemindersJob` (scheduler cada 15 min).
+- [x] Auditoría `AuditModule::Meetings`.
+- [x] Pruebas: `VirtualMeetingsTest`, BDD `virtual_meetings.feature`, Cypress `virtual-meetings.cy.ts`.
 
 ## Pendiente / siguientes fases (ROADMAP)
 

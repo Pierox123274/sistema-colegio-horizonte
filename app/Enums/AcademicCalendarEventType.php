@@ -8,4 +8,5 @@ enum AcademicCalendarEventType: string
     case Exam = 'exam';
     case Event = 'event';
     case Reminder = 'reminder';
+    case Meeting = 'meeting';
 }

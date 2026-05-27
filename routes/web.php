@@ -26,6 +26,7 @@ use App\Http\Controllers\Intranet\Cms\CmsNewsController;
 use App\Http\Controllers\Intranet\Cms\CmsPageController;
 use App\Http\Controllers\Intranet\Cms\CmsSettingController;
 use App\Http\Controllers\Intranet\Cms\CmsTestimonialController;
+use App\Http\Controllers\Intranet\IntranetVirtualMeetingController;
 use App\Http\Controllers\IntranetAdaptiveAnalyticsController;
 use App\Http\Controllers\IntranetAdaptiveDiagnosticExamController;
 use App\Http\Controllers\IntranetAdaptiveDiagnosticResultController;
@@ -63,6 +64,7 @@ use App\Http\Controllers\StudentLearningPathController;
 use App\Http\Controllers\StudentPaymentsController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\StudentVirtualClassroomController;
+use App\Http\Controllers\StudentVirtualMeetingController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherAcademicRiskController;
 use App\Http\Controllers\TeacherAIController;
@@ -79,6 +81,7 @@ use App\Http\Controllers\TeacherPedagogicalPanelController;
 use App\Http\Controllers\TeacherReportsController;
 use App\Http\Controllers\TeacherStudentsController;
 use App\Http\Controllers\TeacherVirtualClassroomController;
+use App\Http\Controllers\TeacherVirtualMeetingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -155,6 +158,9 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/classrooms/exam-attempt/{attempt}', [StudentVirtualClassroomController::class, 'examAttempt'])->name('classrooms.exam-attempt');
         Route::post('/classrooms/exam-attempt/{attempt}/answer', [StudentVirtualClassroomController::class, 'answerExam'])->name('classrooms.exam-attempt.answer');
         Route::get('/calendar', [StudentCalendarController::class, 'index'])->name('calendar.index');
+        Route::get('/meetings', [StudentVirtualMeetingController::class, 'index'])->name('meetings.index');
+        Route::get('/meetings/{meeting}', [StudentVirtualMeetingController::class, 'show'])->name('meetings.show');
+        Route::get('/meetings/{meeting}/join', [StudentVirtualMeetingController::class, 'join'])->name('meetings.join');
     });
 
     Route::middleware(['role:Docente|Administrador'])->prefix('teacher')->name('teacher.')->group(function () {
@@ -199,6 +205,13 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::post('/classrooms/{classroom}/assignments/{assignment}/submissions/{submission}/grade', [TeacherVirtualClassroomController::class, 'gradeSubmission'])->name('classrooms.submissions.grade');
         Route::post('/classrooms/{classroom}/exams', [TeacherVirtualClassroomController::class, 'storeExam'])->name('classrooms.exams.store');
         Route::get('/calendar', [TeacherCalendarController::class, 'index'])->name('calendar.index');
+        Route::get('/meetings', [TeacherVirtualMeetingController::class, 'index'])->name('meetings.index');
+        Route::get('/meetings/create', [TeacherVirtualMeetingController::class, 'create'])->name('meetings.create');
+        Route::post('/meetings', [TeacherVirtualMeetingController::class, 'store'])->name('meetings.store');
+        Route::get('/meetings/{meeting}', [TeacherVirtualMeetingController::class, 'show'])->name('meetings.show');
+        Route::get('/meetings/{meeting}/join', [TeacherVirtualMeetingController::class, 'join'])->name('meetings.join');
+        Route::post('/meetings/{meeting}/start', [TeacherVirtualMeetingController::class, 'start'])->name('meetings.start');
+        Route::post('/meetings/{meeting}/cancel', [TeacherVirtualMeetingController::class, 'cancel'])->name('meetings.cancel');
     });
 
     Route::middleware($intranetRoles)->prefix('intranet/announcements/inbox')->name('intranet.announcements.inbox.')->group(function () {
@@ -262,6 +275,11 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
 
     Route::middleware(['role:Administrador'])->prefix('intranet/gamification')->name('intranet.gamification.')->group(function () {
         Route::get('/', [IntranetGamificationController::class, 'index'])->name('index');
+    });
+
+    Route::middleware(['role:Administrador'])->prefix('intranet/meetings')->name('intranet.meetings.')->group(function () {
+        Route::get('/', [IntranetVirtualMeetingController::class, 'index'])->name('index');
+        Route::get('/{meeting}', [IntranetVirtualMeetingController::class, 'show'])->name('show');
     });
 
     Route::middleware(['role:Administrador|Secretaria'])->prefix('intranet/adaptive')->name('intranet.adaptive.')->group(function () {

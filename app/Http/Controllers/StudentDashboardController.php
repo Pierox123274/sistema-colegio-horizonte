@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\GamificationService;
 use App\Services\LMSDashboardService;
 use App\Services\StudentContextService;
+use App\Services\VirtualMeetingService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -18,7 +19,8 @@ class StudentDashboardController extends Controller
     public function index(
         Request $request,
         LMSDashboardService $lmsDashboard,
-        GamificationService $gamification
+        GamificationService $gamification,
+        VirtualMeetingService $meetings,
     ): Response {
         $user = $request->user();
         abort_if($user === null, 403);
@@ -26,6 +28,7 @@ class StudentDashboardController extends Controller
         $context = $this->studentContext->portalContext($user);
         $student = $context['student'];
         $lms = $student !== null ? $lmsDashboard->studentSummary($student) : [];
+        $upcomingMeetings = $user !== null ? $meetings->upcomingPayloadFor($user, 5) : [];
         $gamificationSummary = $student !== null ? $gamification->studentSummary($student) : null;
         $academicYear = $this->studentContext->activeAcademicYear();
 
@@ -49,6 +52,7 @@ class StudentDashboardController extends Controller
         return Inertia::render('Student/Dashboard', [
             'academic_year' => $academicYear?->only(['id', 'name', 'year', 'is_active']),
             'lms' => $lms,
+            'upcoming_meetings' => $upcomingMeetings,
             'gamification' => $gamificationSummary,
             'student' => $studentCard,
             'enrollment' => $enrollment,

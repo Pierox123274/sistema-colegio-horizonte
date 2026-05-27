@@ -3,6 +3,8 @@ import { AppPageHeader } from '@/Components/App/AppPageHeader';
 import { AppStatCard } from '@/Components/App/AppStatCard';
 import RecentAnnouncementsPanel from '@/Components/Announcements/RecentAnnouncementsPanel';
 import RecentNotificationsPanel from '@/Components/Notifications/RecentNotificationsPanel';
+import UpcomingMeetingsPanel from '@/Components/Meetings/UpcomingMeetingsPanel';
+import type { MeetingCardData } from '@/Components/Meetings/MeetingCard';
 import AssignmentsOverview, {
     type AssignmentTableRow,
     type SectionOverview,
@@ -54,6 +56,7 @@ type DashboardProps = PageProps<{
         reports: string;
         classrooms: string;
         calendar: string;
+        meetings: string;
     };
     lms: {
         classrooms_count: number;
@@ -67,6 +70,7 @@ type DashboardProps = PageProps<{
         level: number;
         xp: number;
     }>;
+    upcoming_meetings: MeetingCardData[];
 }>;
 
 export default function TeacherDashboard() {
@@ -81,6 +85,7 @@ export default function TeacherDashboard() {
         links,
         lms,
         gamification_top_students,
+        upcoming_meetings,
     } = usePage<DashboardProps>().props;
 
     const scopeNote = teacher_portal_scoped
@@ -89,6 +94,7 @@ export default function TeacherDashboard() {
 
     const tools = [
         { href: links.classrooms, label: 'Aula virtual', desc: 'Tareas, materiales y evaluaciones online' },
+        { href: links.meetings, label: 'Videoclases', desc: 'Clases virtuales y reuniones' },
         { href: links.calendar, label: 'Calendario académico', desc: 'Fechas de tareas y exámenes' },
         { href: links.assignments, label: 'Mis asignaciones', desc: 'Secciones, cursos y alumnos a su cargo' },
         { href: links.attendance_register, label: 'Registrar asistencia', desc: 'Marcar asistencia por fecha y sección' },
@@ -111,6 +117,10 @@ export default function TeacherDashboard() {
 
                 <RecentAnnouncementsPanel />
                 <RecentNotificationsPanel title="Recordatorios docentes" />
+                <UpcomingMeetingsPanel
+                    meetings={upcoming_meetings}
+                    indexHref={links.meetings}
+                />
 
                 {academic_year ? (
                     <div className="mb-6 rounded-xl border border-plomo/15 bg-white px-4 py-3 text-sm shadow-sm">

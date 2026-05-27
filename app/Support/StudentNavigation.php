@@ -51,6 +51,17 @@ final class StudentNavigation
                 'activeRoutes' => ['student.calendar.index'],
             ],
             [
+                'label' => 'Videoclases',
+                'href' => route('student.meetings.index', absolute: false),
+                'icon' => 'video',
+                'disabled' => false,
+                'activeRoutes' => [
+                    'student.meetings.index',
+                    'student.meetings.show',
+                    'student.meetings.join',
+                ],
+            ],
+            [
                 'label' => 'Diagnóstico adaptativo',
                 'href' => route('student.diagnostic.index', absolute: false),
                 'icon' => 'clipboard-list',

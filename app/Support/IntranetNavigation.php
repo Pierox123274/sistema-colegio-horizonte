@@ -362,6 +362,13 @@ final class IntranetNavigation
                         'activeRoutes' => ['intranet.lms.overview'],
                     ],
                     [
+                        'label' => 'Videoclases',
+                        'href' => route('intranet.meetings.index', absolute: false),
+                        'icon' => 'video',
+                        'disabled' => false,
+                        'activeRoutes' => ['intranet.meetings.index', 'intranet.meetings.show'],
+                    ],
+                    [
                         'label' => 'Gamificación',
                         'href' => route('intranet.gamification.index', absolute: false),
                         'icon' => 'trophy',
