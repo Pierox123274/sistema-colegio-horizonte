@@ -34,5 +34,7 @@ class DatabaseSeeder extends Seeder
         );
 
         $user->syncRoles([IntranetRole::Administrador->value]);
+
+        $this->call(StudentPortalDemoSeeder::class);
     }
 }

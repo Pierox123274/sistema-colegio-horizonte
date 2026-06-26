@@ -9,6 +9,7 @@ if [ "$(php artisan tinker --execute='echo \App\Models\User::count();')" = "0" ]
 fi
 
 php artisan optimize:clear
+php artisan db:seed --class=Database\\Seeders\\StudentPortalDemoSeeder --force
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
