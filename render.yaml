@@ -1,0 +1,38 @@
+# Blueprint Render (plan gratuito — el servicio entra en reposo tras inactividad).
+# Conectar la base de datos MySQL externa vía variables DB_* en el panel de Render.
+services:
+  - type: web
+    name: sistema-colegio-horizonte
+    runtime: php
+    plan: free
+    buildCommand: composer install --no-dev --optimize-autoloader --no-interaction && npm ci && npm run build
+    startCommand: php artisan migrate --force && php artisan storage:link || true && php artisan config:cache && php artisan serve --host=0.0.0.0 --port=$PORT
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: DB_CONNECTION
+        value: mysql
+      - key: APP_KEY
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: APP_URL
+        sync: false

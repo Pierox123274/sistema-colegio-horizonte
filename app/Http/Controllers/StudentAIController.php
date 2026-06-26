@@ -93,6 +93,7 @@ class StudentAIController extends Controller
                 'cached' => $payload['cached'],
                 'model' => $payload['model'],
                 'error_code' => $payload['error_code'],
+                'fallback' => $payload['fallback'] ?? false,
             ]);
         }
 
@@ -102,6 +103,7 @@ class StudentAIController extends Controller
                 'success' => $payload['success'],
                 'cached' => $payload['cached'],
                 'model' => $payload['model'],
+                'fallback' => $payload['fallback'] ?? false,
             ],
         ]);
     }

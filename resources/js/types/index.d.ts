@@ -25,6 +25,7 @@ export type FlashMessages = {
             success?: boolean;
             cached?: boolean;
             model?: string;
+            fallback?: boolean;
         } | null;
     };
 };

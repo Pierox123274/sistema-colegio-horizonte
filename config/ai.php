@@ -12,6 +12,9 @@ return [
 
     'tutor_enabled' => filter_var(env('AI_TUTOR_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
 
+    /** Respuestas pedagógicas locales si OpenAI/Ollama fallan (cuota, red, etc.). */
+    'local_fallback_enabled' => filter_var(env('AI_LOCAL_FALLBACK_ENABLED', true), FILTER_VALIDATE_BOOLEAN),
+
     /*
     |--------------------------------------------------------------------------
     | OpenAI (API oficial; nunca commitear claves)

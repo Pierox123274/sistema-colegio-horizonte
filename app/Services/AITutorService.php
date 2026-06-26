@@ -27,6 +27,7 @@ final class AITutorService
         private readonly AcademicRiskAnalysisService $risk,
         private readonly StudentRecommendationService $recommendations,
         private readonly StudentContextService $studentContext,
+        private readonly LocalTutorFallbackService $localFallback,
     ) {}
 
     public function provider(): AIProviderInterface
@@ -106,12 +107,28 @@ final class AITutorService
         ];
 
         $result = $this->provider()->chat($messages);
+
+        if (! $result->success && config('ai.local_fallback_enabled', true)) {
+            $payload = $this->localFallback->studentChat($student, $message);
+            $this->logAiAudit(
+                $user,
+                $student,
+                'student_chat',
+                new AIChatResult($payload['reply'], true, 'local-fallback', $result->errorCode),
+                $promptHash,
+            );
+            Cache::put($cacheKey, $payload, (int) config('ai.cache_ttl_seconds', 3600));
+
+            return $payload;
+        }
+
         $payload = [
             'reply' => $result->content,
             'success' => $result->success,
             'model' => $result->model,
             'error_code' => $result->errorCode,
             'cached' => false,
+            'fallback' => false,
         ];
 
         $this->logAiAudit($user, $student, 'student_chat', $result, $promptHash);

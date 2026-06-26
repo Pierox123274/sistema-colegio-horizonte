@@ -101,17 +101,26 @@ class AITutorTest extends TestCase
     public function test_student_chat_graceful_when_openai_errors(): void
     {
         Config::set('ai.tutor_enabled', true);
+        Config::set('ai.local_fallback_enabled', true);
         Config::set('ai.openai.api_key', 'sk-test');
 
         Http::fake([
-            'api.openai.com/*' => Http::response(['error' => 'bad'], 502),
+            'api.openai.com/*' => Http::response(['error' => ['code' => 'insufficient_quota', 'message' => 'quota']], 429),
         ]);
 
         $user = $this->studentUser();
 
-        $this->actingAs($user)
-            ->post(route('student.ai-tutor.message'), ['message' => 'Hola'])
-            ->assertRedirect();
+        $response = $this->actingAs($user)
+            ->postJson(route('student.ai-tutor.message'), ['message' => 'Hola']);
+
+        $response
+            ->assertOk()
+            ->assertJson([
+                'success' => true,
+                'fallback' => true,
+                'model' => 'local-fallback',
+            ])
+            ->assertJsonPath('reply', fn (string $reply) => str_contains($reply, 'Hola'));
     }
 
     public function test_student_chat_returns_json_payload_when_expected(): void

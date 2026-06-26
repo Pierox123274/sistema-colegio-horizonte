@@ -47,7 +47,7 @@ type ChatMessage = {
     role: 'user' | 'assistant';
     content: string;
     at: string;
-    meta?: { cached?: boolean; success?: boolean };
+    meta?: { cached?: boolean; success?: boolean; fallback?: boolean };
 };
 
 type AITutorProps = PageProps<{
@@ -216,6 +216,7 @@ export default function AITutor() {
                             meta: {
                                 cached: meta?.cached,
                                 success: meta?.success,
+                                fallback: meta?.fallback,
                             },
                         },
                     ]);
@@ -435,6 +436,11 @@ export default function AITutor() {
                                                                 isUser ? 'justify-end' : 'justify-start'
                                                             }`}
                                                         >
+                                                            {!isUser && msg.meta?.fallback && (
+                                                                <span className="rounded bg-sky-100 px-1.5 py-0.5 text-[10px] font-medium text-sky-900">
+                                                                    Asistente local
+                                                                </span>
+                                                            )}
                                                             {!isUser && msg.meta?.cached && (
                                                                 <span className="rounded bg-slate-200/80 px-1.5 py-0.5 text-[10px] font-medium text-slate-700">
                                                                     Caché
