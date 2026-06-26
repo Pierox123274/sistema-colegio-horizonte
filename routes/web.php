@@ -637,4 +637,4 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
     });
 });
 
-require __DIR__.'/auth.php';
+require_once __DIR__.'/auth.php';

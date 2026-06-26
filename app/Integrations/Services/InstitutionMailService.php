@@ -43,7 +43,7 @@ final class InstitutionMailService
             $log = IntegrationEmailLog::query()->create([
                 'mailable_class' => $mailable::class,
                 'recipient_hash' => hash('sha256', implode(',', $recipients)),
-                'subject' => method_exists($mailable, 'envelope') ? null : null,
+                'subject' => null,
                 'status' => 'queued',
                 'mailer' => config('mail.default'),
             ]);
