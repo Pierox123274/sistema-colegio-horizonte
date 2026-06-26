@@ -1,6 +1,8 @@
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
     volumes:
       - .:/var/www/html
     environment:
