@@ -1,6 +1,8 @@
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
     volumes:
       - .:/var/www/html
     environment:
@@ -48,7 +50,9 @@ services:
       - "63790:6379"
 
   queue:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
     command: php artisan queue:work redis --sleep=3 --tries=3 --max-time=3600
     volumes:
       - .:/var/www/html
@@ -67,7 +71,9 @@ services:
       - app
 
   scheduler:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
     command: php artisan schedule:work
     volumes:
       - .:/var/www/html
