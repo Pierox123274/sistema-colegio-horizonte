@@ -166,45 +166,61 @@ final class TeacherAICopilotService
         $created = [];
         DB::transaction(function () use ($questions, $subjectId, &$created): void {
             foreach ($questions as $q) {
-                $type = $this->mapQuestionType((string) ($q['type'] ?? 'multiple_choice'));
-                $difficulty = $this->mapDifficulty((string) ($q['difficulty'] ?? 'medium'));
-
-                $bank = QuestionBank::query()->create([
-                    'subject_id' => $subjectId,
-                    'topic' => (string) ($q['topic'] ?? 'IA — generado'),
-                    'question_type' => $type,
-                    'difficulty' => $difficulty,
-                    'competencies' => $q['competencies'] ?? [],
-                    'stem' => (string) ($q['stem'] ?? $q['question'] ?? 'Pregunta'),
-                    'explanation' => (string) ($q['explanation'] ?? ''),
-                    'true_false_answer' => $type === QuestionType::TrueFalse ? (bool) ($q['correct_answer'] ?? true) : null,
-                    'short_answer_expected' => $type === QuestionType::ShortAnswer ? (string) ($q['correct_answer'] ?? '') : null,
-                    'is_active' => true,
-                ]);
-
-                if ($type === QuestionType::MultipleChoice && isset($q['options']) && is_array($q['options'])) {
-                    foreach (array_values($q['options']) as $i => $opt) {
-                        $label = is_array($opt) ? (string) ($opt['label'] ?? chr(65 + $i)) : chr(65 + $i);
-                        $body = is_array($opt) ? (string) ($opt['body'] ?? $opt['text'] ?? '') : (string) $opt;
-                        $isCorrect = is_array($opt)
-                            ? (bool) ($opt['is_correct'] ?? false)
-                            : ($i === (int) ($q['correct_index'] ?? 0));
-
-                        QuestionOption::query()->create([
-                            'question_bank_id' => $bank->id,
-                            'sort_order' => $i + 1,
-                            'label' => $label,
-                            'body' => $body,
-                            'is_correct' => $isCorrect,
-                        ]);
-                    }
-                }
-
+                $bank = $this->createQuestionBankEntry($subjectId, $q);
+                $this->attachMultipleChoiceOptions($bank, $q);
                 $created[] = $bank->id;
             }
         });
 
         return ['created' => count($created), 'ids' => $created];
+    }
+
+    /**
+     * @param  array<string, mixed>  $q
+     */
+    private function createQuestionBankEntry(int $subjectId, array $q): QuestionBank
+    {
+        $type = $this->mapQuestionType((string) ($q['type'] ?? 'multiple_choice'));
+        $difficulty = $this->mapDifficulty((string) ($q['difficulty'] ?? 'medium'));
+
+        return QuestionBank::query()->create([
+            'subject_id' => $subjectId,
+            'topic' => (string) ($q['topic'] ?? 'IA — generado'),
+            'question_type' => $type,
+            'difficulty' => $difficulty,
+            'competencies' => $q['competencies'] ?? [],
+            'stem' => (string) ($q['stem'] ?? $q['question'] ?? 'Pregunta'),
+            'explanation' => (string) ($q['explanation'] ?? ''),
+            'true_false_answer' => $type === QuestionType::TrueFalse ? (bool) ($q['correct_answer'] ?? true) : null,
+            'short_answer_expected' => $type === QuestionType::ShortAnswer ? (string) ($q['correct_answer'] ?? '') : null,
+            'is_active' => true,
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $q
+     */
+    private function attachMultipleChoiceOptions(QuestionBank $bank, array $q): void
+    {
+        if ($bank->question_type !== QuestionType::MultipleChoice || ! isset($q['options']) || ! is_array($q['options'])) {
+            return;
+        }
+
+        foreach (array_values($q['options']) as $i => $opt) {
+            $label = is_array($opt) ? (string) ($opt['label'] ?? chr(65 + $i)) : chr(65 + $i);
+            $body = is_array($opt) ? (string) ($opt['body'] ?? $opt['text'] ?? '') : (string) $opt;
+            $isCorrect = is_array($opt)
+                ? (bool) ($opt['is_correct'] ?? false)
+                : ($i === (int) ($q['correct_index'] ?? 0));
+
+            QuestionOption::query()->create([
+                'question_bank_id' => $bank->id,
+                'sort_order' => $i + 1,
+                'label' => $label,
+                'body' => $body,
+                'is_correct' => $isCorrect,
+            ]);
+        }
     }
 
     /**

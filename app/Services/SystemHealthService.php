@@ -240,10 +240,33 @@ final class SystemHealthService
         bool $queueConfigured,
         array $backupStatus,
     ): array {
+        return array_merge(
+            $this->buildRuntimeHealthChecks($database, $queue, $queueConfigured, $cacheWritable),
+            $this->buildStorageHealthChecks(
+                $disk,
+                $storagePath,
+                $bootstrapCachePath,
+                $publicStorageLinked,
+            ),
+            $this->buildOperationalHealthChecks(
+                $schedulerHeartbeat,
+                $schedulerHealthy,
+                $mailConfigured,
+                $backupStatus,
+            ),
+        );
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function buildRuntimeHealthChecks(
+        array $database,
+        array $queue,
+        bool $queueConfigured,
+        bool $cacheWritable,
+    ): array {
         $phpVersion = PHP_VERSION;
-        $httpsExpected = str_starts_with((string) config('app.url'), 'https://');
-        $diskUsagePercent = $disk['usage_percent'];
-        $backupDirectory = storage_path('app/backups');
 
         return [
             'php_version' => [
@@ -292,11 +315,28 @@ final class SystemHealthService
                 'value' => config('cache.default'),
                 'message' => $cacheWritable ? 'Cache escribible.' : 'No se pudo escribir en caché.',
             ],
+        ];
+    }
+
+    /**
+     * @param  array{free_bytes: int|false, total_bytes: int|false, usage_percent: ?float}  $disk
+     * @return array<string, array<string, mixed>>
+     */
+    private function buildStorageHealthChecks(
+        array $disk,
+        string $storagePath,
+        string $bootstrapCachePath,
+        bool $publicStorageLinked,
+    ): array {
+        $diskUsagePercent = $disk['usage_percent'];
+        $storageWritable = is_writable($storagePath) && is_writable($bootstrapCachePath);
+
+        return [
             'storage_writable' => [
                 'label' => 'Storage writable',
-                'status' => is_writable($storagePath) && is_writable($bootstrapCachePath) ? 'ok' : 'critical',
+                'status' => $storageWritable ? 'ok' : 'critical',
                 'value' => $storagePath,
-                'message' => is_writable($storagePath) && is_writable($bootstrapCachePath)
+                'message' => $storageWritable
                     ? 'storage/ y bootstrap/cache tienen permisos correctos.'
                     : 'Revisar permisos de storage/ y bootstrap/cache.',
             ],
@@ -308,6 +348,50 @@ final class SystemHealthService
                     ? 'Enlace público disponible.'
                     : 'Ejecutar php artisan storage:link.',
             ],
+            'disk_usage' => $this->diskUsageCheck($diskUsagePercent),
+        ];
+    }
+
+    /**
+     * @return array{label: string, status: string, value: ?string, message: string}
+     */
+    private function diskUsageCheck(?float $diskUsagePercent): array
+    {
+        $status = 'ok';
+        if ($diskUsagePercent === null) {
+            $message = 'No se pudo calcular uso de disco.';
+        } elseif ($diskUsagePercent >= 90) {
+            $status = 'critical';
+            $message = 'Uso de disco crítico.';
+        } elseif ($diskUsagePercent >= 80) {
+            $status = 'warning';
+            $message = 'Uso de disco alto.';
+        } else {
+            $message = 'Uso de disco saludable.';
+        }
+
+        return [
+            'label' => 'Disk usage',
+            'status' => $status,
+            'value' => $diskUsagePercent !== null ? "{$diskUsagePercent}%" : null,
+            'message' => $message,
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $backupStatus
+     * @return array<string, array<string, mixed>>
+     */
+    private function buildOperationalHealthChecks(
+        mixed $schedulerHeartbeat,
+        bool $schedulerHealthy,
+        bool $mailConfigured,
+        array $backupStatus,
+    ): array {
+        $httpsExpected = str_starts_with((string) config('app.url'), 'https://');
+        $backupDirectory = storage_path('app/backups');
+
+        return [
             'scheduler' => [
                 'label' => 'Scheduler status',
                 'status' => $schedulerHealthy ? 'ok' : 'warning',
@@ -315,18 +399,6 @@ final class SystemHealthService
                 'message' => $schedulerHealthy
                     ? 'Scheduler reportó actividad reciente.'
                     : 'No hay heartbeat reciente del scheduler.',
-            ],
-            'disk_usage' => [
-                'label' => 'Disk usage',
-                'status' => $diskUsagePercent !== null && $diskUsagePercent >= 90
-                    ? 'critical'
-                    : ($diskUsagePercent !== null && $diskUsagePercent >= 80 ? 'warning' : 'ok'),
-                'value' => $diskUsagePercent !== null ? "{$diskUsagePercent}%" : null,
-                'message' => $diskUsagePercent === null
-                    ? 'No se pudo calcular uso de disco.'
-                    : ($diskUsagePercent >= 90
-                        ? 'Uso de disco crítico.'
-                        : ($diskUsagePercent >= 80 ? 'Uso de disco alto.' : 'Uso de disco saludable.')),
             ],
             'https' => [
                 'label' => 'HTTPS',

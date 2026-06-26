@@ -11,6 +11,7 @@ use App\Models\Section;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class StoreAttendanceBatchRequest extends FormRequest
 {
@@ -39,60 +40,82 @@ class StoreAttendanceBatchRequest extends FormRequest
 
     public function withValidator($validator): void
     {
-        $validator->after(function ($validator): void {
+        $validator->after(function (Validator $validator): void {
             if ($validator->errors()->isNotEmpty()) {
                 return;
             }
 
-            $section = Section::query()->with('grade')->find((int) $this->input('section_id'));
-            if (! $section) {
-                return;
-            }
-
-            if ((int) $section->grade_id !== (int) $this->input('grade_id')) {
-                $validator->errors()->add('grade_id', 'La sección no pertenece al grado seleccionado.');
-            }
-
-            if ((int) $section->grade->educational_level_id !== (int) $this->input('educational_level_id')) {
-                $validator->errors()->add('educational_level_id', 'El grado no pertenece al nivel seleccionado.');
-            }
-
-            $year = AcademicYear::query()->find((int) $this->input('academic_year_id'));
-            $attendanceDate = (string) $this->input('attendance_date');
-            if (
-                $year !== null
-                && ($attendanceDate < $year->starts_at?->toDateString() || $attendanceDate > $year->ends_at?->toDateString())
-            ) {
-                $validator->errors()->add('attendance_date', 'La fecha de asistencia está fuera del año académico seleccionado.');
-            }
-
-            $studentIds = collect($this->input('entries', []))
-                ->pluck('student_id')
-                ->map(fn ($id) => (int) $id)
-                ->filter()
-                ->values();
-
-            $duplicateStudentIds = $studentIds->duplicates()->unique()->values();
-            if ($duplicateStudentIds->isNotEmpty()) {
-                $validator->errors()->add('entries', 'No se puede enviar el mismo estudiante más de una vez en el registro masivo.');
-            }
-
-            $enrolledIds = Enrollment::query()
-                ->where('academic_year_id', (int) $this->input('academic_year_id'))
-                ->where('educational_level_id', (int) $this->input('educational_level_id'))
-                ->where('grade_id', (int) $this->input('grade_id'))
-                ->where('section_id', (int) $this->input('section_id'))
-                ->whereIn('status', $this->activeEnrollmentStatuses())
-                ->whereIn('student_id', $studentIds)
-                ->pluck('student_id')
-                ->map(fn ($id) => (int) $id)
-                ->all();
-
-            $notEnrolled = array_diff($studentIds->all(), $enrolledIds);
-            if ($notEnrolled !== []) {
-                $validator->errors()->add('entries', 'Solo se puede registrar asistencia para estudiantes matriculados en la sección seleccionada.');
-            }
+            $this->validateSectionHierarchy($validator);
+            $this->validateAttendanceDateInYear($validator);
+            $this->validateUniqueStudents($validator);
+            $this->validateStudentsEnrolled($validator);
         });
+    }
+
+    private function validateSectionHierarchy(Validator $validator): void
+    {
+        $section = Section::query()->with('grade')->find((int) $this->input('section_id'));
+        if ($section === null) {
+            return;
+        }
+
+        if ((int) $section->grade_id !== (int) $this->input('grade_id')) {
+            $validator->errors()->add('grade_id', 'La sección no pertenece al grado seleccionado.');
+        }
+
+        if ((int) $section->grade->educational_level_id !== (int) $this->input('educational_level_id')) {
+            $validator->errors()->add('educational_level_id', 'El grado no pertenece al nivel seleccionado.');
+        }
+    }
+
+    private function validateAttendanceDateInYear(Validator $validator): void
+    {
+        $year = AcademicYear::query()->find((int) $this->input('academic_year_id'));
+        $attendanceDate = (string) $this->input('attendance_date');
+
+        if (
+            $year !== null
+            && ($attendanceDate < $year->starts_at?->toDateString() || $attendanceDate > $year->ends_at?->toDateString())
+        ) {
+            $validator->errors()->add('attendance_date', 'La fecha de asistencia está fuera del año académico seleccionado.');
+        }
+    }
+
+    private function validateUniqueStudents(Validator $validator): void
+    {
+        $studentIds = collect($this->input('entries', []))
+            ->pluck('student_id')
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->values();
+
+        if ($studentIds->duplicates()->isNotEmpty()) {
+            $validator->errors()->add('entries', 'No se puede enviar el mismo estudiante más de una vez en el registro masivo.');
+        }
+    }
+
+    private function validateStudentsEnrolled(Validator $validator): void
+    {
+        $studentIds = collect($this->input('entries', []))
+            ->pluck('student_id')
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->values();
+
+        $enrolledIds = Enrollment::query()
+            ->where('academic_year_id', (int) $this->input('academic_year_id'))
+            ->where('educational_level_id', (int) $this->input('educational_level_id'))
+            ->where('grade_id', (int) $this->input('grade_id'))
+            ->where('section_id', (int) $this->input('section_id'))
+            ->whereIn('status', $this->activeEnrollmentStatuses())
+            ->whereIn('student_id', $studentIds)
+            ->pluck('student_id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
+        if (array_diff($studentIds->all(), $enrolledIds) !== []) {
+            $validator->errors()->add('entries', 'Solo se puede registrar asistencia para estudiantes matriculados en la sección seleccionada.');
+        }
     }
 
     /**

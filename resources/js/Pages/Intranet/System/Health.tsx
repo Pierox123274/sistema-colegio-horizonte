@@ -7,6 +7,11 @@ import IntranetLayout from '@/Layouts/IntranetLayout';
 import type { PageProps } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { Activity, Database, HardDrive, Layers, Server } from 'lucide-react';
+import {
+    checkStatusBadgeClass,
+    computeDiskFreePercent,
+    healthStatusTone,
+} from '@/Pages/Intranet/System/healthUtils';
 
 function formatBytes(n: number | null | undefined): string {
     if (n == null || n <= 0) return '—';
@@ -66,21 +71,12 @@ type P = PageProps<{
 export default function SystemHealth() {
     const { health, metrics_snapshot, env_issues, backups_count, recent_errors } = usePage<P>().props;
 
-    const statusTone =
-        health.status === 'critical'
-            ? 'border-red-200 bg-red-50 text-red-800'
-            : health.status === 'warning'
-              ? 'border-amber-200 bg-amber-50 text-amber-900'
-              : 'border-emerald-200 bg-emerald-50 text-emerald-900';
+    const statusTone = healthStatusTone(health.status);
 
-    const diskPct =
-        health.storage.disk_free_bytes != null &&
-        health.storage.disk_total_bytes != null &&
-        health.storage.disk_total_bytes > 0
-            ? Math.round(
-                  (health.storage.disk_free_bytes / health.storage.disk_total_bytes) * 100,
-              )
-            : null;
+    const diskPct = computeDiskFreePercent(
+        health.storage.disk_free_bytes,
+        health.storage.disk_total_bytes,
+    );
 
     return (
         <IntranetLayout title="Salud del sistema">
@@ -215,13 +211,7 @@ export default function SystemHealth() {
                                 <div className="flex items-center justify-between gap-3">
                                     <p className="font-semibold text-navy-900">{check.label}</p>
                                     <span
-                                        className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
-                                            check.status === 'critical'
-                                                ? 'bg-red-100 text-red-700'
-                                                : check.status === 'warning'
-                                                  ? 'bg-amber-100 text-amber-700'
-                                                  : 'bg-emerald-100 text-emerald-700'
-                                        }`}
+                                        className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${checkStatusBadgeClass(check.status)}`}
                                     >
                                         {check.status}
                                     </span>

@@ -1,4 +1,6 @@
 import AssignmentsTabs, { type AssignmentsTabId } from '@/Components/Teacher/Assignments/AssignmentsTabs';
+import { SectionActionLinks } from '@/Components/Teacher/Assignments/SectionActionLinks';
+import { SectionOverviewCard } from '@/Components/Teacher/Assignments/SectionOverviewCard';
 import { RoleBadge } from '@/Components/Teacher/RoleBadge';
 import { TeacherAssignmentsEmpty } from '@/Components/Teacher/AssignmentsOverview';
 import { Card } from '@/Components/Intranet/Card';
@@ -80,34 +82,6 @@ type P = PageProps<{
     has_teaching_assignments: boolean;
     empty_message: string;
 }>;
-
-function SectionActionLinks({ section }: { section: SectionOverview }) {
-    return (
-        <div className="flex flex-wrap gap-2">
-            <Link
-                href={section.links.students}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-plomo/20 bg-white px-3 py-2 text-xs font-semibold text-navy-900 shadow-sm transition hover:bg-navy-50"
-            >
-                <Users className="h-3.5 w-3.5" />
-                Ver estudiantes
-            </Link>
-            <Link
-                href={section.links.attendance}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-plomo/20 bg-white px-3 py-2 text-xs font-semibold text-navy-900 shadow-sm transition hover:bg-navy-50"
-            >
-                <CalendarCheck className="h-3.5 w-3.5" />
-                Registrar asistencia
-            </Link>
-            <Link
-                href={section.links.grades}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-navy-900 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-navy-950"
-            >
-                <ClipboardCheck className="h-3.5 w-3.5" />
-                Registrar notas
-            </Link>
-        </div>
-    );
-}
 
 export default function TeacherAssignmentsIndex() {
     const { overview, active_tab, has_teaching_assignments, empty_message } = usePage<P>().props;
@@ -275,52 +249,10 @@ export default function TeacherAssignmentsIndex() {
                                             </p>
                                             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                                                 {gradeGroup.sections.map((section) => (
-                                                    <Card
+                                                    <SectionOverviewCard
                                                         key={section.section_id}
-                                                        className="flex flex-col border-l-4 border-l-navy-900/20"
-                                                    >
-                                                        <div className="mb-3 flex items-start justify-between gap-2">
-                                                            <div>
-                                                                <p className="text-xs text-plomo">
-                                                                    Sección {section.section}
-                                                                </p>
-                                                                <h3 className="text-lg font-bold text-navy-900">
-                                                                    {section.grade}
-                                                                </h3>
-                                                                <p className="text-xs text-plomo">
-                                                                    {section.level}
-                                                                </p>
-                                                            </div>
-                                                            <RoleBadge isTutor={section.is_tutor} />
-                                                        </div>
-
-                                                        {section.courses.length > 0 ? (
-                                                            <div className="mb-3 flex flex-wrap gap-1.5">
-                                                                {section.courses.map((c) => (
-                                                                    <span
-                                                                        key={c.id}
-                                                                        className="rounded-md bg-white px-2 py-0.5 text-xs font-medium text-navy-900 ring-1 ring-plomo/15"
-                                                                    >
-                                                                        {c.name}
-                                                                    </span>
-                                                                ))}
-                                                            </div>
-                                                        ) : (
-                                                            <p className="mb-3 text-xs text-plomo">
-                                                                Sin curso específico en esta asignación
-                                                            </p>
-                                                        )}
-
-                                                        <p className="mb-4 flex items-center gap-1.5 text-sm text-plomo">
-                                                            <Users className="h-4 w-4" />
-                                                            {section.students_count} estudiantes
-                                                            matriculados
-                                                        </p>
-
-                                                        <div className="mt-auto border-t border-plomo/10 pt-4">
-                                                            <SectionActionLinks section={section} />
-                                                        </div>
-                                                    </Card>
+                                                        section={section}
+                                                    />
                                                 ))}
                                             </div>
                                         </div>

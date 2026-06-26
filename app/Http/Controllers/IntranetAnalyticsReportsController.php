@@ -104,37 +104,68 @@ class IntranetAnalyticsReportsController extends Controller
         return response()->streamDownload(function () use ($report, $type): void {
             $out = fopen('php://output', 'w');
             fprintf($out, chr(0xEF).chr(0xBB).chr(0xBF));
-            fputcsv($out, ['Reporte analítico', $report['title'] ?? $type], ';');
-            fputcsv($out, [], ';');
-
-            if (isset($report['summary']) && is_array($report['summary'])) {
-                fputcsv($out, ['Resumen'], ';');
-                foreach ($report['summary'] as $key => $value) {
-                    fputcsv($out, [(string) $key, is_scalar($value) ? (string) $value : json_encode($value)], ';');
-                }
-                fputcsv($out, [], ';');
-            }
-
-            foreach (['top_students', 'risk_students', 'most_absences', 'recent_payments', 'low_stock'] as $section) {
-                if (empty($report[$section]) || ! is_array($report[$section])) {
-                    continue;
-                }
-
-                fputcsv($out, [str_replace('_', ' ', ucfirst($section))], ';');
-                $first = $report[$section][0] ?? [];
-                if (is_array($first)) {
-                    fputcsv($out, array_keys($first), ';');
-                    foreach ($report[$section] as $row) {
-                        fputcsv($out, array_values($row), ';');
-                    }
-                }
-                fputcsv($out, [], ';');
-            }
-
+            $this->writeAnalyticsCsv($out, $report, $type);
             fclose($out);
         }, 'reporte-'.$type.'-'.now()->format('Ymd-His').'.csv', [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
+    }
+
+    /**
+     * @param  resource  $out
+     * @param  array<string, mixed>  $report
+     */
+    private function writeAnalyticsCsv($out, array $report, string $type): void
+    {
+        fputcsv($out, ['Reporte analítico', $report['title'] ?? $type], ';');
+        fputcsv($out, [], ';');
+
+        $this->writeCsvSummarySection($out, $report);
+        $this->writeCsvDataSections($out, $report);
+    }
+
+    /**
+     * @param  resource  $out
+     * @param  array<string, mixed>  $report
+     */
+    private function writeCsvSummarySection($out, array $report): void
+    {
+        if (! isset($report['summary']) || ! is_array($report['summary'])) {
+            return;
+        }
+
+        fputcsv($out, ['Resumen'], ';');
+        foreach ($report['summary'] as $key => $value) {
+            fputcsv($out, [(string) $key, is_scalar($value) ? (string) $value : json_encode($value)], ';');
+        }
+        fputcsv($out, [], ';');
+    }
+
+    /**
+     * @param  resource  $out
+     * @param  array<string, mixed>  $report
+     */
+    private function writeCsvDataSections($out, array $report): void
+    {
+        foreach (['top_students', 'risk_students', 'most_absences', 'recent_payments', 'low_stock'] as $section) {
+            if (empty($report[$section]) || ! is_array($report[$section])) {
+                continue;
+            }
+
+            fputcsv($out, [str_replace('_', ' ', ucfirst($section))], ';');
+            $first = $report[$section][0] ?? [];
+            if (! is_array($first)) {
+                fputcsv($out, [], ';');
+
+                continue;
+            }
+
+            fputcsv($out, array_keys($first), ';');
+            foreach ($report[$section] as $row) {
+                fputcsv($out, array_values($row), ';');
+            }
+            fputcsv($out, [], ';');
+        }
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Models\Student;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class StoreSaleRequest extends FormRequest
 {
@@ -54,38 +55,51 @@ class StoreSaleRequest extends FormRequest
 
     public function withValidator($validator): void
     {
-        $validator->after(function ($validator): void {
+        $validator->after(function (Validator $validator): void {
             if ($validator->errors()->isNotEmpty()) {
                 return;
             }
 
-            $items = $this->input('items', []);
-            foreach ($items as $index => $item) {
-                $product = Product::query()->find((int) ($item['product_id'] ?? 0));
-                if (! $product) {
-                    continue;
-                }
-                if (! $product->is_active) {
-                    $validator->errors()->add("items.$index.product_id", 'No se puede vender un producto inactivo.');
-                }
-                $qty = (float) ($item['quantity'] ?? 0);
-                if ((float) $product->current_stock < $qty - 0.0001) {
-                    $validator->errors()->add("items.$index.quantity", 'La cantidad excede el stock disponible.');
-                }
-            }
-
-            $studentId = $this->input('student_id');
-            $guardianId = $this->input('guardian_id');
-            if ($studentId !== null && $guardianId !== null) {
-                $linked = Student::query()
-                    ->whereKey((int) $studentId)
-                    ->whereHas('guardians', fn ($q) => $q->where('guardians.id', (int) $guardianId))
-                    ->exists();
-
-                if (! $linked) {
-                    $validator->errors()->add('guardian_id', 'El apoderado no pertenece al estudiante seleccionado.');
-                }
-            }
+            $this->validateSaleItems($validator);
+            $this->validateStudentGuardianLink($validator);
         });
+    }
+
+    private function validateSaleItems(Validator $validator): void
+    {
+        foreach ($this->input('items', []) as $index => $item) {
+            $product = Product::query()->find((int) ($item['product_id'] ?? 0));
+            if ($product === null) {
+                continue;
+            }
+
+            if (! $product->is_active) {
+                $validator->errors()->add("items.$index.product_id", 'No se puede vender un producto inactivo.');
+            }
+
+            $qty = (float) ($item['quantity'] ?? 0);
+            if ((float) $product->current_stock < $qty - 0.0001) {
+                $validator->errors()->add("items.$index.quantity", 'La cantidad excede el stock disponible.');
+            }
+        }
+    }
+
+    private function validateStudentGuardianLink(Validator $validator): void
+    {
+        $studentId = $this->input('student_id');
+        $guardianId = $this->input('guardian_id');
+
+        if ($studentId === null || $guardianId === null) {
+            return;
+        }
+
+        $linked = Student::query()
+            ->whereKey((int) $studentId)
+            ->whereHas('guardians', fn ($q) => $q->where('guardians.id', (int) $guardianId))
+            ->exists();
+
+        if (! $linked) {
+            $validator->errors()->add('guardian_id', 'El apoderado no pertenece al estudiante seleccionado.');
+        }
     }
 }

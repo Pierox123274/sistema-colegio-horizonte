@@ -75,54 +75,70 @@ class AttendanceService
             $attendanceDate = (string) Carbon::parse($data['attendance_date'])->toDateString();
 
             foreach ($data['entries'] as $entry) {
-                $existing = Attendance::query()
-                    ->where('student_id', (int) $entry['student_id'])
-                    ->where('section_id', (int) $data['section_id'])
-                    ->whereDate('attendance_date', $attendanceDate)
-                    ->first();
-
-                if ($existing) {
-                    $existing->update([
-                        'academic_year_id' => (int) $data['academic_year_id'],
-                        'educational_level_id' => (int) $data['educational_level_id'],
-                        'grade_id' => (int) $data['grade_id'],
-                        'status' => $entry['status'],
-                        'observation' => $entry['observation'] ?: null,
-                        'recorded_by_user_id' => $userId,
-                    ]);
-
-                    continue;
-                }
-
-                Attendance::query()->create([
-                    'student_id' => (int) $entry['student_id'],
-                    'attendance_date' => $attendanceDate,
-                    'section_id' => (int) $data['section_id'],
-                    'academic_year_id' => (int) $data['academic_year_id'],
-                    'educational_level_id' => (int) $data['educational_level_id'],
-                    'grade_id' => (int) $data['grade_id'],
-                    'status' => $entry['status'],
-                    'observation' => $entry['observation'] ?: null,
-                    'recorded_by_user_id' => $userId,
-                ]);
+                $this->upsertAttendanceEntry($data, $entry, $attendanceDate, $userId);
             }
 
-            foreach ($data['entries'] as $entry) {
-                if (($entry['status'] ?? '') !== 'presente') {
-                    continue;
-                }
-                $student = Student::query()->find((int) $entry['student_id']);
-                if ($student === null) {
-                    continue;
-                }
-                $this->gamification->awardXp(
-                    $student,
-                    ExperienceSource::AttendanceDaily,
-                    20,
-                    'Asistencia efectiva registrada'
-                );
-            }
+            $this->awardPresentAttendanceXp($data['entries']);
         });
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  array<string, mixed>  $entry
+     */
+    private function upsertAttendanceEntry(array $data, array $entry, string $attendanceDate, int $userId): void
+    {
+        $payload = [
+            'academic_year_id' => (int) $data['academic_year_id'],
+            'educational_level_id' => (int) $data['educational_level_id'],
+            'grade_id' => (int) $data['grade_id'],
+            'status' => $entry['status'],
+            'observation' => $entry['observation'] ?: null,
+            'recorded_by_user_id' => $userId,
+        ];
+
+        $existing = Attendance::query()
+            ->where('student_id', (int) $entry['student_id'])
+            ->where('section_id', (int) $data['section_id'])
+            ->whereDate('attendance_date', $attendanceDate)
+            ->first();
+
+        if ($existing) {
+            $existing->update($payload);
+
+            return;
+        }
+
+        Attendance::query()->create([
+            ...$payload,
+            'student_id' => (int) $entry['student_id'],
+            'attendance_date' => $attendanceDate,
+            'section_id' => (int) $data['section_id'],
+        ]);
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $entries
+     */
+    private function awardPresentAttendanceXp(array $entries): void
+    {
+        foreach ($entries as $entry) {
+            if (($entry['status'] ?? '') !== 'presente') {
+                continue;
+            }
+
+            $student = Student::query()->find((int) $entry['student_id']);
+            if ($student === null) {
+                continue;
+            }
+
+            $this->gamification->awardXp(
+                $student,
+                ExperienceSource::AttendanceDaily,
+                20,
+                'Asistencia efectiva registrada'
+            );
+        }
     }
 
     /**

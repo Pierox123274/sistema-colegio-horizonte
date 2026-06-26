@@ -33,40 +33,41 @@ final class IntranetNavigation
             return [];
         }
 
+        $staffRoles = [
+            IntranetRole::Administrador->value,
+            IntranetRole::Secretaria->value,
+            IntranetRole::Docente->value,
+        ];
+        $officeRoles = [
+            IntranetRole::Administrador->value,
+            IntranetRole::Secretaria->value,
+        ];
+
+        $canViewEnrollments = $user->hasAnyRole($staffRoles);
+        $canFinance = $user->hasAnyRole($officeRoles);
+        $canInventory = $user->hasAnyRole($officeRoles);
+        $canSales = $canInventory;
+        $canAttendance = $user->hasAnyRole($staffRoles);
+        $financeNav = self::financeNavItems($canFinance);
+
+        return array_merge(
+            self::primaryNavItems($user),
+            self::extendedNavItems($user, $canViewEnrollments, $financeNav, $canInventory, $canSales, $canAttendance),
+        );
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private static function primaryNavItems(User $user): array
+    {
         $canManageStudents = $user->hasAnyRole([
             IntranetRole::Administrador->value,
             IntranetRole::Secretaria->value,
             IntranetRole::Docente->value,
         ]);
 
-        $canManageGuardians = $canManageStudents;
-
-        $canViewAcademic = $user->hasAnyRole([
-            IntranetRole::Administrador->value,
-            IntranetRole::Secretaria->value,
-            IntranetRole::Docente->value,
-        ]);
-
-        $canViewEnrollments = $user->hasAnyRole([
-            IntranetRole::Administrador->value,
-            IntranetRole::Secretaria->value,
-            IntranetRole::Docente->value,
-        ]);
-
-        $canFinance = $user->hasAnyRole([
-            IntranetRole::Administrador->value,
-            IntranetRole::Secretaria->value,
-        ]);
-        $canInventory = $user->hasAnyRole([
-            IntranetRole::Administrador->value,
-            IntranetRole::Secretaria->value,
-        ]);
-        $canSales = $canInventory;
-        $canAttendance = $user->hasAnyRole([
-            IntranetRole::Administrador->value,
-            IntranetRole::Secretaria->value,
-            IntranetRole::Docente->value,
-        ]);
+        $canViewAcademic = $canManageStudents;
 
         $docenteSinAdministrador = $user->hasRole(IntranetRole::Docente->value)
             && ! $user->hasRole(IntranetRole::Administrador->value);
@@ -91,114 +92,7 @@ final class IntranetNavigation
         $nav = [$dashboardItem];
 
         if ($canViewAcademic) {
-            $nav[] = [
-                'label' => 'Gestión académica',
-                'href' => null,
-                'icon' => 'school',
-                'disabled' => false,
-                'children' => [
-                    [
-                        'label' => 'Niveles',
-                        'href' => route('intranet.academic.levels.index', absolute: false),
-                        'icon' => 'layers',
-                        'disabled' => false,
-                        'activeRoutes' => [
-                            'intranet.academic.levels.index',
-                            'intranet.academic.levels.show',
-                            'intranet.academic.levels.create',
-                            'intranet.academic.levels.edit',
-                        ],
-                    ],
-                    [
-                        'label' => 'Grados',
-                        'href' => route('intranet.academic.grades.index', absolute: false),
-                        'icon' => 'book-marked',
-                        'disabled' => false,
-                        'activeRoutes' => [
-                            'intranet.academic.grades.index',
-                            'intranet.academic.grades.show',
-                            'intranet.academic.grades.create',
-                            'intranet.academic.grades.edit',
-                        ],
-                    ],
-                    [
-                        'label' => 'Secciones',
-                        'href' => route('intranet.academic.sections.index', absolute: false),
-                        'icon' => 'layout-grid',
-                        'disabled' => false,
-                        'activeRoutes' => [
-                            'intranet.academic.sections.index',
-                            'intranet.academic.sections.show',
-                            'intranet.academic.sections.create',
-                            'intranet.academic.sections.edit',
-                        ],
-                    ],
-                    [
-                        'label' => 'Aulas',
-                        'href' => route('intranet.academic.classrooms.index', absolute: false),
-                        'icon' => 'door-open',
-                        'disabled' => false,
-                        'activeRoutes' => [
-                            'intranet.academic.classrooms.index',
-                            'intranet.academic.classrooms.show',
-                            'intranet.academic.classrooms.create',
-                            'intranet.academic.classrooms.edit',
-                        ],
-                    ],
-                    [
-                        'label' => 'Cursos',
-                        'href' => route('intranet.academic.subjects.index', absolute: false),
-                        'icon' => 'book-marked',
-                        'disabled' => false,
-                        'activeRoutes' => [
-                            'intranet.academic.subjects.index',
-                            'intranet.academic.subjects.show',
-                            'intranet.academic.subjects.create',
-                            'intranet.academic.subjects.edit',
-                        ],
-                    ],
-                    [
-                        'label' => 'Evaluaciones',
-                        'href' => route('intranet.academic.evaluations.index', absolute: false),
-                        'icon' => 'clipboard-check',
-                        'disabled' => false,
-                        'activeRoutes' => [
-                            'intranet.academic.evaluations.index',
-                            'intranet.academic.evaluations.show',
-                            'intranet.academic.evaluations.create',
-                            'intranet.academic.evaluations.edit',
-                        ],
-                    ],
-                    [
-                        'label' => 'Registro de notas',
-                        'href' => route('intranet.academic.grades.records.index', absolute: false),
-                        'icon' => 'receipt',
-                        'disabled' => false,
-                        'activeRoutes' => ['intranet.academic.grades.records.index'],
-                    ],
-                    [
-                        'label' => 'Historial académico',
-                        'href' => route('intranet.academic.grades.history.index', absolute: false),
-                        'icon' => 'user-check',
-                        'disabled' => false,
-                        'activeRoutes' => [
-                            'intranet.academic.grades.history.index',
-                            'intranet.academic.grades.students.show',
-                        ],
-                    ],
-                    [
-                        'label' => 'Reportes académicos',
-                        'href' => route('intranet.academic.grades.reports.index', absolute: false),
-                        'icon' => 'file-bar-chart',
-                        'disabled' => false,
-                        'activeRoutes' => [
-                            'intranet.academic.grades.reports.index',
-                            'intranet.academic.grades.reports.export.pdf',
-                            'intranet.academic.grades.reports.export.excel',
-                        ],
-                    ],
-                ],
-            ];
+            $nav[] = self::academicNavItem();
         }
 
         $nav[] = [
@@ -212,17 +106,25 @@ final class IntranetNavigation
 
         $nav[] = [
             'label' => 'Apoderados',
-            'href' => $canManageGuardians
+            'href' => $canManageStudents
                 ? route('intranet.guardians.index', absolute: false)
                 : null,
             'icon' => 'user-circle',
-            'disabled' => ! $canManageGuardians,
+            'disabled' => ! $canManageStudents,
         ];
 
-        $canAdministration = $user->hasRole(IntranetRole::Administrador->value);
+        return array_merge($nav, self::announcementNavItems($user), self::administrationNavItems($user));
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private static function announcementNavItems(User $user): array
+    {
+        $items = [];
 
         if ($user->hasRole(IntranetRole::Administrador->value)) {
-            $nav[] = [
+            $items[] = [
                 'label' => 'Comunicados',
                 'href' => route('intranet.announcements.index', absolute: false),
                 'icon' => 'megaphone',
@@ -239,7 +141,7 @@ final class IntranetNavigation
         if ($user->hasRole(IntranetRole::Secretaria->value)
             && ! $user->hasRole(IntranetRole::Administrador->value)
         ) {
-            $nav[] = [
+            $items[] = [
                 'label' => 'Comunicados',
                 'href' => route('intranet.announcements.inbox.index', absolute: false),
                 'icon' => 'megaphone',
@@ -251,192 +153,345 @@ final class IntranetNavigation
             ];
         }
 
-        if ($canAdministration) {
-            $nav[] = [
-                'label' => 'Administración',
-                'href' => null,
-                'icon' => 'shield',
-                'disabled' => false,
-                'children' => [
-                    [
-                        'label' => 'Usuarios',
-                        'href' => route('intranet.admin.users.index', absolute: false),
-                        'icon' => 'users',
-                        'disabled' => false,
-                        'activeRoutes' => [
-                            'intranet.admin.users.index',
-                            'intranet.admin.users.create',
-                            'intranet.admin.users.edit',
-                        ],
-                    ],
-                    [
-                        'label' => 'Asignaciones docentes',
-                        'href' => route('intranet.admin.teacher-assignments.index', absolute: false),
-                        'icon' => 'user-cog',
-                        'disabled' => false,
-                        'activeRoutes' => [
-                            'intranet.admin.teacher-assignments.index',
-                            'intranet.admin.teacher-assignments.create',
-                            'intranet.admin.teacher-assignments.edit',
-                        ],
-                    ],
-                    [
-                        'label' => 'Salud del sistema',
-                        'href' => route('intranet.system.health.index', absolute: false),
-                        'icon' => 'activity',
-                        'disabled' => false,
-                        'activeRoutes' => ['intranet.system.health.index'],
-                    ],
-                    [
-                        'label' => 'Integraciones',
-                        'href' => route('intranet.integrations.index', absolute: false),
-                        'icon' => 'link',
-                        'disabled' => false,
-                        'activeRoutes' => ['intranet.integrations.index'],
-                    ],
-                    [
-                        'label' => 'Colas y jobs',
-                        'href' => route('intranet.system.jobs.index', absolute: false),
-                        'icon' => 'list-todo',
-                        'disabled' => false,
-                        'activeRoutes' => ['intranet.system.jobs.index'],
-                    ],
-                    [
-                        'label' => 'Respaldos',
-                        'href' => route('intranet.system.backups.index', absolute: false),
-                        'icon' => 'archive',
-                        'disabled' => false,
-                        'activeRoutes' => ['intranet.system.backups.index'],
-                    ],
-                    [
-                        'label' => 'IA institucional',
-                        'href' => route('intranet.ai-analytics.index', absolute: false),
-                        'icon' => 'sparkles',
-                        'disabled' => false,
-                        'activeRoutes' => [
-                            'intranet.ai-analytics.index',
-                            'intranet.ai-analytics.refresh',
-                        ],
-                    ],
-                    [
-                        'label' => 'Aprendizaje adaptativo',
-                        'href' => null,
-                        'icon' => 'arrow-left-right',
-                        'disabled' => false,
-                        'children' => [
-                            [
-                                'label' => 'Analítica institucional',
-                                'href' => route('intranet.adaptive-analytics.index', absolute: false),
-                                'icon' => 'bar-chart-3',
-                                'disabled' => false,
-                                'activeRoutes' => ['intranet.adaptive-analytics.index'],
-                            ],
-                            [
-                                'label' => 'Exámenes diagnóstico',
-                                'href' => route('intranet.adaptive.diagnostic-exams.index', absolute: false),
-                                'icon' => 'clipboard-list',
-                                'disabled' => false,
-                                'activeRoutes' => [
-                                    'intranet.adaptive.diagnostic-exams.index',
-                                    'intranet.adaptive.diagnostic-exams.create',
-                                    'intranet.adaptive.diagnostic-exams.store',
-                                    'intranet.adaptive.diagnostic-exams.show',
-                                    'intranet.adaptive.diagnostic-exams.edit',
-                                    'intranet.adaptive.diagnostic-exams.update',
-                                ],
-                            ],
-                            [
-                                'label' => 'Banco de preguntas',
-                                'href' => route('intranet.adaptive.questions.index', absolute: false),
-                                'icon' => 'clipboard-check',
-                                'disabled' => false,
-                                'activeRoutes' => ['intranet.adaptive.questions.index'],
-                            ],
-                            [
-                                'label' => 'Resultados diagnóstico',
-                                'href' => route('intranet.adaptive.results.index', absolute: false),
-                                'icon' => 'file-bar-chart',
-                                'disabled' => false,
-                                'activeRoutes' => ['intranet.adaptive.results.index'],
-                            ],
-                        ],
-                    ],
-                    [
-                        'label' => 'Aula virtual (LMS)',
-                        'href' => route('intranet.lms.overview', absolute: false),
-                        'icon' => 'book-marked',
-                        'disabled' => false,
-                        'activeRoutes' => ['intranet.lms.overview'],
-                    ],
-                    [
-                        'label' => 'Videoclases',
-                        'href' => route('intranet.meetings.index', absolute: false),
-                        'icon' => 'video',
-                        'disabled' => false,
-                        'activeRoutes' => ['intranet.meetings.index', 'intranet.meetings.show'],
-                    ],
-                    [
-                        'label' => 'Gamificación',
-                        'href' => route('intranet.gamification.index', absolute: false),
-                        'icon' => 'trophy',
-                        'disabled' => false,
-                        'activeRoutes' => ['intranet.gamification.index'],
-                    ],
-                ],
-            ];
+        return $items;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private static function administrationNavItems(User $user): array
+    {
+        if (! $user->hasRole(IntranetRole::Administrador->value)) {
+            return [];
         }
 
-        $financeNav = [];
-        if ($canFinance) {
-            $financeNav[] = [
-                'label' => 'Finanzas',
-                'href' => null,
-                'icon' => 'banknote',
-                'disabled' => false,
-                'children' => [
-                    [
-                        'label' => 'Conceptos de pago',
-                        'href' => route('intranet.payment-concepts.index', absolute: false),
-                        'icon' => 'package',
-                        'disabled' => false,
-                        'activeRoutes' => [
-                            'intranet.payment-concepts.index',
-                            'intranet.payment-concepts.show',
-                            'intranet.payment-concepts.create',
-                            'intranet.payment-concepts.edit',
-                        ],
+        return [self::administrationNavItem()];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function academicNavItem(): array
+    {
+        return [
+            'label' => 'Gestión académica',
+            'href' => null,
+            'icon' => 'school',
+            'disabled' => false,
+            'children' => [
+                [
+                    'label' => 'Niveles',
+                    'href' => route('intranet.academic.levels.index', absolute: false),
+                    'icon' => 'layers',
+                    'disabled' => false,
+                    'activeRoutes' => [
+                        'intranet.academic.levels.index',
+                        'intranet.academic.levels.show',
+                        'intranet.academic.levels.create',
+                        'intranet.academic.levels.edit',
                     ],
-                    [
-                        'label' => 'Pensiones',
-                        'href' => route('intranet.pensions.index', absolute: false),
-                        'icon' => 'calendar-days',
-                        'disabled' => false,
-                        'activeRoutes' => [
-                            'intranet.pensions.index',
-                            'intranet.pensions.show',
-                            'intranet.pensions.create',
-                            'intranet.pensions.edit',
-                        ],
+                ],
+                [
+                    'label' => 'Grados',
+                    'href' => route('intranet.academic.grades.index', absolute: false),
+                    'icon' => 'book-marked',
+                    'disabled' => false,
+                    'activeRoutes' => [
+                        'intranet.academic.grades.index',
+                        'intranet.academic.grades.show',
+                        'intranet.academic.grades.create',
+                        'intranet.academic.grades.edit',
                     ],
-                    [
-                        'label' => 'Pagos',
-                        'href' => route('intranet.payments.index', absolute: false),
-                        'icon' => 'receipt',
-                        'disabled' => false,
-                        'activeRoutes' => [
-                            'intranet.payments.index',
-                            'intranet.payments.show',
-                            'intranet.payments.create',
-                            'intranet.payments.receipt',
-                            'intranet.payments.receipt.pdf',
-                            'intranet.payments.receipt.ticket',
+                ],
+                [
+                    'label' => 'Secciones',
+                    'href' => route('intranet.academic.sections.index', absolute: false),
+                    'icon' => 'layout-grid',
+                    'disabled' => false,
+                    'activeRoutes' => [
+                        'intranet.academic.sections.index',
+                        'intranet.academic.sections.show',
+                        'intranet.academic.sections.create',
+                        'intranet.academic.sections.edit',
+                    ],
+                ],
+                [
+                    'label' => 'Aulas',
+                    'href' => route('intranet.academic.classrooms.index', absolute: false),
+                    'icon' => 'door-open',
+                    'disabled' => false,
+                    'activeRoutes' => [
+                        'intranet.academic.classrooms.index',
+                        'intranet.academic.classrooms.show',
+                        'intranet.academic.classrooms.create',
+                        'intranet.academic.classrooms.edit',
+                    ],
+                ],
+                [
+                    'label' => 'Cursos',
+                    'href' => route('intranet.academic.subjects.index', absolute: false),
+                    'icon' => 'book-marked',
+                    'disabled' => false,
+                    'activeRoutes' => [
+                        'intranet.academic.subjects.index',
+                        'intranet.academic.subjects.show',
+                        'intranet.academic.subjects.create',
+                        'intranet.academic.subjects.edit',
+                    ],
+                ],
+                [
+                    'label' => 'Evaluaciones',
+                    'href' => route('intranet.academic.evaluations.index', absolute: false),
+                    'icon' => 'clipboard-check',
+                    'disabled' => false,
+                    'activeRoutes' => [
+                        'intranet.academic.evaluations.index',
+                        'intranet.academic.evaluations.show',
+                        'intranet.academic.evaluations.create',
+                        'intranet.academic.evaluations.edit',
+                    ],
+                ],
+                [
+                    'label' => 'Registro de notas',
+                    'href' => route('intranet.academic.grades.records.index', absolute: false),
+                    'icon' => 'receipt',
+                    'disabled' => false,
+                    'activeRoutes' => ['intranet.academic.grades.records.index'],
+                ],
+                [
+                    'label' => 'Historial académico',
+                    'href' => route('intranet.academic.grades.history.index', absolute: false),
+                    'icon' => 'user-check',
+                    'disabled' => false,
+                    'activeRoutes' => [
+                        'intranet.academic.grades.history.index',
+                        'intranet.academic.grades.students.show',
+                    ],
+                ],
+                [
+                    'label' => 'Reportes académicos',
+                    'href' => route('intranet.academic.grades.reports.index', absolute: false),
+                    'icon' => 'file-bar-chart',
+                    'disabled' => false,
+                    'activeRoutes' => [
+                        'intranet.academic.grades.reports.index',
+                        'intranet.academic.grades.reports.export.pdf',
+                        'intranet.academic.grades.reports.export.excel',
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function administrationNavItem(): array
+    {
+        return [
+            'label' => 'Administración',
+            'href' => null,
+            'icon' => 'shield',
+            'disabled' => false,
+            'children' => [
+                [
+                    'label' => 'Usuarios',
+                    'href' => route('intranet.admin.users.index', absolute: false),
+                    'icon' => 'users',
+                    'disabled' => false,
+                    'activeRoutes' => [
+                        'intranet.admin.users.index',
+                        'intranet.admin.users.create',
+                        'intranet.admin.users.edit',
+                    ],
+                ],
+                [
+                    'label' => 'Asignaciones docentes',
+                    'href' => route('intranet.admin.teacher-assignments.index', absolute: false),
+                    'icon' => 'user-cog',
+                    'disabled' => false,
+                    'activeRoutes' => [
+                        'intranet.admin.teacher-assignments.index',
+                        'intranet.admin.teacher-assignments.create',
+                        'intranet.admin.teacher-assignments.edit',
+                    ],
+                ],
+                [
+                    'label' => 'Salud del sistema',
+                    'href' => route('intranet.system.health.index', absolute: false),
+                    'icon' => 'activity',
+                    'disabled' => false,
+                    'activeRoutes' => ['intranet.system.health.index'],
+                ],
+                [
+                    'label' => 'Integraciones',
+                    'href' => route('intranet.integrations.index', absolute: false),
+                    'icon' => 'link',
+                    'disabled' => false,
+                    'activeRoutes' => ['intranet.integrations.index'],
+                ],
+                [
+                    'label' => 'Colas y jobs',
+                    'href' => route('intranet.system.jobs.index', absolute: false),
+                    'icon' => 'list-todo',
+                    'disabled' => false,
+                    'activeRoutes' => ['intranet.system.jobs.index'],
+                ],
+                [
+                    'label' => 'Respaldos',
+                    'href' => route('intranet.system.backups.index', absolute: false),
+                    'icon' => 'archive',
+                    'disabled' => false,
+                    'activeRoutes' => ['intranet.system.backups.index'],
+                ],
+                [
+                    'label' => 'IA institucional',
+                    'href' => route('intranet.ai-analytics.index', absolute: false),
+                    'icon' => 'sparkles',
+                    'disabled' => false,
+                    'activeRoutes' => [
+                        'intranet.ai-analytics.index',
+                        'intranet.ai-analytics.refresh',
+                    ],
+                ],
+                [
+                    'label' => 'Aprendizaje adaptativo',
+                    'href' => null,
+                    'icon' => 'arrow-left-right',
+                    'disabled' => false,
+                    'children' => [
+                        [
+                            'label' => 'Analítica institucional',
+                            'href' => route('intranet.adaptive-analytics.index', absolute: false),
+                            'icon' => 'bar-chart-3',
+                            'disabled' => false,
+                            'activeRoutes' => ['intranet.adaptive-analytics.index'],
+                        ],
+                        [
+                            'label' => 'Exámenes diagnóstico',
+                            'href' => route('intranet.adaptive.diagnostic-exams.index', absolute: false),
+                            'icon' => 'clipboard-list',
+                            'disabled' => false,
+                            'activeRoutes' => [
+                                'intranet.adaptive.diagnostic-exams.index',
+                                'intranet.adaptive.diagnostic-exams.create',
+                                'intranet.adaptive.diagnostic-exams.store',
+                                'intranet.adaptive.diagnostic-exams.show',
+                                'intranet.adaptive.diagnostic-exams.edit',
+                                'intranet.adaptive.diagnostic-exams.update',
+                            ],
+                        ],
+                        [
+                            'label' => 'Banco de preguntas',
+                            'href' => route('intranet.adaptive.questions.index', absolute: false),
+                            'icon' => 'clipboard-check',
+                            'disabled' => false,
+                            'activeRoutes' => ['intranet.adaptive.questions.index'],
+                        ],
+                        [
+                            'label' => 'Resultados diagnóstico',
+                            'href' => route('intranet.adaptive.results.index', absolute: false),
+                            'icon' => 'file-bar-chart',
+                            'disabled' => false,
+                            'activeRoutes' => ['intranet.adaptive.results.index'],
                         ],
                     ],
                 ],
-            ];
+                [
+                    'label' => 'Aula virtual (LMS)',
+                    'href' => route('intranet.lms.overview', absolute: false),
+                    'icon' => 'book-marked',
+                    'disabled' => false,
+                    'activeRoutes' => ['intranet.lms.overview'],
+                ],
+                [
+                    'label' => 'Videoclases',
+                    'href' => route('intranet.meetings.index', absolute: false),
+                    'icon' => 'video',
+                    'disabled' => false,
+                    'activeRoutes' => ['intranet.meetings.index', 'intranet.meetings.show'],
+                ],
+                [
+                    'label' => 'Gamificación',
+                    'href' => route('intranet.gamification.index', absolute: false),
+                    'icon' => 'trophy',
+                    'disabled' => false,
+                    'activeRoutes' => ['intranet.gamification.index'],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private static function financeNavItems(bool $canFinance): array
+    {
+        if (! $canFinance) {
+            return [];
         }
 
-        return array_merge($nav, [
+        return [[
+            'label' => 'Finanzas',
+            'href' => null,
+            'icon' => 'banknote',
+            'disabled' => false,
+            'children' => [
+                [
+                    'label' => 'Conceptos de pago',
+                    'href' => route('intranet.payment-concepts.index', absolute: false),
+                    'icon' => 'package',
+                    'disabled' => false,
+                    'activeRoutes' => [
+                        'intranet.payment-concepts.index',
+                        'intranet.payment-concepts.show',
+                        'intranet.payment-concepts.create',
+                        'intranet.payment-concepts.edit',
+                    ],
+                ],
+                [
+                    'label' => 'Pensiones',
+                    'href' => route('intranet.pensions.index', absolute: false),
+                    'icon' => 'calendar-days',
+                    'disabled' => false,
+                    'activeRoutes' => [
+                        'intranet.pensions.index',
+                        'intranet.pensions.show',
+                        'intranet.pensions.create',
+                        'intranet.pensions.edit',
+                    ],
+                ],
+                [
+                    'label' => 'Pagos',
+                    'href' => route('intranet.payments.index', absolute: false),
+                    'icon' => 'receipt',
+                    'disabled' => false,
+                    'activeRoutes' => [
+                        'intranet.payments.index',
+                        'intranet.payments.show',
+                        'intranet.payments.create',
+                        'intranet.payments.receipt',
+                        'intranet.payments.receipt.pdf',
+                        'intranet.payments.receipt.ticket',
+                    ],
+                ],
+            ],
+        ]];
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $financeNav
+     * @return list<array<string, mixed>>
+     */
+    private static function extendedNavItems(
+        User $user,
+        bool $canViewEnrollments,
+        array $financeNav,
+        bool $canInventory,
+        bool $canSales,
+        bool $canAttendance,
+    ): array {
+        return [
             [
                 'label' => 'Matrículas',
                 'href' => $canViewEnrollments
@@ -682,7 +737,7 @@ final class IntranetNavigation
                 'icon' => 'user',
                 'disabled' => false,
             ],
-        ]);
+        ];
     }
 
     /**

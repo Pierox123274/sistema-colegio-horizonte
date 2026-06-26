@@ -67,65 +67,17 @@ class SaleService
     public function create(array $data, int $userId): Sale
     {
         return DB::transaction(function () use ($data, $userId): Sale {
-            /** @var CashRegister|null $cashRegister */
-            $cashRegister = CashRegister::query()
-                ->where('user_id', $userId)
-                ->where('status', 'abierta')
-                ->latest('opened_at')
-                ->first();
+            $cashRegister = $this->requireOpenCashRegister($userId);
+            $normalized = $this->normalizeSaleItems($data['items'] ?? []);
+            $total = array_sum(array_column($normalized, 'subtotal'));
 
-            if (! $cashRegister) {
-                throw ValidationException::withMessages([
-                    'cash_register' => ['Debe tener una caja abierta para registrar ventas.'],
-                ]);
-            }
-
-            $items = $data['items'] ?? [];
-            $total = 0.0;
-            $normalized = [];
-            foreach ($items as $item) {
-                $product = Product::query()->lockForUpdate()->findOrFail((int) $item['product_id']);
-                if (! $product->is_active) {
-                    throw ValidationException::withMessages([
-                        'items' => ['No se puede vender producto inactivo.'],
-                    ]);
-                }
-                $qty = (float) $item['quantity'];
-                if ((float) $product->current_stock < $qty - 0.0001) {
-                    throw ValidationException::withMessages([
-                        'items' => ['No hay stock suficiente para '.$product->name.'.'],
-                    ]);
-                }
-                $unitPrice = (float) $item['unit_price'];
-                $subtotal = $qty * $unitPrice;
-                $total += $subtotal;
-                $normalized[] = [
-                    'product' => $product,
-                    'quantity' => $qty,
-                    'unit_price' => $unitPrice,
-                    'subtotal' => $subtotal,
-                ];
-            }
-
-            $studentId = isset($data['student_id']) ? (int) $data['student_id'] : null;
-            $guardianId = isset($data['guardian_id']) ? (int) $data['guardian_id'] : null;
-            if ($studentId !== null && $guardianId !== null) {
-                $linked = Student::query()
-                    ->whereKey($studentId)
-                    ->whereHas('guardians', fn ($q) => $q->where('guardians.id', $guardianId))
-                    ->exists();
-                if (! $linked) {
-                    throw ValidationException::withMessages([
-                        'guardian_id' => ['El apoderado no pertenece al estudiante seleccionado.'],
-                    ]);
-                }
-            }
+            $this->assertStudentGuardianLinked($data);
 
             $sale = Sale::query()->create([
                 'cash_register_id' => $cashRegister->id,
                 'sale_code' => $this->nextCode(),
-                'student_id' => $studentId,
-                'guardian_id' => $guardianId,
+                'student_id' => isset($data['student_id']) ? (int) $data['student_id'] : null,
+                'guardian_id' => isset($data['guardian_id']) ? (int) $data['guardian_id'] : null,
                 'payment_method' => $data['payment_method'],
                 'status' => 'registrada',
                 'total' => $total,
@@ -134,20 +86,7 @@ class SaleService
                 'observations' => $data['observations'] ?? null,
             ]);
 
-            foreach ($normalized as $item) {
-                /** @var Product $product */
-                $product = $item['product'];
-                SaleItem::query()->create([
-                    'sale_id' => $sale->id,
-                    'product_id' => $product->id,
-                    'quantity' => $item['quantity'],
-                    'unit_price' => $item['unit_price'],
-                    'subtotal' => $item['subtotal'],
-                ]);
-
-                $newStock = max(0, (float) $product->current_stock - (float) $item['quantity']);
-                $product->update(['current_stock' => $newStock]);
-            }
+            $this->persistSaleItems($sale, $normalized, $cashRegister);
 
             CashMovement::query()->create([
                 'cash_register_id' => $cashRegister->id,
@@ -161,6 +100,99 @@ class SaleService
 
             return $sale->fresh(['items.product', 'student', 'guardian', 'cashRegister']);
         });
+    }
+
+    private function requireOpenCashRegister(int $userId): CashRegister
+    {
+        /** @var CashRegister|null $cashRegister */
+        $cashRegister = CashRegister::query()
+            ->where('user_id', $userId)
+            ->where('status', 'abierta')
+            ->latest('opened_at')
+            ->first();
+
+        if (! $cashRegister) {
+            throw ValidationException::withMessages([
+                'cash_register' => ['Debe tener una caja abierta para registrar ventas.'],
+            ]);
+        }
+
+        return $cashRegister;
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $items
+     * @return list<array{product: Product, quantity: float, unit_price: float, subtotal: float}>
+     */
+    private function normalizeSaleItems(array $items): array
+    {
+        $normalized = [];
+        foreach ($items as $item) {
+            $product = Product::query()->lockForUpdate()->findOrFail((int) $item['product_id']);
+            if (! $product->is_active) {
+                throw ValidationException::withMessages([
+                    'items' => ['No se puede vender producto inactivo.'],
+                ]);
+            }
+            $qty = (float) $item['quantity'];
+            if ((float) $product->current_stock < $qty - 0.0001) {
+                throw ValidationException::withMessages([
+                    'items' => ['No hay stock suficiente para '.$product->name.'.'],
+                ]);
+            }
+            $unitPrice = (float) $item['unit_price'];
+            $normalized[] = [
+                'product' => $product,
+                'quantity' => $qty,
+                'unit_price' => $unitPrice,
+                'subtotal' => $qty * $unitPrice,
+            ];
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function assertStudentGuardianLinked(array $data): void
+    {
+        $studentId = isset($data['student_id']) ? (int) $data['student_id'] : null;
+        $guardianId = isset($data['guardian_id']) ? (int) $data['guardian_id'] : null;
+        if ($studentId === null || $guardianId === null) {
+            return;
+        }
+
+        $linked = Student::query()
+            ->whereKey($studentId)
+            ->whereHas('guardians', fn ($q) => $q->where('guardians.id', $guardianId))
+            ->exists();
+        if (! $linked) {
+            throw ValidationException::withMessages([
+                'guardian_id' => ['El apoderado no pertenece al estudiante seleccionado.'],
+            ]);
+        }
+    }
+
+    /**
+     * @param  list<array{product: Product, quantity: float, unit_price: float, subtotal: float}>  $normalized
+     */
+    private function persistSaleItems(Sale $sale, array $normalized, CashRegister $cashRegister): void
+    {
+        foreach ($normalized as $item) {
+            /** @var Product $product */
+            $product = $item['product'];
+            SaleItem::query()->create([
+                'sale_id' => $sale->id,
+                'product_id' => $product->id,
+                'quantity' => $item['quantity'],
+                'unit_price' => $item['unit_price'],
+                'subtotal' => $item['subtotal'],
+            ]);
+
+            $newStock = max(0, (float) $product->current_stock - (float) $item['quantity']);
+            $product->update(['current_stock' => $newStock]);
+        }
     }
 
     public function cancel(Sale $sale, int $userId): Sale

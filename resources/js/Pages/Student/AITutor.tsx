@@ -3,7 +3,7 @@ import { Card } from '@/Components/Intranet/Card';
 import { PageContainer } from '@/Components/Intranet/PageContainer';
 import { SectionTitle } from '@/Components/Intranet/SectionTitle';
 import StudentLayout from '@/Layouts/StudentLayout';
-import type { FlashMessages, PageProps } from '@/types';
+import type { PageProps } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import {
     AlertCircle,
@@ -15,6 +15,12 @@ import {
     User,
 } from 'lucide-react';
 import { postJson } from '@/utils/aiFetch';
+import {
+    formatCoachResult,
+    handleTutorMessageError,
+    handleTutorMessageSuccess,
+    type ChatMessage,
+} from '@/Pages/Student/aiTutorChat';
 import type { FormEvent, KeyboardEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -41,14 +47,6 @@ type Insight = {
     ai_summary: string | null;
     generated_at: string;
 } | null;
-
-type ChatMessage = {
-    id: string;
-    role: 'user' | 'assistant';
-    content: string;
-    at: string;
-    meta?: { cached?: boolean; success?: boolean; fallback?: boolean };
-};
 
 type AITutorProps = PageProps<{
     portal: PortalCtx;
@@ -202,33 +200,12 @@ export default function AITutor() {
             preserveScroll: true,
             onSuccess: (page) => {
                 pendingUserIdRef.current = null;
-                const f = page.props.flash as FlashMessages | undefined;
-                const reply = f?.ai?.ai_reply;
-                const meta = f?.ai?.ai_meta;
-                if (reply != null && reply !== '') {
-                    setMessages((m) => [
-                        ...m,
-                        {
-                            id: crypto.randomUUID(),
-                            role: 'assistant',
-                            content: reply,
-                            at: new Date().toISOString(),
-                            meta: {
-                                cached: meta?.cached,
-                                success: meta?.success,
-                                fallback: meta?.fallback,
-                            },
-                        },
-                    ]);
-                }
-                reset('message');
+                handleTutorMessageSuccess(page, setMessages, () => reset('message'));
             },
             onError: () => {
                 const drop = pendingUserIdRef.current;
                 pendingUserIdRef.current = null;
-                if (drop) {
-                    setMessages((m) => m.filter((x) => x.id !== drop));
-                }
+                handleTutorMessageError(drop, setMessages);
             },
         });
     };
@@ -267,17 +244,7 @@ export default function AITutor() {
                 topic: coachTopic,
             });
             const d = res.data ?? {};
-            if (kind === 'summary' && Array.isArray(d.summary_points)) {
-                setCoachResult((d.summary_points as string[]).map((p) => `• ${p}`).join('\n'));
-            } else if (kind === 'explain' && d.explanation) {
-                setCoachResult(String(d.explanation));
-            } else if (kind === 'practice' && Array.isArray(d.exercises)) {
-                setCoachResult((d.exercises as string[]).map((e, i) => `${i + 1}. ${e}`).join('\n'));
-            } else if (kind === 'mini-quiz' && Array.isArray(d.items)) {
-                setCoachResult(`${(d.items as unknown[]).length} preguntas generadas. Revísalas con tu docente.`);
-            } else {
-                setCoachResult(JSON.stringify(d, null, 2));
-            }
+            setCoachResult(formatCoachResult(kind, d));
         } catch {
             setCoachResult('No se pudo completar la solicitud. Intenta de nuevo.');
         } finally {

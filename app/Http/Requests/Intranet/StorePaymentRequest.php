@@ -10,6 +10,7 @@ use App\Models\Pension;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class StorePaymentRequest extends FormRequest
 {
@@ -49,29 +50,49 @@ class StorePaymentRequest extends FormRequest
 
     public function withValidator($validator): void
     {
-        $validator->after(function ($validator): void {
+        $validator->after(function (Validator $validator): void {
             if ($validator->errors()->isNotEmpty()) {
                 return;
             }
-            $studentId = (int) $this->input('student_id');
 
-            if ($this->input('enrollment_id')) {
-                $enrollment = Enrollment::query()->find((int) $this->input('enrollment_id'));
-                if (! $enrollment || (int) $enrollment->student_id !== $studentId) {
-                    $validator->errors()->add('enrollment_id', 'La matrícula no corresponde al estudiante.');
-                }
-            }
-
-            if ($this->input('pension_id')) {
-                $pension = Pension::query()->with('enrollment')->find((int) $this->input('pension_id'));
-                if (! $pension || (int) $pension->enrollment->student_id !== $studentId) {
-                    $validator->errors()->add('pension_id', 'La pensión no corresponde al estudiante.');
-                }
-                if ($pension && $this->input('enrollment_id')
-                    && (int) $pension->enrollment_id !== (int) $this->input('enrollment_id')) {
-                    $validator->errors()->add('enrollment_id', 'La matrícula no coincide con la pensión seleccionada.');
-                }
-            }
+            $this->validateEnrollmentBelongsToStudent($validator);
+            $this->validatePensionBelongsToStudent($validator);
         });
+    }
+
+    private function validateEnrollmentBelongsToStudent(Validator $validator): void
+    {
+        if (! $this->input('enrollment_id')) {
+            return;
+        }
+
+        $studentId = (int) $this->input('student_id');
+        $enrollment = Enrollment::query()->find((int) $this->input('enrollment_id'));
+
+        if ($enrollment === null || (int) $enrollment->student_id !== $studentId) {
+            $validator->errors()->add('enrollment_id', 'La matrícula no corresponde al estudiante.');
+        }
+    }
+
+    private function validatePensionBelongsToStudent(Validator $validator): void
+    {
+        if (! $this->input('pension_id')) {
+            return;
+        }
+
+        $studentId = (int) $this->input('student_id');
+        $pension = Pension::query()->with('enrollment')->find((int) $this->input('pension_id'));
+
+        if ($pension === null || (int) $pension->enrollment->student_id !== $studentId) {
+            $validator->errors()->add('pension_id', 'La pensión no corresponde al estudiante.');
+        }
+
+        if (
+            $pension !== null
+            && $this->input('enrollment_id')
+            && (int) $pension->enrollment_id !== (int) $this->input('enrollment_id')
+        ) {
+            $validator->errors()->add('enrollment_id', 'La matrícula no coincide con la pensión seleccionada.');
+        }
     }
 }

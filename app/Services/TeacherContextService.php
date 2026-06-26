@@ -348,6 +348,34 @@ final class TeacherContextService
      */
     private function studentsRowsForAssignments(Collection $assignments, $enrollmentsBySection): array
     {
+        $subjectsBySection = $this->subjectsBySectionFromAssignments($assignments);
+        $rows = [];
+
+        foreach ($enrollmentsBySection as $sectionId => $enrollments) {
+            $assignment = $assignments->firstWhere('section_id', $sectionId);
+            $sectionMeta = $this->sectionMetaForAssignment($assignment);
+            $courseNames = array_values($subjectsBySection[$sectionId] ?? []);
+
+            foreach ($enrollments as $enrollment) {
+                $row = $this->studentRowFromEnrollment($enrollment, (int) $sectionId, $sectionMeta, $courseNames);
+                if ($row !== null) {
+                    $rows[$row['id']] = $row;
+                }
+            }
+        }
+
+        return collect($rows)
+            ->sortBy(['last_name', 'first_name'])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  Collection<int, TeacherAssignment>  $assignments
+     * @return array<int, array<int, string>>
+     */
+    private function subjectsBySectionFromAssignments(Collection $assignments): array
+    {
         $subjectsBySection = [];
         foreach ($assignments as $assignment) {
             $sectionId = (int) $assignment->section_id;
@@ -356,46 +384,51 @@ final class TeacherContextService
             }
         }
 
-        $rows = [];
+        return $subjectsBySection;
+    }
 
-        foreach ($enrollmentsBySection as $sectionId => $enrollments) {
-            $assignment = $assignments->firstWhere('section_id', $sectionId);
-            $levelName = $assignment?->educationalLevel?->name
-                ?? $assignment?->section?->grade?->educationalLevel?->name;
-            $gradeName = $assignment?->grade?->name ?? $assignment?->section?->grade?->name;
-            $sectionName = $assignment?->section?->name ?? '—';
-            $sectionLabel = trim(implode(' · ', array_filter([$levelName, $gradeName, $sectionName])));
-            $courseNames = array_values($subjectsBySection[$sectionId] ?? []);
+    /**
+     * @return array{section_label: string}
+     */
+    private function sectionMetaForAssignment(?TeacherAssignment $assignment): array
+    {
+        $levelName = $assignment?->educationalLevel?->name
+            ?? $assignment?->section?->grade?->educationalLevel?->name;
+        $gradeName = $assignment?->grade?->name ?? $assignment?->section?->grade?->name;
+        $sectionName = $assignment?->section?->name ?? '—';
 
-            foreach ($enrollments as $enrollment) {
-                $student = $enrollment->student;
-                if ($student === null) {
-                    continue;
-                }
+        return [
+            'section_label' => trim(implode(' · ', array_filter([$levelName, $gradeName, $sectionName]))),
+        ];
+    }
 
-                $status = $enrollment->status instanceof EnrollmentStatus
-                    ? $enrollment->status->value
-                    : (string) $enrollment->status;
-
-                $rows[$student->id] = [
-                    'id' => $student->id,
-                    'code' => $student->code,
-                    'first_name' => $student->first_name,
-                    'last_name' => $student->last_name,
-                    'section_id' => (int) $sectionId,
-                    'section_label' => $sectionLabel,
-                    'courses' => $courseNames,
-                    'courses_label' => $courseNames !== [] ? implode(', ', $courseNames) : '—',
-                    'enrollment_status' => $status,
-                    'enrollment_status_label' => Str::ucfirst($status),
-                ];
-            }
+    /**
+     * @param  list<string>  $courseNames
+     * @return array<string, mixed>|null
+     */
+    private function studentRowFromEnrollment($enrollment, int $sectionId, array $sectionMeta, array $courseNames): ?array
+    {
+        $student = $enrollment->student;
+        if ($student === null) {
+            return null;
         }
 
-        return collect($rows)
-            ->sortBy(['last_name', 'first_name'])
-            ->values()
-            ->all();
+        $status = $enrollment->status instanceof EnrollmentStatus
+            ? $enrollment->status->value
+            : (string) $enrollment->status;
+
+        return [
+            'id' => $student->id,
+            'code' => $student->code,
+            'first_name' => $student->first_name,
+            'last_name' => $student->last_name,
+            'section_id' => $sectionId,
+            'section_label' => $sectionMeta['section_label'],
+            'courses' => $courseNames,
+            'courses_label' => $courseNames !== [] ? implode(', ', $courseNames) : '—',
+            'enrollment_status' => $status,
+            'enrollment_status_label' => Str::ucfirst($status),
+        ];
     }
 
     /**
