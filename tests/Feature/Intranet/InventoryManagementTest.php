@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class InventoryManagementTest extends TestCase
@@ -299,5 +300,77 @@ class InventoryManagementTest extends TestCase
         $this->actingAs($admin)
             ->get(route('intranet.inventory.categories.create'))
             ->assertOk();
+    }
+
+    public function test_administrador_accede_formularios_y_detalle_producto(): void
+    {
+        $admin = $this->userWithRole(IntranetRole::Administrador);
+        $category = ProductCategory::factory()->create();
+        $product = Product::factory()->create([
+            'product_category_id' => $category->id,
+            'name' => 'Polo institucional',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('intranet.inventory.products.create'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Intranet/Inventory/Products/Create')
+                ->has('catalog.categories'));
+
+        $this->actingAs($admin)
+            ->get(route('intranet.inventory.products.show', $product))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Intranet/Inventory/Products/Show')
+                ->where('product.id', $product->id)
+                ->where('product.name', 'Polo institucional'));
+
+        $this->actingAs($admin)
+            ->get(route('intranet.inventory.products.edit', $product))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Intranet/Inventory/Products/Edit')
+                ->where('product.id', $product->id));
+    }
+
+    public function test_administrador_actualiza_producto(): void
+    {
+        $admin = $this->userWithRole(IntranetRole::Administrador);
+        $category = ProductCategory::factory()->create();
+        $product = Product::factory()->create([
+            'product_category_id' => $category->id,
+            'name' => 'Nombre anterior',
+            'product_type' => 'uniforme',
+            'size' => 'M',
+            'gender_target' => 'unisex',
+            'sale_price' => 10,
+        ]);
+
+        $this->actingAs($admin)
+            ->put(route('intranet.inventory.products.update', $product), [
+                'product_category_id' => $category->id,
+                'code' => $product->code,
+                'name' => 'Nombre actualizado',
+                'description' => 'Descripción nueva',
+                'product_type' => 'uniforme',
+                'size' => 'M',
+                'color' => $product->color,
+                'gender_target' => 'unisex',
+                'unit' => $product->unit,
+                'purchase_price' => '10.00',
+                'sale_price' => '18.00',
+                'current_stock' => '5.00',
+                'minimum_stock' => '2.00',
+                'is_active' => true,
+            ])
+            ->assertRedirect(route('intranet.inventory.products.show', $product))
+            ->assertSessionHas('success');
+
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'name' => 'Nombre actualizado',
+            'sale_price' => '18.00',
+        ]);
     }
 }

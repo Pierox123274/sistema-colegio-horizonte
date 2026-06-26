@@ -278,4 +278,31 @@ class CashSalesManagementTest extends TestCase
     {
         $this->assertSame('America/Lima', config('app.timezone'));
     }
+
+    public function test_comprobante_html_y_pdf_responden_correctamente(): void
+    {
+        $admin = $this->userWithRole(IntranetRole::Administrador);
+        $sale = Sale::factory()->create(['status' => 'registrada']);
+
+        $this->actingAs($admin)
+            ->get(route('intranet.sales.sales.receipt', $sale))
+            ->assertOk()
+            ->assertViewIs('intranet.sales.receipt')
+            ->assertViewHas('receipt');
+
+        $this->actingAs($admin)
+            ->get(route('intranet.sales.sales.receipt.pdf', $sale))
+            ->assertOk()
+            ->assertHeader('content-type', 'application/pdf');
+    }
+
+    public function test_docente_no_puede_ver_comprobante_de_venta(): void
+    {
+        $docente = $this->userWithRole(IntranetRole::Docente);
+        $sale = Sale::factory()->create();
+
+        $this->actingAs($docente)
+            ->get(route('intranet.sales.sales.receipt', $sale))
+            ->assertForbidden();
+    }
 }

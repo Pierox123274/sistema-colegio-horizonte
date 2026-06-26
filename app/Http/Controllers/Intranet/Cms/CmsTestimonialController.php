@@ -18,7 +18,7 @@ class CmsTestimonialController extends Controller
         private readonly CmsContentService $content,
     ) {}
 
-    public function index(Request $request): Response
+    public function index(): Response
     {
         $this->authorize('viewAny', CmsTestimonial::class);
 

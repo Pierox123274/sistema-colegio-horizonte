@@ -20,9 +20,11 @@ class InventoryMovementFactory extends Factory
         $previous = fake()->randomFloat(2, 0, 100);
         $quantity = fake()->randomFloat(2, 1, 20);
         $type = fake()->randomElement(InventoryMovementType::values());
-        $new = $type === InventoryMovementType::Salida->value
-            ? max(0, $previous - $quantity)
-            : ($type === InventoryMovementType::Ajuste->value ? $quantity : $previous + $quantity);
+        $new = match ($type) {
+            InventoryMovementType::Salida->value => max(0, $previous - $quantity),
+            InventoryMovementType::Ajuste->value => $quantity,
+            default => $previous + $quantity,
+        };
 
         return [
             'product_id' => Product::factory(),

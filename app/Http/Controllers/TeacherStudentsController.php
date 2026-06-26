@@ -25,16 +25,16 @@ class TeacherStudentsController extends Controller
         $user = $request->user();
         $sectionScope = null;
         $docenteSolo = $user !== null && $this->teacherContext->isDocentePortalScoped($user);
-        if ($docenteSolo && $user !== null) {
+        if ($docenteSolo) {
             $sectionScope = $this->teacherContext->activeSectionIdsFor($user);
         }
 
-        if ($docenteSolo && $user !== null && $request->filled('section_id')) {
+        if ($docenteSolo && $request->filled('section_id')) {
             $this->teacherContext->assertTeacherCanAccessSection($user, (int) $request->query('section_id'));
         }
 
         $groupedStudents = [];
-        if ($docenteSolo && $user !== null) {
+        if ($docenteSolo) {
             $groupedStudents = $this->teacherContext->studentsGroupedBySection(
                 $user,
                 $request->query('search') ? (string) $request->query('search') : null,
@@ -54,7 +54,7 @@ class TeacherStudentsController extends Controller
             'catalog' => [
                 'educational_levels' => EducationalLevel::options(),
                 'statuses' => StudentStatus::options(),
-                'sections' => $docenteSolo && $user !== null
+                'sections' => $docenteSolo
                     ? $this->teacherContext->sectionFilterOptionsFor($user)
                     : [],
             ],

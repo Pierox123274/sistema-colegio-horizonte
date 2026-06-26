@@ -71,7 +71,7 @@ final class UserNotificationService
             return;
         }
 
-        $user->notify(new InstitutionalCommunicationNotification(
+        $user->notifyNow(new InstitutionalCommunicationNotification(
             title: $title,
             message: $message,
             category: $category,

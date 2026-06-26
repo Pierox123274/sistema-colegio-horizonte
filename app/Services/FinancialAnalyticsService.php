@@ -120,11 +120,11 @@ final class FinancialAnalyticsService
     {
         $query = Payment::query()->where('status', PaymentEntryStatus::Registrado->value);
 
-        if (! empty($filters['date_from'])) {
-            $query->whereDate('paid_at', '>=', $filters['date_from']);
-        } else {
-            $query->whereDate('paid_at', '>=', now()->subDays(30)->toDateString());
-        }
+        $query->whereDate(
+            'paid_at',
+            '>=',
+            $filters['date_from'] ?? now()->subDays(30)->toDateString(),
+        );
 
         if (! empty($filters['date_to'])) {
             $query->whereDate('paid_at', '<=', $filters['date_to']);

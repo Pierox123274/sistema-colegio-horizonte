@@ -197,9 +197,10 @@ final class SystemHealthService
             ],
         ];
 
-        $overallStatus = collect($checks)->contains(fn (array $check): bool => $check['status'] === 'critical')
+        $statuses = collect($checks)->pluck('status');
+        $overallStatus = $statuses->contains('critical')
             ? 'critical'
-            : (collect($checks)->contains(fn (array $check): bool => $check['status'] === 'warning') ? 'warning' : 'ok');
+            : ($statuses->contains('warning') ? 'warning' : 'ok');
 
         Log::channel(config('logging.health_channel', 'daily'))->info('system_health_snapshot', [
             'overall_status' => $overallStatus,

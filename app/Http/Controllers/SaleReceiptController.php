@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Sale;
 use App\Services\SaleReceiptService;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
@@ -15,28 +14,35 @@ class SaleReceiptController extends Controller
         private readonly SaleReceiptService $saleReceiptService
     ) {}
 
-    public function show(Request $request, Sale $sale): View
+    public function show(Sale $sale): View
     {
-        $this->authorize('view', $sale);
-        $receipt = $this->saleReceiptService->buildReceiptData($sale);
-
-        return view('intranet.sales.receipt', ['receipt' => $receipt]);
+        return view('intranet.sales.receipt', [
+            'receipt' => $this->authorizedReceipt($sale),
+        ]);
     }
 
-    public function pdf(Request $request, Sale $sale): SymfonyResponse
+    public function pdf(Sale $sale): SymfonyResponse
     {
-        $this->authorize('view', $sale);
-        $receipt = $this->saleReceiptService->buildReceiptData($sale);
+        $receipt = $this->authorizedReceipt($sale);
         $pdf = Pdf::loadView('intranet.sales.receipt-pdf', ['receipt' => $receipt]);
 
         return $pdf->download($receipt['receipt_number'].'.pdf');
     }
 
-    public function ticket(Request $request, Sale $sale): View
+    public function ticket(Sale $sale): View
+    {
+        return view('intranet.sales.receipt-ticket', [
+            'receipt' => $this->authorizedReceipt($sale),
+        ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function authorizedReceipt(Sale $sale): array
     {
         $this->authorize('view', $sale);
-        $receipt = $this->saleReceiptService->buildReceiptData($sale);
 
-        return view('intranet.sales.receipt-ticket', ['receipt' => $receipt]);
+        return $this->saleReceiptService->buildReceiptData($sale);
     }
 }

@@ -46,19 +46,16 @@ class TeacherDashboardController extends Controller
 
         $assignmentsOverview = ['academic_year' => null, 'sections' => [], 'course_assignments' => []];
 
-        if ($docenteSolo && $user !== null) {
+        if ($docenteSolo) {
             $sectionIds = $this->teacherContext->activeSectionIdsFor($user);
             $stats = $this->teacherContext->dashboardStats($user, $sectionIds);
             $assignmentsPayload = $this->teacherContext->assignmentsTableFor($user);
             $assignmentsOverview = $this->teacherContext->assignmentsOverviewFor($user);
         } else {
-            $enrolledCount = 0;
-            if ($activeYear !== null) {
-                $enrolledCount = Enrollment::query()
-                    ->where('academic_year_id', $activeYear->id)
-                    ->where('status', EnrollmentStatus::Matriculado->value)
-                    ->count();
-            }
+            $enrolledCount = $activeYear === null ? 0 : Enrollment::query()
+                ->where('academic_year_id', $activeYear->id)
+                ->where('status', EnrollmentStatus::Matriculado->value)
+                ->count();
 
             $stats = [
                 'enrolled_students' => $enrolledCount,

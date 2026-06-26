@@ -636,5 +636,3 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::put('/', [NotificationController::class, 'updateSettings'])->name('update');
     });
 });
-
-require_once __DIR__.'/auth.php';

@@ -6,6 +6,9 @@ import { publicImage } from '@/Components/Public/data/publicImages';
 import { InstitutionalButtonLink } from '@/Components/Public/ui/InstitutionalButton';
 import { PublicStatsRow } from './PublicStatsRow';
 
+const HERO_PATTERN_OVERLAY =
+    "opacity-[0.04] bg-[url('data:image/svg+xml,%3Csvg width=\\'60\\' height=\\'60\\' viewBox=\\'0 0 60 60\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'%23ffffff\\'%3E%3Cpath d=\\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4z\\'/%3E%3C/g%3E%3C/svg%3E')]";
+
 type PublicHeroImageProps = {
     badge?: string;
     title: ReactNode;
@@ -52,7 +55,7 @@ export function PublicHeroImage({
                 aria-hidden
             />
             <div
-                className="absolute inset-0 opacity-[0.04] bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23ffffff\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4z\'/%3E%3C/g%3E%3C/svg%3E')]"
+                className={`absolute inset-0 ${HERO_PATTERN_OVERLAY}`}
                 aria-hidden
             />
 

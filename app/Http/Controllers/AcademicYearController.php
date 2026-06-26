@@ -29,7 +29,7 @@ class AcademicYearController extends Controller
         ]);
     }
 
-    public function create(Request $request): Response
+    public function create(): Response
     {
         $this->authorize('create', AcademicYear::class);
 

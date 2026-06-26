@@ -40,7 +40,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function create(Request $request): Response
+    public function create(): Response
     {
         $this->authorize('create', Product::class);
 
@@ -63,11 +63,17 @@ class ProductController extends Controller
             ->with('success', 'Producto registrado.');
     }
 
-    public function show(Request $request, Product $product): Response
+    public function show(Product $product): Response
     {
         $this->authorize('view', $product);
 
-        $product->load(['category', 'inventoryMovements' => fn ($q) => $q->with('createdByUser:id,name')->orderByDesc('created_at')->limit(20)]);
+        $product->load([
+            'category',
+            'inventoryMovements' => fn ($q) => $q
+                ->with('createdByUser:id,name')
+                ->orderByDesc('created_at')
+                ->limit(20),
+        ]);
 
         return Inertia::render('Intranet/Inventory/Products/Show', [
             'product' => $product,
@@ -75,7 +81,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function edit(Request $request, Product $product): Response
+    public function edit(Product $product): Response
     {
         $this->authorize('update', $product);
 
@@ -101,7 +107,7 @@ class ProductController extends Controller
             ->with('success', 'Producto actualizado.');
     }
 
-    public function deactivate(Request $request, Product $product): RedirectResponse
+    public function deactivate(Product $product): RedirectResponse
     {
         $this->authorize('update', $product);
         $this->productService->deactivate($product);

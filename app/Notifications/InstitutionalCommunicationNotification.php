@@ -4,15 +4,11 @@ namespace App\Notifications;
 
 use App\Enums\NotificationCategory;
 use App\Enums\NotificationPriority;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class InstitutionalCommunicationNotification extends Notification implements ShouldQueue
+class InstitutionalCommunicationNotification extends Notification
 {
-    use Queueable;
-
     /**
      * @param  list<string>  $channels
      * @param  array<string, mixed>  $meta

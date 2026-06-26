@@ -53,9 +53,10 @@ final class IntegrationHealthService
             ],
         ];
 
-        $overall = collect($checks)->contains(fn (array $c): bool => ($c['status'] ?? '') === 'critical')
+        $statuses = collect($checks)->pluck('status');
+        $overall = $statuses->contains('critical')
             ? 'critical'
-            : (collect($checks)->contains(fn (array $c): bool => ($c['status'] ?? '') === 'warning') ? 'warning' : 'ok');
+            : ($statuses->contains('warning') ? 'warning' : 'ok');
 
         return [
             'status' => $overall,
@@ -90,7 +91,7 @@ final class IntegrationHealthService
 
         return [
             'label' => 'Queue',
-            'status' => $driver === 'sync' ? 'warning' : ($pending > 500 ? 'warning' : 'ok'),
+            'status' => ($driver === 'sync' || $pending > 500) ? 'warning' : 'ok',
             'value' => ['driver' => $driver, 'pending' => $pending],
             'message' => $driver === 'sync'
                 ? 'Cola en sync; usar database/redis en producción.'
@@ -107,7 +108,7 @@ final class IntegrationHealthService
 
         return [
             'label' => ucfirst($name),
-            'status' => ! $enabled ? 'ok' : ($configured ? 'ok' : 'warning'),
+            'status' => (! $enabled || $configured) ? 'ok' : 'warning',
             'value' => $enabled ? 'enabled' : 'disabled',
             'message' => ! $enabled
                 ? 'Módulo deshabilitado por configuración.'
