@@ -17,6 +17,8 @@ use Inertia\Response;
 
 class StudentVirtualClassroomController extends Controller
 {
+    private const ASSIGNMENT_MAX_UPLOAD_KB = 5120;
+
     public function index(
         Request $request,
         StudentContextService $context,
@@ -106,7 +108,12 @@ class StudentVirtualClassroomController extends Controller
 
         $data = $request->validate([
             'student_comment' => ['nullable', 'string', 'max:2000'],
-            'file' => ['nullable', 'file', 'max:10240'],
+            'file' => [
+                'nullable',
+                'file',
+                'mimes:pdf,doc,docx,ppt,pptx,zip,jpg,jpeg,png',
+                'max:'.self::ASSIGNMENT_MAX_UPLOAD_KB,
+            ],
         ]);
 
         $assignments->submit(

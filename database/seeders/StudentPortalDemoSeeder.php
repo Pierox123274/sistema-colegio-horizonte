@@ -14,10 +14,12 @@ use Illuminate\Support\Facades\Hash;
 
 class StudentPortalDemoSeeder extends Seeder
 {
+    private const DEMO_STUDENT_EMAIL = 'estudiante@demo.com';
+
     public function run(): void
     {
         $user = User::query()->firstOrCreate(
-            ['email' => 'estudiante@demo.com'],
+            ['email' => self::DEMO_STUDENT_EMAIL],
             [
                 'name' => 'Estudiante Demo',
                 'password' => Hash::make('password'),
@@ -43,12 +45,12 @@ class StudentPortalDemoSeeder extends Seeder
                     'grade' => '5.º',
                     'section' => 'A',
                     'status' => StudentStatus::Activo->value,
-                    'email' => 'estudiante@demo.com',
+                    'email' => self::DEMO_STUDENT_EMAIL,
                 ],
             );
 
         if ($student->user_id !== $user->id) {
-            $student->update(['user_id' => $user->id, 'email' => 'estudiante@demo.com']);
+            $student->update(['user_id' => $user->id, 'email' => self::DEMO_STUDENT_EMAIL]);
         }
     }
 }

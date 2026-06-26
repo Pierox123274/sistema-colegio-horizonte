@@ -59,7 +59,19 @@ export function MobileNavMenu({ open, onClose, canLogin }: MobileNavMenuProps) {
                     aria-modal="true"
                     aria-label="Menú de navegación"
                 >
-                    <div className="absolute inset-0 bg-institutional-blue-950/80 backdrop-blur-sm" onClick={onClose} />
+                    <div
+                        className="absolute inset-0 bg-institutional-blue-950/80 backdrop-blur-sm"
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Cerrar menú"
+                        onClick={onClose}
+                        onKeyDown={(event) => {
+                            if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+                                event.preventDefault();
+                                onClose();
+                            }
+                        }}
+                    />
                     <motion.nav
                         initial={{ x: '100%' }}
                         animate={{ x: 0 }}

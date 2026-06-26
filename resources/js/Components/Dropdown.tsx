@@ -38,13 +38,24 @@ const Trigger = ({ children }: PropsWithChildren) => {
 
     return (
         <>
-            <div onClick={toggleOpen}>{children}</div>
+            <button type="button" onClick={toggleOpen} className="inline-flex">
+                {children}
+            </button>
 
             {open && (
                 <div
                     className="fixed inset-0 z-40"
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Cerrar menú"
                     onClick={() => setOpen(false)}
-                ></div>
+                    onKeyDown={(event) => {
+                        if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            setOpen(false);
+                        }
+                    }}
+                />
             )}
         </>
     );
@@ -89,7 +100,13 @@ const Content = ({
             >
                 <div
                     className={`absolute z-50 mt-2 rounded-md shadow-lg ${alignmentClasses} ${widthClasses}`}
+                    role="presentation"
                     onClick={() => setOpen(false)}
+                    onKeyDown={(event) => {
+                        if (event.key === 'Escape') {
+                            setOpen(false);
+                        }
+                    }}
                 >
                     <div
                         className={

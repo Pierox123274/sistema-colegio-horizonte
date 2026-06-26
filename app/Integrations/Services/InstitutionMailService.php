@@ -43,7 +43,7 @@ final class InstitutionMailService
             $log = IntegrationEmailLog::query()->create([
                 'mailable_class' => $mailable::class,
                 'recipient_hash' => hash('sha256', implode(',', $recipients)),
-                'subject' => method_exists($mailable, 'envelope') ? null : null,
+                'subject' => $this->resolveMailableSubject($mailable),
                 'status' => 'queued',
                 'mailer' => config('mail.default'),
             ]);
@@ -68,6 +68,15 @@ final class InstitutionMailService
 
             throw $e;
         }
+    }
+
+    private function resolveMailableSubject(Mailable $mailable): ?string
+    {
+        if (! method_exists($mailable, 'envelope')) {
+            return null;
+        }
+
+        return $mailable->envelope()->subject ?? null;
     }
 
     public function markSent(IntegrationEmailLog $log): void

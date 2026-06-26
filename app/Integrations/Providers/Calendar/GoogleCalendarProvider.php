@@ -59,7 +59,7 @@ final class GoogleCalendarProvider implements CalendarProviderInterface
 
     private function buildIcs(CalendarEventDTO $event): string
     {
-        $uid = md5($event->title.$event->startsAt->timestamp);
+        $uid = hash('sha256', $event->title.$event->startsAt->timestamp);
         $dtStart = $event->startsAt->utc()->format('Ymd\THis\Z');
         $dtEnd = $event->endsAt->utc()->format('Ymd\THis\Z');
         $summary = str_replace(["\r", "\n", ',', ';'], ' ', $event->title);

@@ -16,6 +16,8 @@ use Inertia\Response;
 
 class StudentAIController extends Controller
 {
+    private const NO_STUDENT_PROFILE_MESSAGE = 'Sin ficha estudiante.';
+
     public function tutor(Request $request, StudentContextService $context, AITutorService $ai): RedirectResponse|Response
     {
         $this->authorize('useStudentTutor', AIDashboard::class);
@@ -118,7 +120,7 @@ class StudentAIController extends Controller
         abort_if($user === null, 403);
 
         $student = $context->portalStudentFor($user);
-        abort_if($student === null, 422, 'Sin ficha estudiante.');
+        abort_if($student === null, 422, self::NO_STUDENT_PROFILE_MESSAGE);
 
         $data = $request->validate(['topic' => ['required', 'string', 'max:255']]);
 
@@ -135,7 +137,7 @@ class StudentAIController extends Controller
         abort_if($user === null, 403);
 
         $student = $context->portalStudentFor($user);
-        abort_if($student === null, 422, 'Sin ficha estudiante.');
+        abort_if($student === null, 422, self::NO_STUDENT_PROFILE_MESSAGE);
 
         $data = $request->validate([
             'topic' => ['required', 'string', 'max:255'],
@@ -155,7 +157,7 @@ class StudentAIController extends Controller
         abort_if($user === null, 403);
 
         $student = $context->portalStudentFor($user);
-        abort_if($student === null, 422, 'Sin ficha estudiante.');
+        abort_if($student === null, 422, self::NO_STUDENT_PROFILE_MESSAGE);
 
         $data = $request->validate(['topic' => ['required', 'string', 'max:255']]);
 
@@ -172,7 +174,7 @@ class StudentAIController extends Controller
         abort_if($user === null, 403);
 
         $student = $context->portalStudentFor($user);
-        abort_if($student === null, 422, 'Sin ficha estudiante.');
+        abort_if($student === null, 422, self::NO_STUDENT_PROFILE_MESSAGE);
 
         $data = $request->validate([
             'topic' => ['required', 'string', 'max:255'],
