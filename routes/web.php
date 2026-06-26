@@ -84,6 +84,7 @@ use App\Http\Controllers\TeacherReportsController;
 use App\Http\Controllers\TeacherStudentsController;
 use App\Http\Controllers\TeacherVirtualClassroomController;
 use App\Http\Controllers\TeacherVirtualMeetingController;
+use App\Support\WebRoutePaths;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -143,10 +144,10 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
             Route::post('/ai-tutor/explain', [StudentAIController::class, 'coachExplain'])->name('ai-tutor.explain');
             Route::get('/recommendations', [StudentAIController::class, 'recommendations'])->name('recommendations.index');
         });
-        Route::get('/grades', [StudentGradesController::class, 'index'])->name('grades.index');
-        Route::get('/attendance', [StudentAttendanceController::class, 'index'])->name('attendance.index');
+        Route::get(WebRoutePaths::GRADES, [StudentGradesController::class, 'index'])->name('grades.index');
+        Route::get(WebRoutePaths::ATTENDANCE, [StudentAttendanceController::class, 'index'])->name('attendance.index');
         Route::get('/payments', [StudentPaymentsController::class, 'index'])->name('payments.index');
-        Route::get('/profile', [StudentProfileController::class, 'show'])->name('profile.show');
+        Route::get(WebRoutePaths::PROFILE, [StudentProfileController::class, 'show'])->name('profile.show');
         Route::get('/announcements', [StudentAnnouncementController::class, 'index'])->name('announcements.index');
         Route::get('/announcements/{announcement}', [StudentAnnouncementController::class, 'show'])->name('announcements.show');
         Route::post('/announcements/{announcement}/read', [StudentAnnouncementController::class, 'markRead'])->name('announcements.read');
@@ -157,14 +158,14 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/diagnostic', [StudentDiagnosticController::class, 'index'])->name('diagnostic.index');
         Route::get('/learning-path', [StudentLearningPathController::class, 'index'])->name('learning-path.index');
         Route::get('/gamification', [StudentGamificationController::class, 'index'])->name('gamification.index');
-        Route::get('/classrooms', [StudentVirtualClassroomController::class, 'index'])->name('classrooms.index');
-        Route::get('/classrooms/{classroom}', [StudentVirtualClassroomController::class, 'show'])->name('classrooms.show');
+        Route::get(WebRoutePaths::CLASSROOMS, [StudentVirtualClassroomController::class, 'index'])->name('classrooms.index');
+        Route::get(WebRoutePaths::CLASSROOM, [StudentVirtualClassroomController::class, 'show'])->name('classrooms.show');
         Route::post('/classrooms/{classroom}/assignments/{assignment}/submit', [StudentVirtualClassroomController::class, 'submitAssignment'])->name('classrooms.assignments.submit');
         Route::post('/classrooms/exams/{exam}/start', [StudentVirtualClassroomController::class, 'startExam'])->name('classrooms.exams.start');
         Route::get('/classrooms/exam-attempt/{attempt}', [StudentVirtualClassroomController::class, 'examAttempt'])->name('classrooms.exam-attempt');
         Route::post('/classrooms/exam-attempt/{attempt}/answer', [StudentVirtualClassroomController::class, 'answerExam'])->name('classrooms.exam-attempt.answer');
         Route::get('/calendar', [StudentCalendarController::class, 'index'])->name('calendar.index');
-        Route::get('/meetings', [StudentVirtualMeetingController::class, 'index'])->name('meetings.index');
+        Route::get(WebRoutePaths::MEETINGS, [StudentVirtualMeetingController::class, 'index'])->name('meetings.index');
         Route::get('/meetings/{meeting}', [StudentVirtualMeetingController::class, 'show'])->name('meetings.show');
         Route::get('/meetings/{meeting}/join', [StudentVirtualMeetingController::class, 'join'])->name('meetings.join');
     });
@@ -172,13 +173,13 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
     Route::middleware(['role:Docente|Administrador'])->prefix('teacher')->name('teacher.')->group(function () {
         Route::get('/dashboard', [TeacherDashboardController::class, 'index'])->name('dashboard');
         Route::get('/assignments', [TeacherAssignmentsController::class, 'index'])->name('assignments.index');
-        Route::get('/attendance', [TeacherAttendanceController::class, 'index'])->name('attendance.index');
+        Route::get(WebRoutePaths::ATTENDANCE, [TeacherAttendanceController::class, 'index'])->name('attendance.index');
         Route::get('/attendance/register', [TeacherAttendanceController::class, 'create'])->name('attendance.create');
         Route::get('/attendance/{date}/{section}', [TeacherAttendanceController::class, 'sectionDate'])->whereNumber('section')->name('attendance.section-date');
-        Route::post('/attendance', [TeacherAttendanceController::class, 'store'])->name('attendance.store');
-        Route::get('/grades', [TeacherGradesController::class, 'index'])->name('grades.index');
-        Route::get('/grades/records', [TeacherGradesController::class, 'records'])->name('grades.records');
-        Route::post('/grades/records', [TeacherGradesController::class, 'store'])->name('grades.records.store');
+        Route::post(WebRoutePaths::ATTENDANCE, [TeacherAttendanceController::class, 'store'])->name('attendance.store');
+        Route::get(WebRoutePaths::GRADES, [TeacherGradesController::class, 'index'])->name('grades.index');
+        Route::get(WebRoutePaths::GRADES_RECORDS, [TeacherGradesController::class, 'records'])->name('grades.records');
+        Route::post(WebRoutePaths::GRADES_RECORDS, [TeacherGradesController::class, 'store'])->name('grades.records.store');
         Route::get('/students', [TeacherStudentsController::class, 'index'])->name('students.index');
         Route::get('/students/{student}', [TeacherStudentsController::class, 'show'])->name('students.show');
         Route::get('/reports', [TeacherReportsController::class, 'index'])->name('reports.index');
@@ -214,17 +215,17 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         });
         Route::get('/adaptive-learning', fn () => redirect()->route('teacher.pedagogical-panel.index'))->name('adaptive-learning.index');
         Route::get('/diagnostic-results', fn () => redirect()->route('teacher.diagnostics.index'))->name('diagnostic-results.index');
-        Route::get('/classrooms', [TeacherVirtualClassroomController::class, 'index'])->name('classrooms.index');
+        Route::get(WebRoutePaths::CLASSROOMS, [TeacherVirtualClassroomController::class, 'index'])->name('classrooms.index');
         Route::get('/classrooms/create', [TeacherVirtualClassroomController::class, 'create'])->name('classrooms.create');
-        Route::post('/classrooms', [TeacherVirtualClassroomController::class, 'store'])->name('classrooms.store');
-        Route::get('/classrooms/{classroom}', [TeacherVirtualClassroomController::class, 'show'])->name('classrooms.show');
+        Route::post(WebRoutePaths::CLASSROOMS, [TeacherVirtualClassroomController::class, 'store'])->name('classrooms.store');
+        Route::get(WebRoutePaths::CLASSROOM, [TeacherVirtualClassroomController::class, 'show'])->name('classrooms.show');
         Route::post('/classrooms/{classroom}/assignments', [TeacherVirtualClassroomController::class, 'storeAssignment'])->name('classrooms.assignments.store');
         Route::post('/classrooms/{classroom}/assignments/{assignment}/submissions/{submission}/grade', [TeacherVirtualClassroomController::class, 'gradeSubmission'])->name('classrooms.submissions.grade');
         Route::post('/classrooms/{classroom}/exams', [TeacherVirtualClassroomController::class, 'storeExam'])->name('classrooms.exams.store');
         Route::get('/calendar', [TeacherCalendarController::class, 'index'])->name('calendar.index');
-        Route::get('/meetings', [TeacherVirtualMeetingController::class, 'index'])->name('meetings.index');
+        Route::get(WebRoutePaths::MEETINGS, [TeacherVirtualMeetingController::class, 'index'])->name('meetings.index');
         Route::get('/meetings/create', [TeacherVirtualMeetingController::class, 'create'])->name('meetings.create');
-        Route::post('/meetings', [TeacherVirtualMeetingController::class, 'store'])->name('meetings.store');
+        Route::post(WebRoutePaths::MEETINGS, [TeacherVirtualMeetingController::class, 'store'])->name('meetings.store');
         Route::get('/meetings/{meeting}', [TeacherVirtualMeetingController::class, 'show'])->name('meetings.show');
         Route::get('/meetings/{meeting}/join', [TeacherVirtualMeetingController::class, 'join'])->name('meetings.join');
         Route::post('/meetings/{meeting}/start', [TeacherVirtualMeetingController::class, 'start'])->name('meetings.start');
@@ -233,7 +234,7 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
 
     Route::middleware($intranetRoles)->prefix('intranet/announcements/inbox')->name('intranet.announcements.inbox.')->group(function () {
         Route::get('/', [IntranetAnnouncementInboxController::class, 'index'])->name('index');
-        Route::get('/{announcement}', [IntranetAnnouncementInboxController::class, 'show'])->name('show');
+        Route::get(WebRoutePaths::ANNOUNCEMENT, [IntranetAnnouncementInboxController::class, 'show'])->name('show');
         Route::post('/{announcement}/read', [IntranetAnnouncementInboxController::class, 'markRead'])->name('read');
     });
 
@@ -241,11 +242,11 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/', [AnnouncementController::class, 'index'])->name('index');
         Route::get('/create', [AnnouncementController::class, 'create'])->name('create');
         Route::post('/', [AnnouncementController::class, 'store'])->name('store');
-        Route::get('/{announcement}', [AnnouncementController::class, 'show'])->name('show');
+        Route::get(WebRoutePaths::ANNOUNCEMENT, [AnnouncementController::class, 'show'])->name('show');
         Route::get('/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('edit');
-        Route::put('/{announcement}', [AnnouncementController::class, 'update'])->name('update');
-        Route::patch('/{announcement}', [AnnouncementController::class, 'update']);
-        Route::delete('/{announcement}', [AnnouncementController::class, 'destroy'])->name('destroy');
+        Route::put(WebRoutePaths::ANNOUNCEMENT, [AnnouncementController::class, 'update'])->name('update');
+        Route::patch(WebRoutePaths::ANNOUNCEMENT, [AnnouncementController::class, 'update']);
+        Route::delete(WebRoutePaths::ANNOUNCEMENT, [AnnouncementController::class, 'destroy'])->name('destroy');
         Route::post('/{announcement}/deactivate', [AnnouncementController::class, 'deactivate'])->name('deactivate');
         Route::post('/{announcement}/resend', [AnnouncementController::class, 'resend'])->name('resend');
     });
@@ -261,12 +262,12 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/{type}', [IntranetAnalyticsReportsController::class, 'show'])->name('show');
     });
 
-    Route::middleware(['role:Administrador|Secretaria|Docente'])->prefix('intranet/security')->name('intranet.security.')->group(function () {
+    Route::middleware(['role:Administrador|Secretaria|Docente'])->prefix(WebRoutePaths::INTRANET_SECURITY)->name('intranet.security.')->group(function () {
         Route::get('/audit-logs', [IntranetSecurityController::class, 'auditLogs'])->name('audit-logs.index');
         Route::post('/sessions/revoke-others', [IntranetSecurityController::class, 'revokeOtherSessions'])->name('sessions.revoke-others');
     });
 
-    Route::middleware(['role:Administrador|Secretaria'])->prefix('intranet/security')->name('intranet.security.')->group(function () {
+    Route::middleware(['role:Administrador|Secretaria'])->prefix(WebRoutePaths::INTRANET_SECURITY)->name('intranet.security.')->group(function () {
         Route::get('/access-monitor', [IntranetSecurityController::class, 'accessMonitor'])->name('access-monitor.index');
     });
 
@@ -308,16 +309,16 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/diagnostic-exams', [IntranetAdaptiveDiagnosticExamController::class, 'index'])->name('diagnostic-exams.index');
         Route::get('/diagnostic-exams/create', [IntranetAdaptiveDiagnosticExamController::class, 'create'])->name('diagnostic-exams.create');
         Route::post('/diagnostic-exams', [IntranetAdaptiveDiagnosticExamController::class, 'store'])->name('diagnostic-exams.store');
-        Route::get('/diagnostic-exams/{diagnostic_exam}', [IntranetAdaptiveDiagnosticExamController::class, 'show'])->name('diagnostic-exams.show');
+        Route::get(WebRoutePaths::DIAGNOSTIC_EXAM, [IntranetAdaptiveDiagnosticExamController::class, 'show'])->name('diagnostic-exams.show');
         Route::get('/diagnostic-exams/{diagnostic_exam}/edit', [IntranetAdaptiveDiagnosticExamController::class, 'edit'])->name('diagnostic-exams.edit');
-        Route::put('/diagnostic-exams/{diagnostic_exam}', [IntranetAdaptiveDiagnosticExamController::class, 'update'])->name('diagnostic-exams.update');
-        Route::patch('/diagnostic-exams/{diagnostic_exam}', [IntranetAdaptiveDiagnosticExamController::class, 'update']);
+        Route::put(WebRoutePaths::DIAGNOSTIC_EXAM, [IntranetAdaptiveDiagnosticExamController::class, 'update'])->name('diagnostic-exams.update');
+        Route::patch(WebRoutePaths::DIAGNOSTIC_EXAM, [IntranetAdaptiveDiagnosticExamController::class, 'update']);
 
         Route::get('/questions', [IntranetAdaptiveQuestionBankController::class, 'index'])->name('questions.index');
         Route::get('/results', [IntranetAdaptiveDiagnosticResultController::class, 'index'])->name('results.index');
     });
 
-    Route::middleware(['role:Administrador'])->prefix('intranet/security')->name('intranet.security.')->group(function () {
+    Route::middleware(['role:Administrador'])->prefix(WebRoutePaths::INTRANET_SECURITY)->name('intranet.security.')->group(function () {
         Route::get('/sessions', [IntranetSecurityController::class, 'sessions'])->name('sessions.index');
         Route::get('/login-attempts', [IntranetSecurityController::class, 'loginAttempts'])->name('login-attempts.index');
         Route::post('/sessions/{userSession}/revoke', [IntranetSecurityController::class, 'revokeSession'])->name('sessions.revoke');
@@ -331,12 +332,12 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/intranet/students/create', [StudentController::class, 'create'])->name('intranet.students.create');
         Route::post('/intranet/students', [StudentController::class, 'store'])->name('intranet.students.store');
         Route::get('/intranet/students/{student}/edit', [StudentController::class, 'edit'])->name('intranet.students.edit');
-        Route::put('/intranet/students/{student}', [StudentController::class, 'update'])->name('intranet.students.update');
-        Route::patch('/intranet/students/{student}', [StudentController::class, 'update']);
+        Route::put(WebRoutePaths::INTRANET_STUDENT, [StudentController::class, 'update'])->name('intranet.students.update');
+        Route::patch(WebRoutePaths::INTRANET_STUDENT, [StudentController::class, 'update']);
     });
 
     Route::middleware(['role:Administrador|Secretaria|Docente'])->group(function () {
-        Route::get('/intranet/students/{student}', [StudentController::class, 'show'])->name('intranet.students.show');
+        Route::get(WebRoutePaths::INTRANET_STUDENT, [StudentController::class, 'show'])->name('intranet.students.show');
     });
 
     Route::middleware(['role:Administrador|Secretaria|Docente'])->group(function () {
@@ -347,22 +348,22 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/intranet/guardians/create', [GuardianController::class, 'create'])->name('intranet.guardians.create');
         Route::post('/intranet/guardians', [GuardianController::class, 'store'])->name('intranet.guardians.store');
         Route::get('/intranet/guardians/{guardian}/edit', [GuardianController::class, 'edit'])->name('intranet.guardians.edit');
-        Route::put('/intranet/guardians/{guardian}', [GuardianController::class, 'update'])->name('intranet.guardians.update');
-        Route::patch('/intranet/guardians/{guardian}', [GuardianController::class, 'update']);
+        Route::put(WebRoutePaths::INTRANET_GUARDIAN, [GuardianController::class, 'update'])->name('intranet.guardians.update');
+        Route::patch(WebRoutePaths::INTRANET_GUARDIAN, [GuardianController::class, 'update']);
     });
 
     Route::middleware(['role:Administrador|Secretaria|Docente'])->group(function () {
-        Route::get('/intranet/guardians/{guardian}', [GuardianController::class, 'show'])->name('intranet.guardians.show');
+        Route::get(WebRoutePaths::INTRANET_GUARDIAN, [GuardianController::class, 'show'])->name('intranet.guardians.show');
     });
 
-    Route::middleware(['role:Administrador|Secretaria|Docente'])->prefix('intranet/academic')->group(function () {
+    Route::middleware(['role:Administrador|Secretaria|Docente'])->prefix(WebRoutePaths::INTRANET_ACADEMIC)->group(function () {
         Route::get('/levels', [EducationalLevelController::class, 'index'])->name('intranet.academic.levels.index');
-        Route::get('/grades', [GradeController::class, 'index'])->name('intranet.academic.grades.index');
+        Route::get(WebRoutePaths::GRADES, [GradeController::class, 'index'])->name('intranet.academic.grades.index');
         Route::get('/sections', [SectionController::class, 'index'])->name('intranet.academic.sections.index');
-        Route::get('/classrooms', [ClassroomController::class, 'index'])->name('intranet.academic.classrooms.index');
+        Route::get(WebRoutePaths::CLASSROOMS, [ClassroomController::class, 'index'])->name('intranet.academic.classrooms.index');
         Route::get('/subjects', [SubjectController::class, 'index'])->name('intranet.academic.subjects.index');
         Route::get('/evaluations', [EvaluationController::class, 'index'])->name('intranet.academic.evaluations.index');
-        Route::get('/grades/records', [AcademicGradeController::class, 'index'])->name('intranet.academic.grades.records.index');
+        Route::get(WebRoutePaths::GRADES_RECORDS, [AcademicGradeController::class, 'index'])->name('intranet.academic.grades.records.index');
         Route::get('/grades/history', [AcademicGradeController::class, 'historyIndex'])->name('intranet.academic.grades.history.index');
         Route::get('/grades/students/{student}', [AcademicGradeController::class, 'studentHistory'])->whereNumber('student')->name('intranet.academic.grades.students.show');
         Route::get('/grades/reports', [AcademicGradeController::class, 'reportsIndex'])->name('intranet.academic.grades.reports.index');
@@ -370,55 +371,55 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/grades/reports/excel', [AcademicGradeController::class, 'exportExcel'])->name('intranet.academic.grades.reports.export.excel');
     });
 
-    Route::middleware(['role:Administrador'])->prefix('intranet/academic')->group(function () {
+    Route::middleware(['role:Administrador'])->prefix(WebRoutePaths::INTRANET_ACADEMIC)->group(function () {
         Route::get('/levels/create', [EducationalLevelController::class, 'create'])->name('intranet.academic.levels.create');
         Route::post('/levels', [EducationalLevelController::class, 'store'])->name('intranet.academic.levels.store');
         Route::get('/levels/{educational_level}/edit', [EducationalLevelController::class, 'edit'])->name('intranet.academic.levels.edit');
-        Route::put('/levels/{educational_level}', [EducationalLevelController::class, 'update'])->name('intranet.academic.levels.update');
-        Route::patch('/levels/{educational_level}', [EducationalLevelController::class, 'update']);
-        Route::delete('/levels/{educational_level}', [EducationalLevelController::class, 'destroy'])->name('intranet.academic.levels.destroy');
+        Route::put(WebRoutePaths::EDUCATIONAL_LEVEL, [EducationalLevelController::class, 'update'])->name('intranet.academic.levels.update');
+        Route::patch(WebRoutePaths::EDUCATIONAL_LEVEL, [EducationalLevelController::class, 'update']);
+        Route::delete(WebRoutePaths::EDUCATIONAL_LEVEL, [EducationalLevelController::class, 'destroy'])->name('intranet.academic.levels.destroy');
 
         Route::get('/grades/create', [GradeController::class, 'create'])->name('intranet.academic.grades.create');
-        Route::post('/grades', [GradeController::class, 'store'])->name('intranet.academic.grades.store');
+        Route::post(WebRoutePaths::GRADES, [GradeController::class, 'store'])->name('intranet.academic.grades.store');
         Route::get('/grades/{grade}/edit', [GradeController::class, 'edit'])->name('intranet.academic.grades.edit');
-        Route::put('/grades/{grade}', [GradeController::class, 'update'])->name('intranet.academic.grades.update');
-        Route::patch('/grades/{grade}', [GradeController::class, 'update']);
-        Route::delete('/grades/{grade}', [GradeController::class, 'destroy'])->name('intranet.academic.grades.destroy');
+        Route::put(WebRoutePaths::GRADE, [GradeController::class, 'update'])->name('intranet.academic.grades.update');
+        Route::patch(WebRoutePaths::GRADE, [GradeController::class, 'update']);
+        Route::delete(WebRoutePaths::GRADE, [GradeController::class, 'destroy'])->name('intranet.academic.grades.destroy');
 
         Route::get('/sections/create', [SectionController::class, 'create'])->name('intranet.academic.sections.create');
         Route::post('/sections', [SectionController::class, 'store'])->name('intranet.academic.sections.store');
         Route::get('/sections/{section}/edit', [SectionController::class, 'edit'])->name('intranet.academic.sections.edit');
-        Route::put('/sections/{section}', [SectionController::class, 'update'])->name('intranet.academic.sections.update');
-        Route::patch('/sections/{section}', [SectionController::class, 'update']);
-        Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('intranet.academic.sections.destroy');
+        Route::put(WebRoutePaths::SECTION, [SectionController::class, 'update'])->name('intranet.academic.sections.update');
+        Route::patch(WebRoutePaths::SECTION, [SectionController::class, 'update']);
+        Route::delete(WebRoutePaths::SECTION, [SectionController::class, 'destroy'])->name('intranet.academic.sections.destroy');
 
         Route::get('/classrooms/create', [ClassroomController::class, 'create'])->name('intranet.academic.classrooms.create');
-        Route::post('/classrooms', [ClassroomController::class, 'store'])->name('intranet.academic.classrooms.store');
+        Route::post(WebRoutePaths::CLASSROOMS, [ClassroomController::class, 'store'])->name('intranet.academic.classrooms.store');
         Route::get('/classrooms/{classroom}/edit', [ClassroomController::class, 'edit'])->name('intranet.academic.classrooms.edit');
-        Route::put('/classrooms/{classroom}', [ClassroomController::class, 'update'])->name('intranet.academic.classrooms.update');
-        Route::patch('/classrooms/{classroom}', [ClassroomController::class, 'update']);
-        Route::delete('/classrooms/{classroom}', [ClassroomController::class, 'destroy'])->name('intranet.academic.classrooms.destroy');
+        Route::put(WebRoutePaths::CLASSROOM, [ClassroomController::class, 'update'])->name('intranet.academic.classrooms.update');
+        Route::patch(WebRoutePaths::CLASSROOM, [ClassroomController::class, 'update']);
+        Route::delete(WebRoutePaths::CLASSROOM, [ClassroomController::class, 'destroy'])->name('intranet.academic.classrooms.destroy');
 
         Route::get('/subjects/create', [SubjectController::class, 'create'])->name('intranet.academic.subjects.create');
         Route::post('/subjects', [SubjectController::class, 'store'])->name('intranet.academic.subjects.store');
         Route::get('/subjects/{subject}/edit', [SubjectController::class, 'edit'])->whereNumber('subject')->name('intranet.academic.subjects.edit');
-        Route::put('/subjects/{subject}', [SubjectController::class, 'update'])->whereNumber('subject')->name('intranet.academic.subjects.update');
-        Route::patch('/subjects/{subject}', [SubjectController::class, 'update'])->whereNumber('subject');
+        Route::put(WebRoutePaths::SUBJECT, [SubjectController::class, 'update'])->whereNumber('subject')->name('intranet.academic.subjects.update');
+        Route::patch(WebRoutePaths::SUBJECT, [SubjectController::class, 'update'])->whereNumber('subject');
 
         Route::get('/evaluations/create', [EvaluationController::class, 'create'])->name('intranet.academic.evaluations.create');
         Route::post('/evaluations', [EvaluationController::class, 'store'])->name('intranet.academic.evaluations.store');
         Route::get('/evaluations/{evaluation}/edit', [EvaluationController::class, 'edit'])->whereNumber('evaluation')->name('intranet.academic.evaluations.edit');
-        Route::put('/evaluations/{evaluation}', [EvaluationController::class, 'update'])->whereNumber('evaluation')->name('intranet.academic.evaluations.update');
-        Route::patch('/evaluations/{evaluation}', [EvaluationController::class, 'update'])->whereNumber('evaluation');
+        Route::put(WebRoutePaths::EVALUATION, [EvaluationController::class, 'update'])->whereNumber('evaluation')->name('intranet.academic.evaluations.update');
+        Route::patch(WebRoutePaths::EVALUATION, [EvaluationController::class, 'update'])->whereNumber('evaluation');
     });
 
-    Route::middleware(['role:Administrador|Secretaria|Docente'])->prefix('intranet/academic')->group(function () {
-        Route::get('/levels/{educational_level}', [EducationalLevelController::class, 'show'])->name('intranet.academic.levels.show');
-        Route::get('/grades/{grade}', [GradeController::class, 'show'])->name('intranet.academic.grades.show');
-        Route::get('/sections/{section}', [SectionController::class, 'show'])->name('intranet.academic.sections.show');
-        Route::get('/classrooms/{classroom}', [ClassroomController::class, 'show'])->name('intranet.academic.classrooms.show');
-        Route::get('/subjects/{subject}', [SubjectController::class, 'show'])->whereNumber('subject')->name('intranet.academic.subjects.show');
-        Route::get('/evaluations/{evaluation}', [EvaluationController::class, 'show'])->whereNumber('evaluation')->name('intranet.academic.evaluations.show');
+    Route::middleware(['role:Administrador|Secretaria|Docente'])->prefix(WebRoutePaths::INTRANET_ACADEMIC)->group(function () {
+        Route::get(WebRoutePaths::EDUCATIONAL_LEVEL, [EducationalLevelController::class, 'show'])->name('intranet.academic.levels.show');
+        Route::get(WebRoutePaths::GRADE, [GradeController::class, 'show'])->name('intranet.academic.grades.show');
+        Route::get(WebRoutePaths::SECTION, [SectionController::class, 'show'])->name('intranet.academic.sections.show');
+        Route::get(WebRoutePaths::CLASSROOM, [ClassroomController::class, 'show'])->name('intranet.academic.classrooms.show');
+        Route::get(WebRoutePaths::SUBJECT, [SubjectController::class, 'show'])->whereNumber('subject')->name('intranet.academic.subjects.show');
+        Route::get(WebRoutePaths::EVALUATION, [EvaluationController::class, 'show'])->whereNumber('evaluation')->name('intranet.academic.evaluations.show');
     });
 
     Route::middleware(['role:Administrador|Secretaria'])->group(function () {
@@ -434,8 +435,8 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/intranet/enrollments/create', [EnrollmentController::class, 'create'])->name('intranet.enrollments.create');
         Route::post('/intranet/enrollments', [EnrollmentController::class, 'store'])->name('intranet.enrollments.store');
         Route::get('/intranet/enrollments/{enrollment}/edit', [EnrollmentController::class, 'edit'])->name('intranet.enrollments.edit');
-        Route::put('/intranet/enrollments/{enrollment}', [EnrollmentController::class, 'update'])->name('intranet.enrollments.update');
-        Route::patch('/intranet/enrollments/{enrollment}', [EnrollmentController::class, 'update']);
+        Route::put(WebRoutePaths::INTRANET_ENROLLMENT, [EnrollmentController::class, 'update'])->name('intranet.enrollments.update');
+        Route::patch(WebRoutePaths::INTRANET_ENROLLMENT, [EnrollmentController::class, 'update']);
     });
 
     Route::middleware(['role:Administrador|Secretaria'])->group(function () {
@@ -444,7 +445,7 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
 
     Route::middleware(['role:Administrador|Secretaria|Docente'])->group(function () {
         Route::get('/intranet/enrollments', [EnrollmentController::class, 'index'])->name('intranet.enrollments.index');
-        Route::get('/intranet/enrollments/{enrollment}', [EnrollmentController::class, 'show'])->name('intranet.enrollments.show');
+        Route::get(WebRoutePaths::INTRANET_ENROLLMENT, [EnrollmentController::class, 'show'])->name('intranet.enrollments.show');
         Route::get('/intranet/attendance', [AttendanceController::class, 'index'])->name('intranet.attendance.index');
         Route::get('/intranet/attendance/reports', [AttendanceController::class, 'reports'])->name('intranet.attendance.reports.index');
         Route::get('/intranet/attendance/students/{student}', [AttendanceController::class, 'studentHistory'])->whereNumber('student')->name('intranet.attendance.students.show');
@@ -456,15 +457,15 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/intranet/payment-concepts/create', [PaymentConceptController::class, 'create'])->name('intranet.payment-concepts.create');
         Route::post('/intranet/payment-concepts', [PaymentConceptController::class, 'store'])->name('intranet.payment-concepts.store');
         Route::get('/intranet/payment-concepts/{payment_concept}/edit', [PaymentConceptController::class, 'edit'])->name('intranet.payment-concepts.edit');
-        Route::put('/intranet/payment-concepts/{payment_concept}', [PaymentConceptController::class, 'update'])->name('intranet.payment-concepts.update');
-        Route::patch('/intranet/payment-concepts/{payment_concept}', [PaymentConceptController::class, 'update']);
-        Route::delete('/intranet/payment-concepts/{payment_concept}', [PaymentConceptController::class, 'destroy'])->name('intranet.payment-concepts.destroy');
+        Route::put(WebRoutePaths::PAYMENT_CONCEPT, [PaymentConceptController::class, 'update'])->name('intranet.payment-concepts.update');
+        Route::patch(WebRoutePaths::PAYMENT_CONCEPT, [PaymentConceptController::class, 'update']);
+        Route::delete(WebRoutePaths::PAYMENT_CONCEPT, [PaymentConceptController::class, 'destroy'])->name('intranet.payment-concepts.destroy');
 
         Route::get('/intranet/pensions/create', [PensionController::class, 'create'])->name('intranet.pensions.create');
         Route::post('/intranet/pensions', [PensionController::class, 'store'])->name('intranet.pensions.store');
         Route::get('/intranet/pensions/{pension}/edit', [PensionController::class, 'edit'])->name('intranet.pensions.edit');
-        Route::put('/intranet/pensions/{pension}', [PensionController::class, 'update'])->name('intranet.pensions.update');
-        Route::patch('/intranet/pensions/{pension}', [PensionController::class, 'update']);
+        Route::put(WebRoutePaths::PENSION, [PensionController::class, 'update'])->name('intranet.pensions.update');
+        Route::patch(WebRoutePaths::PENSION, [PensionController::class, 'update']);
 
         Route::get('/intranet/payments/students/search', [PaymentController::class, 'searchStudents'])->name('intranet.payments.students.search');
         Route::get('/intranet/payments/students/{student}/summary', [PaymentController::class, 'studentSummary'])->name('intranet.payments.students.summary');
@@ -476,10 +477,10 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
 
     Route::middleware(['role:Administrador|Secretaria'])->group(function () {
         Route::get('/intranet/payment-concepts', [PaymentConceptController::class, 'index'])->name('intranet.payment-concepts.index');
-        Route::get('/intranet/payment-concepts/{payment_concept}', [PaymentConceptController::class, 'show'])->name('intranet.payment-concepts.show');
+        Route::get(WebRoutePaths::PAYMENT_CONCEPT, [PaymentConceptController::class, 'show'])->name('intranet.payment-concepts.show');
 
         Route::get('/intranet/pensions', [PensionController::class, 'index'])->name('intranet.pensions.index');
-        Route::get('/intranet/pensions/{pension}', [PensionController::class, 'show'])->name('intranet.pensions.show');
+        Route::get(WebRoutePaths::PENSION, [PensionController::class, 'show'])->name('intranet.pensions.show');
 
         Route::get('/intranet/payments', [PaymentController::class, 'index'])->name('intranet.payments.index');
         Route::get('/intranet/payments/{payment}', [PaymentController::class, 'show'])->name('intranet.payments.show');
@@ -488,12 +489,12 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/intranet/payments/{payment}/receipt/ticket', [PaymentReceiptController::class, 'ticket'])->name('intranet.payments.receipt.ticket');
 
         Route::get('/intranet/inventory/categories', [ProductCategoryController::class, 'index'])->name('intranet.inventory.categories.index');
-        Route::get('/intranet/inventory/categories/{product_category}', [ProductCategoryController::class, 'show'])
+        Route::get(WebRoutePaths::PRODUCT_CATEGORY, [ProductCategoryController::class, 'show'])
             ->whereNumber('product_category')
             ->name('intranet.inventory.categories.show');
 
         Route::get('/intranet/inventory/products', [ProductController::class, 'index'])->name('intranet.inventory.products.index');
-        Route::get('/intranet/inventory/products/{product}', [ProductController::class, 'show'])
+        Route::get(WebRoutePaths::PRODUCT, [ProductController::class, 'show'])
             ->whereNumber('product')
             ->name('intranet.inventory.products.show');
 
@@ -536,10 +537,10 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/intranet/inventory/categories/{product_category}/edit', [ProductCategoryController::class, 'edit'])
             ->whereNumber('product_category')
             ->name('intranet.inventory.categories.edit');
-        Route::put('/intranet/inventory/categories/{product_category}', [ProductCategoryController::class, 'update'])
+        Route::put(WebRoutePaths::PRODUCT_CATEGORY, [ProductCategoryController::class, 'update'])
             ->whereNumber('product_category')
             ->name('intranet.inventory.categories.update');
-        Route::patch('/intranet/inventory/categories/{product_category}', [ProductCategoryController::class, 'update'])
+        Route::patch(WebRoutePaths::PRODUCT_CATEGORY, [ProductCategoryController::class, 'update'])
             ->whereNumber('product_category');
         Route::post('/intranet/inventory/categories/{product_category}/deactivate', [ProductCategoryController::class, 'deactivate'])
             ->whereNumber('product_category')
@@ -550,10 +551,10 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         Route::get('/intranet/inventory/products/{product}/edit', [ProductController::class, 'edit'])
             ->whereNumber('product')
             ->name('intranet.inventory.products.edit');
-        Route::put('/intranet/inventory/products/{product}', [ProductController::class, 'update'])
+        Route::put(WebRoutePaths::PRODUCT, [ProductController::class, 'update'])
             ->whereNumber('product')
             ->name('intranet.inventory.products.update');
-        Route::patch('/intranet/inventory/products/{product}', [ProductController::class, 'update'])
+        Route::patch(WebRoutePaths::PRODUCT, [ProductController::class, 'update'])
             ->whereNumber('product');
         Route::post('/intranet/inventory/products/{product}/deactivate', [ProductController::class, 'deactivate'])
             ->whereNumber('product')
@@ -621,9 +622,9 @@ Route::middleware(['auth', 'verified', $intranetRoles])->group(function () use (
         });
     });
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get(WebRoutePaths::PROFILE, [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch(WebRoutePaths::PROFILE, [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete(WebRoutePaths::PROFILE, [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::prefix('notifications')->name('notifications.')->group(function () {
         Route::get('/', [NotificationController::class, 'index'])->name('index');

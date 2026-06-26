@@ -10,6 +10,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PublicSiteController extends Controller
 {
+    private const LEVEL_PAGE_VIEW = 'Public/Niveles/LevelPage';
+
     public function __construct(
         private readonly CmsPublicPresenter $cms,
     ) {}
@@ -94,7 +96,7 @@ class PublicSiteController extends Controller
 
     public function nivelInicial(): Response
     {
-        return $this->page('Public/Niveles/LevelPage', array_merge(
+        return $this->page(self::LEVEL_PAGE_VIEW, array_merge(
             ['level' => 'inicial'],
             $this->cms->pageProps('niveles-inicial', 'Nivel Inicial — I.E.P. Horizonte', ''),
         ));
@@ -102,7 +104,7 @@ class PublicSiteController extends Controller
 
     public function nivelPrimaria(): Response
     {
-        return $this->page('Public/Niveles/LevelPage', array_merge(
+        return $this->page(self::LEVEL_PAGE_VIEW, array_merge(
             ['level' => 'primaria'],
             $this->cms->pageProps('niveles-primaria', 'Nivel Primaria — I.E.P. Horizonte', ''),
         ));
@@ -110,7 +112,7 @@ class PublicSiteController extends Controller
 
     public function nivelSecundaria(): Response
     {
-        return $this->page('Public/Niveles/LevelPage', array_merge(
+        return $this->page(self::LEVEL_PAGE_VIEW, array_merge(
             ['level' => 'secundaria'],
             $this->cms->pageProps('niveles-secundaria', 'Nivel Secundaria — I.E.P. Horizonte', ''),
         ));

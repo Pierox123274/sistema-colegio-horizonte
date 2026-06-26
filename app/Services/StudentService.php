@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 
 class StudentService
 {
+    private const EMPTY_RESULT_SQL = '1 = 0';
+
     /**
      * @param  list<int>|null  $sectionIdsForActiveYear  Matrícula vigente en año activo y secciones dadas; null = sin filtro por sección.
      */
@@ -19,52 +21,10 @@ class StudentService
             ->orderBy('last_name')
             ->orderBy('first_name');
 
-        if ($sectionIdsForActiveYear !== null) {
-            $activeYear = AcademicYear::query()->where('is_active', true)->first();
-            if ($activeYear === null || $sectionIdsForActiveYear === []) {
-                $query->whereRaw('1 = 0');
-            } else {
-                $query->whereHas('enrollments', function ($q) use ($activeYear, $sectionIdsForActiveYear): void {
-                    $q->where('academic_year_id', $activeYear->id)
-                        ->where('status', EnrollmentStatus::Matriculado->value)
-                        ->whereIn('section_id', $sectionIdsForActiveYear);
-                });
-            }
-        }
-
-        if ($search = trim((string) $request->query('search', ''))) {
-            $query->where(function ($q) use ($search): void {
-                $like = '%'.$search.'%';
-                $q->where('first_name', 'like', $like)
-                    ->orWhere('last_name', 'like', $like)
-                    ->orWhere('code', 'like', $like)
-                    ->orWhere('document_number', 'like', $like);
-            });
-        }
-
-        if ($level = $request->query('educational_level')) {
-            $query->where('educational_level', $level);
-        }
-
-        if ($status = $request->query('status')) {
-            $query->where('status', $status);
-        }
-
-        if ($request->filled('section_id') && $sectionIdsForActiveYear !== null) {
-            $sectionId = (int) $request->query('section_id');
-            if ($sectionIdsForActiveYear === [] || ! in_array($sectionId, $sectionIdsForActiveYear, true)) {
-                $query->whereRaw('1 = 0');
-            } else {
-                $activeYear = AcademicYear::query()->where('is_active', true)->first();
-                if ($activeYear !== null) {
-                    $query->whereHas('enrollments', function ($q) use ($activeYear, $sectionId): void {
-                        $q->where('academic_year_id', $activeYear->id)
-                            ->where('status', EnrollmentStatus::Matriculado->value)
-                            ->where('section_id', $sectionId);
-                    });
-                }
-            }
-        }
+        $this->applyActiveYearSectionFilter($query, $sectionIdsForActiveYear);
+        $this->applySearchFilter($query, $request);
+        $this->applyLevelAndStatusFilters($query, $request);
+        $this->applySectionIdFilter($query, $request, $sectionIdsForActiveYear);
 
         $query->with([
             'guardians' => function ($q): void {
@@ -73,6 +33,84 @@ class StudentService
         ]);
 
         return $query->paginate($perPage)->withQueryString();
+    }
+
+    /**
+     * @param  list<int>|null  $sectionIdsForActiveYear
+     */
+    private function applyActiveYearSectionFilter($query, ?array $sectionIdsForActiveYear): void
+    {
+        if ($sectionIdsForActiveYear === null) {
+            return;
+        }
+
+        $activeYear = AcademicYear::query()->where('is_active', true)->first();
+        if ($activeYear === null || $sectionIdsForActiveYear === []) {
+            $query->whereRaw(self::EMPTY_RESULT_SQL);
+
+            return;
+        }
+
+        $query->whereHas('enrollments', function ($q) use ($activeYear, $sectionIdsForActiveYear): void {
+            $q->where('academic_year_id', $activeYear->id)
+                ->where('status', EnrollmentStatus::Matriculado->value)
+                ->whereIn('section_id', $sectionIdsForActiveYear);
+        });
+    }
+
+    private function applySearchFilter($query, Request $request): void
+    {
+        $search = trim((string) $request->query('search', ''));
+        if ($search === '') {
+            return;
+        }
+
+        $query->where(function ($q) use ($search): void {
+            $like = '%'.$search.'%';
+            $q->where('first_name', 'like', $like)
+                ->orWhere('last_name', 'like', $like)
+                ->orWhere('code', 'like', $like)
+                ->orWhere('document_number', 'like', $like);
+        });
+    }
+
+    private function applyLevelAndStatusFilters($query, Request $request): void
+    {
+        if ($level = $request->query('educational_level')) {
+            $query->where('educational_level', $level);
+        }
+
+        if ($status = $request->query('status')) {
+            $query->where('status', $status);
+        }
+    }
+
+    /**
+     * @param  list<int>|null  $sectionIdsForActiveYear
+     */
+    private function applySectionIdFilter($query, Request $request, ?array $sectionIdsForActiveYear): void
+    {
+        if (! $request->filled('section_id') || $sectionIdsForActiveYear === null) {
+            return;
+        }
+
+        $sectionId = (int) $request->query('section_id');
+        if ($sectionIdsForActiveYear === [] || ! in_array($sectionId, $sectionIdsForActiveYear, true)) {
+            $query->whereRaw(self::EMPTY_RESULT_SQL);
+
+            return;
+        }
+
+        $activeYear = AcademicYear::query()->where('is_active', true)->first();
+        if ($activeYear === null) {
+            return;
+        }
+
+        $query->whereHas('enrollments', function ($q) use ($activeYear, $sectionId): void {
+            $q->where('academic_year_id', $activeYear->id)
+                ->where('status', EnrollmentStatus::Matriculado->value)
+                ->where('section_id', $sectionId);
+        });
     }
 
     /**

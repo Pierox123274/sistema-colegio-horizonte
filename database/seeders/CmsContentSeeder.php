@@ -19,6 +19,12 @@ use Illuminate\Database\Seeder;
 
 class CmsContentSeeder extends Seeder
 {
+    private const LABEL_EDUCATIONAL_LEVELS = 'Niveles educativos';
+
+    private const LABEL_ADMISSION = 'Admisión';
+
+    private const LABEL_SCHOOL_LIFE = 'Vida escolar';
+
     public function run(): void
     {
         $this->seedSettings();
@@ -66,14 +72,14 @@ class CmsContentSeeder extends Seeder
             ['slug' => 'nosotros-mision-vision', 'title' => 'Misión y visión', 'subtitle' => 'Propósito institucional'],
             ['slug' => 'nosotros-valores', 'title' => 'Valores', 'subtitle' => 'Principios de convivencia'],
             ['slug' => 'nosotros-infraestructura', 'title' => 'Infraestructura', 'subtitle' => 'Campus y espacios'],
-            ['slug' => 'niveles', 'title' => 'Niveles educativos', 'subtitle' => 'Inicial, Primaria y Secundaria'],
+            ['slug' => 'niveles', 'title' => self::LABEL_EDUCATIONAL_LEVELS, 'subtitle' => 'Inicial, Primaria y Secundaria'],
             ['slug' => 'niveles-inicial', 'title' => 'Nivel Inicial', 'template' => 'level'],
             ['slug' => 'niveles-primaria', 'title' => 'Nivel Primaria', 'template' => 'level'],
             ['slug' => 'niveles-secundaria', 'title' => 'Nivel Secundaria', 'template' => 'level'],
-            ['slug' => 'admision', 'title' => 'Admisión', 'subtitle' => 'Proceso 2026'],
+            ['slug' => 'admision', 'title' => self::LABEL_ADMISSION, 'subtitle' => 'Proceso 2026'],
             ['slug' => 'admision-requisitos', 'title' => 'Requisitos de admisión'],
             ['slug' => 'admision-matricula', 'title' => 'Matrícula 2026'],
-            ['slug' => 'vida-escolar', 'title' => 'Vida escolar'],
+            ['slug' => 'vida-escolar', 'title' => self::LABEL_SCHOOL_LIFE],
             ['slug' => 'vida-escolar-actividades', 'title' => 'Actividades'],
             ['slug' => 'vida-escolar-talleres', 'title' => 'Talleres'],
             ['slug' => 'vida-escolar-eventos', 'title' => 'Eventos'],
@@ -110,7 +116,7 @@ class CmsContentSeeder extends Seeder
                 'payload' => [
                     'items' => [
                         ['value' => 15, 'suffix' => '+', 'label' => 'Años de experiencia'],
-                        ['value' => 3, 'suffix' => '', 'label' => 'Niveles educativos'],
+                        ['value' => 3, 'suffix' => '', 'label' => self::LABEL_EDUCATIONAL_LEVELS],
                         ['value' => 850, 'suffix' => '+', 'label' => 'Familias en comunidad'],
                         ['value' => 45, 'suffix' => '+', 'label' => 'Docentes especializados'],
                     ],
@@ -133,7 +139,7 @@ class CmsContentSeeder extends Seeder
                 'section_key' => 'teaser_niveles',
                 'title' => 'Teaser Niveles',
                 'payload' => [
-                    'eyebrow' => 'Niveles educativos',
+                    'eyebrow' => self::LABEL_EDUCATIONAL_LEVELS,
                     'title' => 'Tres etapas, una misma excelencia',
                     'description' => 'Progresión curricular con acompañamiento personalizado.',
                     'route_name' => 'public.niveles',
@@ -172,8 +178,8 @@ class CmsContentSeeder extends Seeder
     private function seedNewsCategories(): void
     {
         $categories = [
-            ['name' => 'Admisión', 'slug' => 'admision', 'sort_order' => 0],
-            ['name' => 'Vida escolar', 'slug' => 'vida-escolar', 'sort_order' => 1],
+            ['name' => self::LABEL_ADMISSION, 'slug' => 'admision', 'sort_order' => 0],
+            ['name' => self::LABEL_SCHOOL_LIFE, 'slug' => 'vida-escolar', 'sort_order' => 1],
             ['name' => 'Logros', 'slug' => 'logros', 'sort_order' => 2],
         ];
 
@@ -336,8 +342,8 @@ class CmsContentSeeder extends Seeder
             ['label' => 'Inicio', 'route_name' => 'public.home', 'sort_order' => 0],
             ['label' => 'Nosotros', 'route_name' => 'public.nosotros', 'sort_order' => 1],
             ['label' => 'Niveles', 'route_name' => 'public.niveles', 'sort_order' => 2],
-            ['label' => 'Admisión', 'route_name' => 'public.admision', 'sort_order' => 3],
-            ['label' => 'Vida escolar', 'route_name' => 'public.vida-escolar', 'sort_order' => 4],
+            ['label' => self::LABEL_ADMISSION, 'route_name' => 'public.admision', 'sort_order' => 3],
+            ['label' => self::LABEL_SCHOOL_LIFE, 'route_name' => 'public.vida-escolar', 'sort_order' => 4],
             ['label' => 'Galería', 'route_name' => 'public.galeria', 'sort_order' => 5],
             ['label' => 'Noticias', 'route_name' => 'public.noticias', 'sort_order' => 6],
             ['label' => 'Contacto', 'route_name' => 'public.contacto', 'sort_order' => 7],
@@ -356,7 +362,7 @@ class CmsContentSeeder extends Seeder
 
         $footerItems = [
             ['label' => 'Nosotros', 'route_name' => 'public.nosotros', 'sort_order' => 0],
-            ['label' => 'Admisión', 'route_name' => 'public.admision', 'sort_order' => 1],
+            ['label' => self::LABEL_ADMISSION, 'route_name' => 'public.admision', 'sort_order' => 1],
             ['label' => 'Noticias', 'route_name' => 'public.noticias', 'sort_order' => 2],
             ['label' => 'Contacto', 'route_name' => 'public.contacto', 'sort_order' => 3],
             ['label' => 'Iniciar sesión', 'route_name' => 'login', 'sort_order' => 4],

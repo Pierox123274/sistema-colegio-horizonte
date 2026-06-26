@@ -257,21 +257,7 @@ final class AuditService
             $action = AuditAction::Cancel;
         }
 
-        if (str_contains($routeName, 'attendance')) {
-            $action = AuditAction::Attendance;
-        } elseif (str_contains($routeName, 'grades') || str_contains($routeName, 'grade')) {
-            $action = AuditAction::Grade;
-        } elseif (str_contains($routeName, 'payment')) {
-            $action = AuditAction::Payment;
-        } elseif (str_contains($routeName, 'enrollment')) {
-            $action = AuditAction::Enrollment;
-        } elseif (str_contains($routeName, 'announcement')) {
-            $action = AuditAction::Announcement;
-        } elseif (str_contains($routeName, 'sales') || str_contains($routeName, 'sale')) {
-            $action = AuditAction::Sale;
-        } elseif (str_contains($routeName, 'cash-register')) {
-            $action = str_contains($routeName, 'close') ? AuditAction::CashClose : AuditAction::CashOpen;
-        }
+        $action = $this->applyDomainAction($routeName, $action);
 
         return [
             'action' => $action,
@@ -283,6 +269,22 @@ final class AuditService
                 ? AuditSeverity::Warning
                 : AuditSeverity::Info,
         ];
+    }
+
+    private function applyDomainAction(string $routeName, AuditAction $action): AuditAction
+    {
+        return match (true) {
+            str_contains($routeName, 'attendance') => AuditAction::Attendance,
+            str_contains($routeName, 'grades'), str_contains($routeName, 'grade') => AuditAction::Grade,
+            str_contains($routeName, 'payment') => AuditAction::Payment,
+            str_contains($routeName, 'enrollment') => AuditAction::Enrollment,
+            str_contains($routeName, 'announcement') => AuditAction::Announcement,
+            str_contains($routeName, 'sales'), str_contains($routeName, 'sale') => AuditAction::Sale,
+            str_contains($routeName, 'cash-register') => str_contains($routeName, 'close')
+                ? AuditAction::CashClose
+                : AuditAction::CashOpen,
+            default => $action,
+        };
     }
 
     private function moduleFromRoute(string $routeName): AuditModule

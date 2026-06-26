@@ -18,6 +18,8 @@ use Illuminate\Support\Str;
 
 final class TeacherContextService
 {
+    private const CLASSROOM_TUTOR_LABEL = 'Tutor de aula';
+
     public function activeAcademicYear(): ?AcademicYear
     {
         return AcademicYear::query()->where('is_active', true)->first();
@@ -402,11 +404,11 @@ final class TeacherContextService
     private function sectionRoleLabel(array $section): string
     {
         if ($section['is_tutor'] && $section['courses'] !== []) {
-            return 'Tutor de aula';
+            return self::CLASSROOM_TUTOR_LABEL;
         }
 
         if ($section['is_tutor']) {
-            return 'Tutor de aula';
+            return self::CLASSROOM_TUTOR_LABEL;
         }
 
         if ($section['courses'] !== []) {
@@ -602,7 +604,7 @@ final class TeacherContextService
     private function assignmentRoleLabel(TeacherAssignment $assignment): string
     {
         if ($assignment->is_tutor) {
-            return 'Tutor de aula';
+            return self::CLASSROOM_TUTOR_LABEL;
         }
 
         if ($assignment->subject_id !== null) {

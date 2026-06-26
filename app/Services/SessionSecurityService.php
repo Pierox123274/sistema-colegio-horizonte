@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 
 final class SessionSecurityService
 {
+    private const DATETIME_DISPLAY_FORMAT = 'd/m/Y H:i';
+
     public function registerSession(User $user, Request $request): UserSession
     {
         $sessionId = (string) $request->session()->getId();
@@ -183,9 +185,9 @@ final class SessionSecurityService
             'user_agent' => $session->user_agent,
             'device_label' => $session->device_label,
             'is_suspicious' => $session->is_suspicious,
-            'logged_in_at' => $session->logged_in_at?->translatedFormat('d/m/Y H:i'),
-            'last_activity_at' => $session->last_activity_at?->translatedFormat('d/m/Y H:i'),
-            'expires_at' => $session->expires_at?->translatedFormat('d/m/Y H:i'),
+            'logged_in_at' => $session->logged_in_at?->translatedFormat(self::DATETIME_DISPLAY_FORMAT),
+            'last_activity_at' => $session->last_activity_at?->translatedFormat(self::DATETIME_DISPLAY_FORMAT),
+            'expires_at' => $session->expires_at?->translatedFormat(self::DATETIME_DISPLAY_FORMAT),
         ];
     }
 

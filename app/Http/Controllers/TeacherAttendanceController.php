@@ -20,6 +20,8 @@ use Inertia\Response;
 
 class TeacherAttendanceController extends Controller
 {
+    private const EMPTY_RESULT_SQL = '1 = 0';
+
     public function __construct(
         private readonly AttendanceService $attendanceService,
         private readonly TeacherContextService $teacherContext
@@ -51,7 +53,7 @@ class TeacherAttendanceController extends Controller
         if ($sectionScope !== null && $request->filled('section_id')) {
             $sectionFilter = (int) $request->query('section_id');
             if ($sectionScope === [] || ! in_array($sectionFilter, $sectionScope, true)) {
-                $recentQuery->whereRaw('1 = 0');
+                $recentQuery->whereRaw(self::EMPTY_RESULT_SQL);
             } else {
                 $recentQuery->where('section_id', $sectionFilter);
             }
@@ -165,7 +167,7 @@ class TeacherAttendanceController extends Controller
         if ($sectionScope !== null && $sectionScope !== []) {
             $query->whereIn('section_id', $sectionScope);
         } elseif ($sectionScope !== null && $sectionScope === []) {
-            $query->whereRaw('1 = 0');
+            $query->whereRaw(self::EMPTY_RESULT_SQL);
         }
     }
 
@@ -179,7 +181,7 @@ class TeacherAttendanceController extends Controller
         }
 
         if ($sectionScope === []) {
-            $query->whereRaw('1 = 0');
+            $query->whereRaw(self::EMPTY_RESULT_SQL);
 
             return;
         }
