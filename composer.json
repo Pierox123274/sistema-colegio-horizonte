@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Sistema web institucional e intranet para I.E.P. Horizonte.",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
