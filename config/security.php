@@ -12,4 +12,13 @@ return [
 
     'suspicious_ip_window_minutes' => (int) env('SECURITY_SUSPICIOUS_IP_WINDOW', 60),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cifrado de datos personales (AES-256-CBC vía APP_KEY)
+    |--------------------------------------------------------------------------
+    */
+    'encrypt_personal_data' => (bool) env('SECURITY_ENCRYPT_PERSONAL_DATA', true),
+
+    'encrypt_sessions' => (bool) env('SESSION_ENCRYPT', false),
+
 ];

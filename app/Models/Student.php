@@ -6,6 +6,7 @@ use App\Enums\DocumentType;
 use App\Enums\EducationalLevel;
 use App\Enums\Gender;
 use App\Enums\StudentStatus;
+use App\Models\Concerns\EncryptsPersonalAttributes;
 use Database\Factories\StudentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Student extends Model
 {
     /** @use HasFactory<StudentFactory> */
-    use HasFactory;
+    use EncryptsPersonalAttributes, HasFactory;
 
     /**
      * @var list<string>
@@ -29,6 +30,7 @@ class Student extends Model
         'last_name',
         'document_type',
         'document_number',
+        'document_number_hash',
         'birth_date',
         'gender',
         'educational_level',
@@ -49,6 +51,11 @@ class Student extends Model
         return [
             'birth_date' => 'date',
             'document_type' => DocumentType::class,
+            'document_number' => 'encrypted',
+            'address' => 'encrypted',
+            'phone' => 'encrypted',
+            'email' => 'encrypted',
+            'medical_observations' => 'encrypted',
             'educational_level' => EducationalLevel::class,
             'gender' => Gender::class,
             'status' => StudentStatus::class,

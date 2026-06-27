@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Guardian;
+use App\Support\EncryptedPersonalDataSearch;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,13 +18,12 @@ class GuardianService
             ->orderBy('first_name');
 
         if ($search = trim((string) $request->query('search', ''))) {
-            $like = '%'.$search.'%';
-            $query->where(function ($q) use ($like): void {
-                $q->where('first_name', 'like', $like)
-                    ->orWhere('last_name', 'like', $like)
-                    ->orWhere('document_number', 'like', $like)
-                    ->orWhere('phone', 'like', $like)
-                    ->orWhere('secondary_phone', 'like', $like);
+            $query->where(function ($q) use ($search): void {
+                EncryptedPersonalDataSearch::applyDocumentOrTextSearch(
+                    $q,
+                    $search,
+                    ['first_name', 'last_name'],
+                );
             });
         }
 

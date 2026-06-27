@@ -7,6 +7,7 @@ use App\Enums\IntranetRole;
 use App\Models\Guardian;
 use App\Models\Student;
 use App\Models\User;
+use App\Support\SensitiveDataHasher;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -57,8 +58,9 @@ class GuardianManagementTest extends TestCase
         $response->assertRedirect();
         $this->assertDatabaseHas('guardians', [
             'first_name' => 'Carlos',
-            'document_number' => '45123456',
+            'document_number_hash' => SensitiveDataHasher::hashDocument('45123456'),
         ]);
+        $this->assertSame('45123456', Guardian::query()->where('first_name', 'Carlos')->value('document_number'));
     }
 
     public function test_secretaria_crea_apoderado(): void
@@ -71,7 +73,9 @@ class GuardianManagementTest extends TestCase
         );
 
         $response->assertRedirect();
-        $this->assertDatabaseHas('guardians', ['document_number' => '45123457']);
+        $this->assertDatabaseHas('guardians', [
+            'document_number_hash' => SensitiveDataHasher::hashDocument('45123457'),
+        ]);
     }
 
     public function test_docente_solo_visualiza(): void

@@ -64,6 +64,7 @@ class VirtualMeeting extends Model
             'is_private' => 'boolean',
             'recurrence_rule' => 'array',
             'provider_metadata' => 'array',
+            'join_password' => 'encrypted',
             'cancelled_at' => 'datetime',
             'started_at' => 'datetime',
             'completed_at' => 'datetime',

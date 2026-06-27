@@ -5,6 +5,26 @@ use Pdo\Mysql;
 
 $defaultDbHost = '127.0.0.1';
 
+$mysqlSslOptions = static function (): array {
+    if (! extension_loaded('pdo_mysql') || ! filter_var(env('DB_SSL', false), FILTER_VALIDATE_BOOL)) {
+        return [];
+    }
+
+    $sslCa = PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA;
+    $verify = PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_VERIFY_SERVER_CERT : PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT;
+
+    $options = [];
+    if ($ca = env('MYSQL_ATTR_SSL_CA')) {
+        $options[$sslCa] = $ca;
+    }
+
+    if (filter_var(env('DB_SSL_VERIFY', true), FILTER_VALIDATE_BOOL) === false) {
+        $options[$verify] = false;
+    }
+
+    return $options;
+};
+
 return [
 
     /*
@@ -62,7 +82,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+                ...$mysqlSslOptions(),
             ]) : [],
         ],
 
@@ -82,7 +102,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+                ...$mysqlSslOptions(),
             ]) : [],
         ],
 

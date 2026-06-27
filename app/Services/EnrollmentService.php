@@ -9,6 +9,7 @@ use App\Models\Enrollment;
 use App\Models\Grade;
 use App\Models\Section;
 use App\Models\Student;
+use App\Support\EncryptedPersonalDataSearch;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -145,14 +146,13 @@ class EnrollmentService
             return [];
         }
 
-        $like = '%'.$term.'%';
-
         return Student::query()
-            ->where(function ($q) use ($like): void {
-                $q->where('code', 'like', $like)
-                    ->orWhere('first_name', 'like', $like)
-                    ->orWhere('last_name', 'like', $like)
-                    ->orWhere('document_number', 'like', $like);
+            ->where(function ($q) use ($term): void {
+                EncryptedPersonalDataSearch::applyDocumentOrTextSearch(
+                    $q,
+                    $term,
+                    ['code', 'first_name', 'last_name'],
+                );
             })
             ->orderBy('last_name')
             ->orderBy('first_name')

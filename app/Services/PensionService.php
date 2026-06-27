@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\PaymentEntryStatus;
 use App\Enums\PensionStatus;
 use App\Models\Pension;
+use App\Support\EncryptedPersonalDataSearch;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 
@@ -21,12 +22,12 @@ class PensionService
             ->orderByDesc('month');
 
         if ($search = trim((string) $request->query('search', ''))) {
-            $like = '%'.$search.'%';
-            $query->whereHas('enrollment.student', function ($q) use ($like): void {
-                $q->where('first_name', 'like', $like)
-                    ->orWhere('last_name', 'like', $like)
-                    ->orWhere('code', 'like', $like)
-                    ->orWhere('document_number', 'like', $like);
+            $query->whereHas('enrollment.student', function ($q) use ($search): void {
+                EncryptedPersonalDataSearch::applyDocumentOrTextSearch(
+                    $q,
+                    $search,
+                    ['first_name', 'last_name', 'code'],
+                );
             });
         }
 

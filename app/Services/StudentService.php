@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\EnrollmentStatus;
 use App\Models\AcademicYear;
 use App\Models\Student;
+use App\Support\EncryptedPersonalDataSearch;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 
@@ -66,11 +67,11 @@ class StudentService
         }
 
         $query->where(function ($q) use ($search): void {
-            $like = '%'.$search.'%';
-            $q->where('first_name', 'like', $like)
-                ->orWhere('last_name', 'like', $like)
-                ->orWhere('code', 'like', $like)
-                ->orWhere('document_number', 'like', $like);
+            EncryptedPersonalDataSearch::applyDocumentOrTextSearch(
+                $q,
+                $search,
+                ['first_name', 'last_name', 'code'],
+            );
         });
     }
 

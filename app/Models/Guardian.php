@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\DocumentType;
 use App\Enums\GuardianRelationshipType;
+use App\Models\Concerns\EncryptsPersonalAttributes;
 use Database\Factories\GuardianFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Guardian extends Model
 {
     /** @use HasFactory<GuardianFactory> */
-    use HasFactory;
+    use EncryptsPersonalAttributes, HasFactory;
 
     /**
      * @var list<string>
@@ -23,6 +24,7 @@ class Guardian extends Model
         'last_name',
         'document_type',
         'document_number',
+        'document_number_hash',
         'relationship_type',
         'phone',
         'secondary_phone',
@@ -40,6 +42,12 @@ class Guardian extends Model
     {
         return [
             'document_type' => DocumentType::class,
+            'document_number' => 'encrypted',
+            'phone' => 'encrypted',
+            'secondary_phone' => 'encrypted',
+            'email' => 'encrypted',
+            'address' => 'encrypted',
+            'workplace' => 'encrypted',
             'relationship_type' => GuardianRelationshipType::class,
             'is_emergency_contact' => 'boolean',
         ];

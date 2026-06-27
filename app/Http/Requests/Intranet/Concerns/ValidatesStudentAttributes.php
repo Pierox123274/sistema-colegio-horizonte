@@ -6,6 +6,8 @@ use App\Enums\DocumentType;
 use App\Enums\EducationalLevel;
 use App\Enums\Gender;
 use App\Enums\StudentStatus;
+use App\Models\Student;
+use App\Rules\UniqueDocumentNumber;
 use App\Support\StudentGradeCatalog;
 use Closure;
 use Illuminate\Validation\Rule;
@@ -31,7 +33,7 @@ trait ValidatesStudentAttributes
                 'nullable',
                 'string',
                 'max:32',
-                Rule::unique('students', 'document_number')->ignore($studentId),
+                new UniqueDocumentNumber(Student::class, $studentId),
             ],
             'birth_date' => ['required', 'date'],
             'gender' => ['required', Rule::enum(Gender::class)],

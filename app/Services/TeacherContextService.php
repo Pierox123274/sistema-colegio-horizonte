@@ -13,6 +13,7 @@ use App\Models\Section;
 use App\Models\Student;
 use App\Models\TeacherAssignment;
 use App\Models\User;
+use App\Support\EncryptedPersonalDataSearch;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
 
@@ -564,12 +565,13 @@ final class TeacherContextService
                 ->orderBy('first_name');
 
             if ($search !== null && trim($search) !== '') {
-                $like = '%'.trim($search).'%';
-                $studentQuery->where(function ($q) use ($like): void {
-                    $q->where('first_name', 'like', $like)
-                        ->orWhere('last_name', 'like', $like)
-                        ->orWhere('code', 'like', $like)
-                        ->orWhere('document_number', 'like', $like);
+                $term = trim($search);
+                $studentQuery->where(function ($q) use ($term): void {
+                    EncryptedPersonalDataSearch::applyDocumentOrTextSearch(
+                        $q,
+                        $term,
+                        ['first_name', 'last_name', 'code'],
+                    );
                 });
             }
 

@@ -5,6 +5,7 @@ namespace App\Http\Requests\Intranet;
 use App\Enums\DocumentType;
 use App\Enums\GuardianRelationshipType;
 use App\Models\Guardian;
+use App\Rules\UniqueDocumentNumber;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -48,7 +49,7 @@ class UpdateGuardianRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:32',
-                Rule::unique('guardians', 'document_number')->ignore($guardianId),
+                new UniqueDocumentNumber(Guardian::class, $guardianId),
             ],
             'relationship_type' => ['required', Rule::enum(GuardianRelationshipType::class)],
             'phone' => ['required', 'string', 'max:32'],
