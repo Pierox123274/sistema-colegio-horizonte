@@ -185,6 +185,15 @@ class VirtualClassroomTest extends TestCase
             AuditLog::query()->where('module', AuditModule::Lms->value)->exists(),
             'Debe auditar acciones LMS',
         );
+
+        $assignment->refresh();
+        $this->assertNotNull($assignment->evaluation_id);
+
+        $this->assertDatabaseHas('grade_records', [
+            'evaluation_id' => $assignment->evaluation_id,
+            'student_id' => $ctx['student']->id,
+            'score' => 8,
+        ]);
     }
 
     public function test_student_completes_online_exam(): void
@@ -230,6 +239,15 @@ class VirtualClassroomTest extends TestCase
         $attempt->refresh();
         $this->assertSame(OnlineExamAttemptStatus::Completed->value, $attempt->status->value);
         $this->assertEquals(100.0, (float) $attempt->score_percent);
+
+        $exam->refresh();
+        $this->assertNotNull($exam->evaluation_id);
+
+        $this->assertDatabaseHas('grade_records', [
+            'evaluation_id' => $exam->evaluation_id,
+            'student_id' => $ctx['student']->id,
+            'score' => 20,
+        ]);
     }
 
     public function test_student_cannot_access_classroom_outside_enrollment(): void

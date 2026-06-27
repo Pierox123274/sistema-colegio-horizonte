@@ -26,6 +26,7 @@ final class OnlineExamService
         private readonly AuditService $audit,
         private readonly LMSService $lms,
         private readonly LMSAdaptiveIntegrationService $adaptive,
+        private readonly LMSGradeSyncService $gradeSync,
         private readonly GamificationService $gamification,
         private readonly UserNotificationService $notifications,
     ) {}
@@ -165,6 +166,7 @@ final class OnlineExamService
         $attempt->save();
 
         $this->adaptive->onOnlineExamCompleted($attempt);
+        $this->gradeSync->syncOnlineExamAttempt($attempt);
 
         $student = $attempt->student;
         if ($student !== null && $score >= 70) {

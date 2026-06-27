@@ -9,12 +9,12 @@ Gestionar **aulas virtuales** por docente/sección, tareas con entregas, exámen
 - `VirtualClassroom`, `Assignment`, `AssignmentSubmission`  
 - `OnlineExam`, `OnlineExamQuestion`, `OnlineExamAttempt`  
 - `AcademicCalendarEvent`  
-- Servicios: `LMSService`, `AssignmentService`, `OnlineExamService`, `LMSCalendarService`, `LMSAdaptiveIntegrationService`  
+- Servicios: `LMSService`, `AssignmentService`, `OnlineExamService`, `LMSCalendarService`, `LMSAdaptiveIntegrationService`, `LMSGradeSyncService`  
 - Políticas: `VirtualClassroomPolicy`, `AssignmentPolicy`, `OnlineExamPolicy`
 
 ## Flujo docente
 
-Crear aula → publicar tarea/examen → estudiantes entregan o rinden → calificación → integración adaptativa si puntaje bajo (recomendaciones/debilidades).
+Crear aula → publicar tarea/examen → estudiantes entregan o rinden → calificación → **sincronización automática a `grade_records`** (vía `Evaluation` vinculado) → integración adaptativa si puntaje bajo (recomendaciones/debilidades).
 
 ## Flujo estudiante
 
@@ -27,6 +27,7 @@ Inertia (Teacher/Student), almacenamiento de archivos en `storage`, colas para n
 ## Decisiones técnicas
 
 - Integración con **Fase 22** vía reglas locales (`LMSAdaptiveIntegrationService`), no dependiente de IA externa.  
+- **Sincronización de notas:** `LMSGradeSyncService` crea un `Evaluation` por tarea/examen (`evaluation_id` en `assignments` / `online_exams`) y un `GradeRecord` por estudiante al calificar o completar examen. Configurable en `config/lms.php` → `grade_sync`.  
 - Calendario unificado con eventos de tipo reunión, tarea, examen.
 
 ## Relación con otros módulos

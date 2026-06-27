@@ -23,6 +23,7 @@ final class AssignmentService
         private readonly AuditService $audit,
         private readonly LMSService $lms,
         private readonly LMSAdaptiveIntegrationService $adaptive,
+        private readonly LMSGradeSyncService $gradeSync,
         private readonly GamificationService $gamification,
         private readonly UserNotificationService $notifications,
     ) {}
@@ -172,6 +173,7 @@ final class AssignmentService
         $submission->save();
 
         $this->adaptive->onAssignmentGraded($submission);
+        $this->gradeSync->syncAssignmentSubmission($submission);
 
         $this->audit->log(
             AuditAction::Update,

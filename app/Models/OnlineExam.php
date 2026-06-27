@@ -19,6 +19,7 @@ class OnlineExam extends Model
      */
     protected $fillable = [
         'virtual_classroom_id',
+        'evaluation_id',
         'title',
         'description',
         'grading_mode',
@@ -45,6 +46,14 @@ class OnlineExam extends Model
             'available_from' => 'datetime',
             'available_until' => 'datetime',
         ];
+    }
+
+    /**
+     * @return BelongsTo<Evaluation, $this>
+     */
+    public function evaluation(): BelongsTo
+    {
+        return $this->belongsTo(Evaluation::class);
     }
 
     /**

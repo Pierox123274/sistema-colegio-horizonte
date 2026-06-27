@@ -18,6 +18,7 @@ class Assignment extends Model
      */
     protected $fillable = [
         'virtual_classroom_id',
+        'evaluation_id',
         'title',
         'description',
         'max_score',
@@ -38,6 +39,14 @@ class Assignment extends Model
             'rubric' => 'array',
             'is_published' => 'boolean',
         ];
+    }
+
+    /**
+     * @return BelongsTo<Evaluation, $this>
+     */
+    public function evaluation(): BelongsTo
+    {
+        return $this->belongsTo(Evaluation::class);
     }
 
     /**

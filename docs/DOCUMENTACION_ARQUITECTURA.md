@@ -458,7 +458,7 @@ flowchart LR
 | Asistencia y notas | `Attendance`, `GradeRecord` | `AttendanceService`, `AcademicGradeService` | Intranet + Teacher |
 | Finanzas | `Payment`, `Pension`, `PaymentConcept` | `PaymentService`, `PensionService` | Intranet + Student |
 | Inventario y caja | `Product`, `Sale`, `CashRegister` | `SaleService`, `CashRegisterService` | Intranet |
-| Aula virtual (LMS) | `VirtualClassroom`, `Assignment`, `OnlineExam` | `LMSService`, `AssignmentService` | Teacher + Student |
+| Aula virtual (LMS) | `VirtualClassroom`, `Assignment`, `OnlineExam` | `LMSService`, `AssignmentService`, `LMSGradeSyncService` | Teacher + Student |
 | Aprendizaje adaptativo | `DiagnosticExam`, `QuestionBank`, `StudentAdaptiveProfile` | `AdaptiveDiagnosticService` | Teacher + Student + Intranet |
 | Tutor IA | — | `AITutorService`, `AIGenerationService` | Student + Teacher |
 | Gamificación | `GamificationProfile`, `Achievement`, `Challenge` | `GamificationService` | Student + Intranet |
