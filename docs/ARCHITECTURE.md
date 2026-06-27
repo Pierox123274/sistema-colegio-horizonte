@@ -1,5 +1,7 @@
 # Arquitectura del sistema — I.E.P. Horizonte
 
+> **Vista general del sistema:** para un mapa arquitectónico completo (capas, portales, módulos, datos, despliegue), ver [`DOCUMENTACION_ARQUITECTURA.md`](./DOCUMENTACION_ARQUITECTURA.md).
+
 Este documento fija la arquitectura base del proyecto **Laravel 12 + Inertia + React (TypeScript)**. Objetivo: mantenibilidad y escalabilidad sin **Clean Architecture pesada**: capas claras, pocas abstracciones, crecimiento por dominio cuando aparezca lógica real.
 
 ## Principios

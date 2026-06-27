@@ -689,6 +689,7 @@ Ver también: `docs/KNOWN_LIMITATIONS.md`
 
 | Documento | Ruta |
 |-----------|------|
+| Arquitectura del sistema | `docs/DOCUMENTACION_ARQUITECTURA.md` |
 | Visión general pruebas | `docs/documentation/testing/TEST_DOCUMENTATION.md` |
 | Feature tests detalle | `docs/documentation/testing/FEATURE_TESTS_DOCUMENTATION.md` |
 | BDD | `docs/documentation/testing/BDD_TESTS_DOCUMENTATION.md` |
