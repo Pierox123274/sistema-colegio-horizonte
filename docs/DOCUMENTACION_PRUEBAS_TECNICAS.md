@@ -476,7 +476,20 @@ Configurar en **Settings → Secrets and variables → Actions**:
 
 #### Comportamiento si falta el token
 
-Si `SONAR_TOKEN` no está configurado, el job `sonarqube` se omite (`if: secrets.SONAR_TOKEN != ''`) y el resto del CI sigue ejecutándose.
+Si `SONAR_TOKEN` no está configurado, el paso de escaneo se omite (`if: env.SONAR_TOKEN != ''`) y el resto del CI sigue ejecutándose.
+
+#### Publicar el workflow en GitHub (primera vez)
+
+El archivo `.github/workflows/ci.yml` requiere el scope **`workflow`** al hacer push. Si `git push` falla con ese mensaje:
+
+```bash
+gh auth refresh -s workflow
+git add .github/workflows/ci.yml
+git commit -m "ci: añadir workflow GitHub Actions con SonarQube"
+git push origin main
+```
+
+Alternativa: crear el archivo manualmente en GitHub (**Add file → Create new file** → ruta `.github/workflows/ci.yml`) pegando el contenido del repositorio local.
 
 #### Cobertura en CI
 
@@ -663,7 +676,8 @@ docker compose -f docker-compose.prod.yml up -d --build
 | Cobertura SonarQube en local | 0 % sin PCOV/Xdebug local | En CI ya se genera con PCOV; local: `vendor/bin/phpunit --coverage-clover build/coverage/clover.xml` |
 | BDD | Sin runner Behat; specs son documentación + enlace a PHPUnit | Mantener comentario de trazabilidad en cada `.feature` |
 | Cypress | No corre en CI actual | Añadir job con `cypress-io/github-action` |
-| SonarQube en CI | Requiere `SONAR_TOKEN` en secrets de GitHub | Sin token, el job `sonarqube` se omite; tests siguen corriendo |
+| SonarQube en CI | Requiere `SONAR_TOKEN` en secrets de GitHub | Sin token, el paso de escaneo se omite; tests siguen corriendo |
+| Workflow en GitHub | Push de `.github/workflows/*` exige scope `workflow` | `gh auth refresh -s workflow` o subir el YAML por la UI de GitHub |
 | E2E | Requiere `npm run build` previo | Documentado en sección 5.4 |
 | SQLite vs MySQL | Tests usan SQLite en memoria | `ProductionReadinessTest` valida configuración prod |
 

@@ -1,0 +1,87 @@
+name: CI
+
+on:
+    push:
+        branches: [main, master, develop]
+    pull_request:
+
+jobs:
+    tests:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.2'
+                  extensions: mbstring, xml, sqlite3, pdo_sqlite, zip, gd, intl, pcov
+                  coverage: pcov
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: npm
+
+            - name: Install Composer dependencies
+              run: composer install --prefer-dist --no-interaction
+
+            - name: Environment
+              run: |
+                  cp .env.example .env
+                  php artisan key:generate
+
+            - name: Migrate
+              run: |
+                  mkdir -p database
+                  touch database/database.sqlite
+                  php artisan migrate --force
+
+            - name: Pint
+              run: vendor/bin/pint --test
+
+            - name: PHPUnit with coverage
+              run: |
+                  mkdir -p build/coverage
+                  vendor/bin/phpunit --coverage-clover build/coverage/clover.xml
+
+            - name: Upload coverage artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: php-coverage
+                  path: build/coverage/clover.xml
+                  if-no-files-found: error
+
+            - name: NPM
+              run: npm ci
+
+            - name: Build frontend
+              run: npm run build
+
+    sonarqube:
+        needs: tests
+        runs-on: ubuntu-latest
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Download coverage
+              uses: actions/download-artifact@v4
+              with:
+                  name: php-coverage
+                  path: build/coverage
+
+            - name: SonarQube Scan
+              uses: SonarSource/sonarqube-scan-action@v4
+              if: env.SONAR_TOKEN != ''
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+                  SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL || 'https://sonarcloud.io' }}
