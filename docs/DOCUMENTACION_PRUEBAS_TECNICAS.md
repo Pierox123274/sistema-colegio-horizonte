@@ -432,13 +432,63 @@ Tras refactors orientados a SonarQube:
 - Fix de accesibilidad (teclado en `Dropdown`, `MobileNavMenu`).
 - Configuración de cobertura PHPUnit → SonarQube.
 
-### 6.5 Integración recomendada en CI
+### 6.5 Integración en CI (GitHub Actions)
 
-SonarQube no está en `.github/workflows/ci.yml` actual. Para integrarlo:
+El análisis SonarQube está integrado en `.github/workflows/ci.yml` mediante el job `sonarqube`.
 
-1. Añadir paso `phpunit --coverage-clover`.
-2. Ejecutar `sonarsource/sonar-scanner-cli` con `SONAR_TOKEN` en secrets.
-3. Opcional: SonarCloud para análisis en la nube sin Docker local.
+#### Pipeline
+
+```
+Job tests                          Job sonarqube (depende de tests)
+├── checkout (fetch-depth: 0)        ├── checkout
+├── PHP 8.2 + PCOV                 ├── descarga artifact clover.xml
+├── pint --test                    └── SonarSource/sonarqube-scan-action@v4
+├── phpunit --coverage-clover
+├── upload-artifact (clover.xml)
+├── npm ci && npm run build
+```
+
+#### Secrets requeridos en GitHub
+
+Configurar en **Settings → Secrets and variables → Actions**:
+
+| Secret / Variable | Obligatorio | Descripción |
+|-------------------|-------------|-------------|
+| `SONAR_TOKEN` | Sí (para escanear) | Token de análisis (SonarCloud o servidor propio) |
+| `SONAR_HOST_URL` | Solo servidor propio | URL del servidor (ej. `https://sonarcloud.io` o `http://tu-sonar:9000`) |
+| `GITHUB_TOKEN` | Automático | Lo provee GitHub Actions |
+
+#### SonarCloud (recomendado en la nube)
+
+1. Crear cuenta en [sonarcloud.io](https://sonarcloud.io) e importar el repositorio.
+2. Generar token en **My Account → Security**.
+3. En `sonar-project.properties`, descomentar y completar:
+   ```properties
+   sonar.organization=tu-organizacion-sonarcloud
+   ```
+4. Añadir `SONAR_TOKEN` en secrets de GitHub.
+5. Opcional: `SONAR_HOST_URL=https://sonarcloud.io` (por defecto en la action).
+
+#### Servidor SonarQube propio (Docker local)
+
+1. Secrets: `SONAR_TOKEN` + `SONAR_HOST_URL` (URL pública o túnel al servidor).
+2. No requiere `sonar.organization` en `sonar-project.properties`.
+
+#### Comportamiento si falta el token
+
+Si `SONAR_TOKEN` no está configurado, el job `sonarqube` se omite (`if: secrets.SONAR_TOKEN != ''`) y el resto del CI sigue ejecutándose.
+
+#### Cobertura en CI
+
+PHPUnit genera `build/coverage/clover.xml` con **PCOV** (más rápido que Xdebug en runners). El archivo se sube como artifact y lo consume SonarQube.
+
+```yaml
+# Fragmento relevante de ci.yml
+- name: PHPUnit with coverage
+  run: |
+      mkdir -p build/coverage
+      vendor/bin/phpunit --coverage-clover build/coverage/clover.xml
+```
 
 ---
 
@@ -512,22 +562,35 @@ Archivo: `.github/workflows/ci.yml`
 
 **Disparadores:** push a `main`, `master`, `develop`; pull requests.
 
-**Pipeline:**
+### Job `tests`
 
 ```
-checkout → PHP 8.2 → Node 20 → composer install
-    → .env + key:generate → migrate (sqlite file)
-    → pint --test → php artisan test
+checkout (fetch-depth: 0) → PHP 8.2 + PCOV → Node 20
+    → composer install → .env + key:generate → migrate (sqlite)
+    → pint --test
+    → phpunit --coverage-clover build/coverage/clover.xml
+    → upload-artifact (clover.xml)
     → npm ci → npm run build
+```
+
+### Job `sonarqube`
+
+```
+needs: tests
+    → download-artifact (clover.xml)
+    → SonarSource/sonarqube-scan-action@v4 (si SONAR_TOKEN está definido)
 ```
 
 | Paso | Herramienta | Criterio de éxito |
 |------|-------------|-------------------|
 | Estilo PHP | Laravel Pint | Sin diffs de formato |
-| Tests | PHPUnit | 340 tests PASS |
+| Tests + cobertura | PHPUnit + PCOV | Suite PASS + `clover.xml` generado |
 | Frontend | `tsc && vite build` | Build sin errores |
+| Calidad estática | SonarQube Scan | Análisis subido (requiere `SONAR_TOKEN`) |
 
-> **Nota:** el workflow puede requerir scope `workflow` en el token de GitHub para pushearse al remoto. Ejecutar localmente con los mismos comandos si CI no está activo en el repo.
+### Configuración de secrets
+
+Ver sección [6.5 Integración en CI](#65-integración-en-ci-github-actions) para `SONAR_TOKEN`, `SONAR_HOST_URL` y SonarCloud.
 
 ---
 
@@ -576,10 +639,11 @@ npm run build
 
 ```bash
 php artisan test
+mkdir -p build/coverage
+vendor/bin/phpunit --coverage-clover build/coverage/clover.xml
 npm run build
 npm run e2e                    # con servidor corriendo
-vendor/bin/phpunit --coverage-clover build/coverage/clover.xml
-# SonarQube scan (opcional)
+# SonarQube local (Docker) o revisar resultado en GitHub Actions → job sonarqube
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
@@ -596,10 +660,10 @@ docker compose -f docker-compose.prod.yml up -d --build
 
 | Área | Limitación | Mitigación |
 |------|------------|------------|
-| Cobertura SonarQube | 0 % sin PCOV/Xdebug local | Instalar extensión y generar `clover.xml` |
+| Cobertura SonarQube en local | 0 % sin PCOV/Xdebug local | En CI ya se genera con PCOV; local: `vendor/bin/phpunit --coverage-clover build/coverage/clover.xml` |
 | BDD | Sin runner Behat; specs son documentación + enlace a PHPUnit | Mantener comentario de trazabilidad en cada `.feature` |
 | Cypress | No corre en CI actual | Añadir job con `cypress-io/github-action` |
-| SonarQube | Análisis manual local | Integrar SonarCloud en GitHub Actions |
+| SonarQube en CI | Requiere `SONAR_TOKEN` en secrets de GitHub | Sin token, el job `sonarqube` se omite; tests siguen corriendo |
 | E2E | Requiere `npm run build` previo | Documentado en sección 5.4 |
 | SQLite vs MySQL | Tests usan SQLite en memoria | `ProductionReadinessTest` valida configuración prod |
 
